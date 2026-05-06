@@ -23,8 +23,8 @@ function App() {
 
   return (
     <ul>
-      {types.map((types) => (
-        <li key={types.name}>{types.name}</li>
+      {types.map((typeRow) => (
+        <li key={typeRow.name}>{typeRow.name}</li>
       ))}
     </ul>
   );
