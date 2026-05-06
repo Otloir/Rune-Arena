@@ -1,0 +1,1 @@
+// creature sprite + platform component will be written here
