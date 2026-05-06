@@ -7,7 +7,7 @@ function App() {
       <section id="center">
         <form action="buy">
           <Input type="text" label="hi" />
-          <Input />
+          <Input type="number" label="Quantity" />
           <button>submit</button>
         </form>
       </section>

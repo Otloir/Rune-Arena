@@ -1,43 +1,51 @@
 import { useState } from "react";
-import styles from './Input.module.css';
+import styles from "./Input.module.css";
 
-interface NumberInputProps {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  type?: "number" | "text";
-  min?: number;
-  max?: number;
 }
 
 export default function Input({
-  label = "Quantity",
-  type = "number",
-  min = 0,
-  max = 99,
-}: NumberInputProps) {
-  const [value, setValue] = useState<string | number>(min);
+  label,
+  type = "text",
+  value,
+  onChange,
+  name,
+  min,
+  max,
+  ...rest
+}: InputProps) {
+  const [internalValue, setInternalValue] = useState<string | number>("");
+  const isNumber = type === "number";
+  const currentValue = value !== undefined ? value : internalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue: string | number = e.target.value;
 
-    if (type === "number") {
+    if (isNumber) {
       const num = parseInt(newValue, 10);
       if (!isNaN(num)) {
-        newValue = Math.max(min, Math.min(num, max));
+        newValue = Math.max(Number(min) || 0, Math.min(num, Number(max) || 99));
       }
     }
 
-    setValue(newValue);
+    if (value === undefined) setInternalValue(newValue);
+    onChange?.(e);
   };
 
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor="input">{label}</label>
+      {label && <label htmlFor={name || "input"}>{label}</label>}
       <input
-        id="input"
+        id={name || "input"}
+        name={name}
         type={type}
-        value={value}
+        value={currentValue}
         onChange={handleChange}
-        {...(type === "number" && { min, max })}
+        min={isNumber ? min : undefined}
+        max={isNumber ? max : undefined}
+        className={isNumber ? styles.number : undefined}
+        {...rest}
       />
     </div>
   );
