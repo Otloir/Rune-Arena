@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from './Input.module.css';
 
 interface NumberInputProps {
   label?: string;
@@ -29,7 +30,7 @@ export default function Input({
   };
 
   return (
-    <div>
+    <div className={styles.inputContainer}>
       <label htmlFor="input">{label}</label>
       <input
         id="input"

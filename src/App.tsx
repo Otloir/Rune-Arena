@@ -1,4 +1,4 @@
-import Input from "./components/atoms/input/input";
+import Input from "./components/Atoms/Input/Input";
 import "./App.css";
 
 function App() {
