@@ -13,7 +13,7 @@ function App() {
   }, []);
 
   async function getTypes() {
-    const { data, error } = await supabase.from("Types").select();
+    const { data, error } = await supabase.from("Types").select("name");
     if (error) {
       console.error("Supabase error:", error.message);
       return;
