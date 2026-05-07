@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase"; // use the shared client
+import Input from "./components/Atoms/Form/Input";
+import "./App.css";
 
 interface TypeRow {
   name: string;
@@ -22,11 +24,22 @@ function App() {
   }
 
   return (
-    <ul>
-      {types.map((typeRow) => (
-        <li key={typeRow.name}>{typeRow.name}</li>
-      ))}
-    </ul>
+    <>
+      {/* number input */}
+      <section id="center">
+        <form action="buy">
+          <Input type="text" label="hi" />
+          <Input type="number" label="Quantity" />
+        </form>
+      </section>
+
+      {/* typing */}
+      <ul>
+        {types.map((typeRow) => (
+          <li key={typeRow.name}>{typeRow.name}</li>
+        ))}
+      </ul>
+    </>
   );
 }
 
