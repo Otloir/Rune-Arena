@@ -1,7 +1,7 @@
 import { supabase } from "../../lib/supabase";
 import { useEffect, useState } from "react";
 
-interface ShopItemProps {
+interface ItemProps {
   itemId: number;
 }
 
@@ -15,7 +15,7 @@ interface Item {
     img: string;
 }
 
-const ShopItem: React.FC<ShopItemProps> = ({ itemId }) => {
+const Item: React.FC<ItemProps> = ({ itemId }) => {
   const [item, setItem] = useState<Item | null>(null);
 
   useEffect(() => {
@@ -50,4 +50,4 @@ const ShopItem: React.FC<ShopItemProps> = ({ itemId }) => {
   );
 };
 
-export default ShopItem;
+export default Item;
