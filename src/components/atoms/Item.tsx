@@ -5,7 +5,7 @@ interface ItemProps {
   itemId: number;
 }
 
-interface Item {
+interface ItemRow {
     id: number;
     name: string;
     property: string;
@@ -16,7 +16,7 @@ interface Item {
 }
 
 const Item: React.FC<ItemProps> = ({ itemId }) => {
-  const [item, setItem] = useState<Item | null>(null);
+  const [item, setItem] = useState<ItemRow | null>(null);
 
   useEffect(() => {
     fetchItem();
