@@ -19,22 +19,22 @@ const Item: React.FC<ItemProps> = ({ itemId }) => {
   const [item, setItem] = useState<ItemRow | null>(null);
 
   useEffect(() => {
+    const fetchItem = async () => {
+      const { data, error } = await supabase
+        .from("Items")
+        .select("*")
+        .eq("id", itemId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching item:", error);
+      } else {
+        setItem(data);
+      }
+    };
+
     fetchItem();
   }, [itemId]);
-
-  const fetchItem = async () => {
-    const { data, error } = await supabase
-      .from("Items")
-      .select("*")
-      .eq("id", itemId)
-      .single();
-
-    if (error) {
-      console.error("Error fetching item:", error);
-    } else {
-      setItem(data);
-    }
-  };
 
   if (!item) return <div>Loading...</div>;
 
