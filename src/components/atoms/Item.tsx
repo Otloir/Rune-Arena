@@ -19,13 +19,14 @@ const Item: React.FC<ItemProps> = ({ itemId }) => {
   const [item, setItem] = useState<ItemRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
     const fetchItem = async () => {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase
         .from("Items")
-        .select("*")
+        //.select("*")
+        .select ("id, name, property, propvalue, description, price, img")
         .eq("id", itemId)
         .single();
 
