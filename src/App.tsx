@@ -1,47 +1,16 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase"; // use the shared client
-import Input from "./components/Atoms/Form/Input";
 import Bars from "./components/Atoms/Bars/Bars";
 import "./App.css";
-
-interface CreaturesRow {
-  HP: number;
-}
-
-interface TypeRow {
-  name: string;
-}
+import { useCreature, useType, useMoves } from "./hooks/useCreature";
+import Input from "./components/Atoms/Form/Input";
 
 function App() {
-  const [types, setTypes] = useState<TypeRow[]>([]);
+  const { creatures } = useCreature();
+  const { types } = useType();
 
-  useEffect(() => {
-    getTypes();
-  }, []);
+  const { moves } = useMoves();
 
-  async function getTypes() {
-    const { data, error } = await supabase.from("Types").select("name");
-    if (error) {
-      console.error("Supabase error:", error.message);
-      return;
-    }
-    setTypes(data ?? []);
-  }
-
-  const [creatures, setCreatures] = useState<CreaturesRow[]>([]);
-
-  useEffect(() => {
-    getCreatures();
-  }, []);
-
-  async function getCreatures() {
-    const { data, error } = await supabase.from("Creatures").select("HP");
-    if (error) {
-      console.error("Supabase error:", error.message);
-      return;
-    }
-    setCreatures(data ?? []);
-  }
+  // temporary fixed placeholder. make dynamic later
+  const creature = creatures[0];
 
   return (
     <>
@@ -53,17 +22,23 @@ function App() {
         </form>
       </section>
 
-      {/* xp and health bar */}
-      {/* dummy creature is fixed, fix when we have a user with a creature to test with */}
+      {/* HP and XP bars */}
       <section>
-        <Bars current={75} max={creatures[0]?.HP} variant="hp" />
-        <Bars current={1250} max={2000} variant="xp" />
+        <Bars current={60} max={creature?.hp} variant="hp" />
+        <Bars current={500} max={2000} variant="xp" />
       </section>
 
-      {/* database display typing */}
+      {/* Types */}
       <ul>
-        {types.map((typeRow) => (
-          <li key={typeRow.name}>{typeRow.name}</li>
+        {types.map((type) => (
+          <li key={type.name}>{type.name}</li>
+        ))}
+      </ul>
+
+      {/* moves */}
+      <ul>
+        {moves.map((move) => (
+          <li key={move.name}>{move.name}</li>
         ))}
       </ul>
     </>
