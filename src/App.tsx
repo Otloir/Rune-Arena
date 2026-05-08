@@ -2,7 +2,7 @@ import Bars from "./components/Atoms/Bars/Bars";
 import "./App.css";
 import { useCreature, useType, useMoves } from "./hooks/useCreature";
 import Input from "./components/Atoms/Form/Input";
-import Item from "./components/atoms/Item/Item";
+import Item from "./components/Atoms/Item/Item";
 
 function App() {
   const { creatures } = useCreature();

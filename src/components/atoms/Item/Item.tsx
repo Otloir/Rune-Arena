@@ -1,4 +1,4 @@
-import { useItem } from "./useItem";
+import { useItem } from "./../../../hooks/useItem";
 import ItemDisplay from "./ItemDisplay";
 
 const Item: React.FC<{ itemId: number }> = ({ itemId }) => {
