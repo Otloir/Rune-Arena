@@ -17,7 +17,10 @@ interface ItemRow {
 
 const Item: React.FC<ItemProps> = ({ itemId }) => {
   const [item, setItem] = useState<ItemRow | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+<<<<<<< HEAD
   useEffect(() => {
     const fetchItem = async () => {
       const { data, error } = await supabase
@@ -37,6 +40,42 @@ const Item: React.FC<ItemProps> = ({ itemId }) => {
   }, [itemId]);
 
   if (!item) return <div>Loading...</div>;
+=======
+  const fetchItem = async () => {
+     setLoading(true);
+     setError(null);
+     const { data, error } = await supabase
+       .from("Items")
+       .select("*")
+       .eq("id", itemId)
+       .single();
+
+       if (error) {
+       console.error("Error fetching item:", error);
+       setItem(null);
+       setError("Failed to load item. Please try again.");
+     } else {
+       setItem(data);
+     }
+     setLoading(false);
+   };
+   useEffect(() => {
+    fetchItem();
+  }, [itemId]);
+
+  if (loading) return <div>Loading...</div>;
+
+  if (error) {
+     return (
+       <div className="item">
+         <p>{error}</p>
+         <button type="button" onClick={fetchItem}>Retry</button>
+       </div>
+     );
+   }
+   if (!item) return <div>No item found.</div>;
+
+>>>>>>> 3202359 (Updated item with better error catching)
 
   return (
     <div className="item">
