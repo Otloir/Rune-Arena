@@ -24,13 +24,14 @@ export default function Bars({
         className={styles.bar}
         role="progressbar"
         aria-label={aria}
+        aria-valuenow={current}
         aria-valuemin={0}
         aria-valuemax={max}
       >
         <div
           className={styles[variant]}
           style={{ width: `${percentage}%` }}
-        ></div>
+          />
       </div>
       {variant === "hp" && (
         <p>
