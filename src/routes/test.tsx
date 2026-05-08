@@ -1,7 +1,7 @@
-import Bars from "../components/Atoms/Bars/Bars";
+import Bars from "../components/atoms/Bars/Bars";
 import { useCreature, useType, useMoves } from "../hooks/useCreature";
-import Input from "../components/Atoms/Form/Input";
-import Item from "../components/Atoms/Item/Item";
+import Input from "../components/atoms/Form/Input";
+import Item from "../components/atoms/Item/Item";
 
 export default function Test() {
   const { creatures } = useCreature();
