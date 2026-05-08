@@ -1,5 +1,5 @@
 // Creature
-export type Creatures = {
+export type Creature = {
   id: string;
   name: string;
   front_img: string;
@@ -24,16 +24,16 @@ export type Move = {
   chance: number;
 }
 
-// Type Effectivness
-export type TypeEffectivness = {
+// Type Effectiveness
+export type TypeEffectiveness = {
   id: number;
   attacker_id: number;
   defender_id: number;
-  effectivness: number;
+  effectiveness: number;
 };
 
 // Levels
-export type Levels = {
+export type Level = {
   id: number;
   level: number;
   xp_required: number;

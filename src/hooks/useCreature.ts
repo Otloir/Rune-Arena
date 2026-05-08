@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import type {
-  Creatures,
+  Creature,
   Move,
   Type,
 } from "../types/creature.types";
 import { getCreatures, getTypes, getMoves } from "../api/creature.database";
 
 export function useCreature() {
-  const [creatures, setCreatures] = useState<Creatures[]>([]);
+  const [creatures, setCreatures] = useState<Creature[]>([]);
 
   useEffect(() => {
     async function load() {

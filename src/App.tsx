@@ -24,8 +24,8 @@ function App() {
 
       {/* HP and XP bars */}
       <section>
-        <Bars current={60} max={creature?.hp} variant="hp" />
-        <Bars current={500} max={2000} variant="xp" />
+        <Bars current={80} max={creature?.hp} variant="hp" aria="hp bar" />
+        <Bars current={500} max={2000} variant="xp" aria="xp bar" />
       </section>
 
       {/* Types */}

@@ -3,25 +3,34 @@ import styles from "./Bars.module.css";
 interface BarProps {
   current: number;
   max: number;
-  label?: string;
+  aria: string;
   variant?: "hp" | "xp";
 }
 
 export default function Bars({
   current,
   max,
+  aria,
   variant = "hp",
 }: BarProps) {
-  const percentage = (current / max) * 100;
+  const percentage =
+    Number.isFinite(current) && Number.isFinite(max) && max > 0
+      ? Math.max(0, Math.min(100, (current / max) * 100))
+      : 0;
 
   return (
     <div className={styles.container}>
-      <div className={styles.bar}>
+      <div
+        className={styles.bar}
+        role="progressbar"
+        aria-label={aria}
+        aria-valuemin={0}
+        aria-valuemax={max}
+      >
         <div
           className={styles[variant]}
-          style={{ width: `${Math.max(0, Math.min(100, percentage))}%` }}
-        >
-        </div>
+          style={{ width: `${percentage}%` }}
+        ></div>
       </div>
       {variant === "hp" && (
         <p>

@@ -1,5 +1,5 @@
-// moves
-export type Move = {
+// items
+export type Item = {
   id: number;
   name: string;
   property: string;
