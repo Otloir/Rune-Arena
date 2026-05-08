@@ -22,7 +22,7 @@ export default function Bars({
     <div className={styles.container}>
       <div
         className={styles.bar}
-        role="progressbar"
+        role="statusbar"
         aria-label={aria}
         aria-valuenow={current}
         aria-valuemin={0}
@@ -33,11 +33,12 @@ export default function Bars({
           style={{ width: `${percentage}%` }}
           />
       </div>
-      {variant === "hp" && (
+      {/* comminting out just in case i want it back in a lil bit */}
+      {/* {variant === "hp" && (
         <p>
           {current} / {max}
         </p>
-      )}
+      )} */}
     </div>
   );
 }
