@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { supabase } from "./../../../lib/supabase";
-import type { ItemRow } from "./../../../types/item.types";
+import { supabase } from "../lib/supabase";
+import type { Item } from "../types/item.types";
 
 export const useItem = (itemId: number) => {
-  const [item, setItem] = useState<ItemRow | null>(null);
+  const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

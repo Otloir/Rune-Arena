@@ -1,0 +1,28 @@
+.container {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.bar {
+  background-color: #eee;
+  border-radius: 15px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border: 2px solid #eee;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hp {
+  background-color: #04aa6d;
+  height: 10px;
+}
+
+.xp {
+  background-color: #0483aa;
+  height: 5px;
+}

@@ -1,5 +1,5 @@
-// types/item.types.ts
-export type ItemRow = {
+// items
+export type Item = {
   id: number;
   name: string;
   property: string;
