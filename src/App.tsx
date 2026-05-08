@@ -2,6 +2,7 @@ import Bars from "./components/Atoms/Bars/Bars";
 import "./App.css";
 import { useCreature, useType, useMoves } from "./hooks/useCreature";
 import Input from "./components/Atoms/Form/Input";
+import Item from "./components/atoms/Item/Item";
 
 function App() {
   const { creatures } = useCreature();
@@ -40,6 +41,10 @@ function App() {
         {moves.map((move) => (
           <li key={move.name}>{move.name}</li>
         ))}
+      </ul>
+      
+      <ul>
+        <Item itemId={1} /> 
       </ul>
     </>
   );
