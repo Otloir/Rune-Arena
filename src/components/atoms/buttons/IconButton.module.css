@@ -1,0 +1,29 @@
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s ease, transform 0.1s ease;
+  flex-shrink: 0;
+}
+
+.iconBtn:active:not(:disabled) { transform: scale(0.92); }
+.iconBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.sm { width: 30px; height: 30px; font-size: 0.85rem; }
+.md { width: 40px; height: 40px; font-size: 1.1rem; }
+.lg { width: 52px; height: 52px; font-size: 1.4rem; }
+
+.default {
+  background: #f0f2f8;
+  color: #3a3f5c;
+}
+.default:hover:not(:disabled) { background: #e2e5f3; }
+
+.ghost {
+  background: transparent;
+  color: #6b7399;
+}
+.ghost:hover:not(:disabled) { background: #f0f2f8; }
