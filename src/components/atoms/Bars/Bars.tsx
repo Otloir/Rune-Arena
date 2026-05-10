@@ -28,12 +28,9 @@ export default function Bars({
         aria-valuemin={0}
         aria-valuemax={max}
       >
-        <div
-          className={styles[variant]}
-          style={{ width: `${percentage}%` }}
-          />
+        <div className={styles[variant]} style={{ width: `${percentage}%` }} />
       </div>
-      {/* comminting out just in case i want it back in a lil bit */}
+      {/* commenting out just in case i want it back in a lil bit */}
       {/* {variant === "hp" && (
         <p>
           {current} / {max}

@@ -32,29 +32,50 @@ export function useUserCreature(userId: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setCreature(null);
+      setLevel(1);
+      setCurrentXp(0);
+      setXpRequired(500);
+      setError(null);
+      setLoading(false);
+      return;
+    }
 
     async function load() {
       setLoading(true);
-      const data = await getUserCreature(userId);
+      setError(null);
+      setCreature(null); 
 
-      if (!data) {
-        setError("No creature found for this user");
+      try {
+        const data = await getUserCreature(userId);
+
+        if (!data) {
+          setError("Unable to load creature for this user");
+          return;
+        }
+
+        const creatureData = Array.isArray(data.creature)
+          ? data.creature[0]
+          : data.creature;
+        const levelData = Array.isArray(data.level)
+          ? data.level[0]
+          : data.level;
+
+        setCreature(creatureData);
+        setLevel(levelData.level);
+        setCurrentXp(data.current_xp);
+        setXpRequired(levelData.xp_required);
+        setError(null);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load creature for this user",
+        );
+      } finally {
         setLoading(false);
-        return;
       }
-
-      // Supabase returns joined tables as objects — pull them out
-      const creature = Array.isArray(data.creature)
-        ? data.creature[0]
-        : data.creature;
-      const level = Array.isArray(data.level) ? data.level[0] : data.level;
-
-      setCreature(creature);
-      setLevel(level.level);
-      setCurrentXp(data.current_xp);
-      setXpRequired(level.xp_required);
-      setLoading(false);
     }
 
     load();

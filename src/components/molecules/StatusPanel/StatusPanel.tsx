@@ -3,18 +3,28 @@ import Bars from "../../atoms/Bars/Bars";
 import { useUserCreature } from "../../../hooks/useCreature";
 
 interface StatusPanelProps {
-  user: string;
-  currentHp?: number; // Current HP — pass undefined to default to max HP
+  userId: string;
+  currentHp?: number;
 }
 
-export default function StatusPanel({ user, currentHp }: StatusPanelProps) {
-  const { creature, level, currentXp, xpRequired, loading, error } = useUserCreature(user);
+export default function StatusPanel({ userId, currentHp }: StatusPanelProps) {
+  const { creature, level, currentXp, xpRequired, loading, error } =
+    useUserCreature(userId);
 
-  if (loading) return <section className={styles.statusBarContainer}>Loading...</section>;
-  if (error || !creature) return <section className={styles.statusBarContainer}>{error ?? "No creature found"}</section>;
+  if (loading)
+    return <section className={styles.statusBarContainer}>Loading...</section>;
+  if (error || !creature)
+    return (
+      <section className={styles.statusBarContainer}>
+        {error ?? "No creature found"}
+      </section>
+    );
 
-  // If no currentHp is passed, default to full HP
-  const displayHp = Math.max(0, currentHp ?? creature.hp);
+  // DisplayHp so it never exceeds max or goes below 0
+  const displayHp = Math.min(
+    Math.max(0, currentHp ?? creature.hp),
+    creature.hp,
+  );
 
   return (
     <section className={styles.statusBarContainer}>
