@@ -19,8 +19,10 @@ export default function Test() {
       </section>
 
       {/* HP and XP bars */}
+      {/* hardcoded how much hp the creature has (currentHp), fix later when we have move buttons */}
       <section>
-        <StatusPanel />
+        <StatusPanel user="1" currentHp={0} />
+        <StatusPanel user="2" currentHp={90} />
       </section>
 
       {/* Types */}

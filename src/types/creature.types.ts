@@ -8,13 +8,13 @@ export type Creature = {
   speed: number;
   defense: number;
   hp: number;
-}
+};
 
 // Types
 export type Type = {
   id: number;
   name: string;
-}
+};
 
 // Moves
 export type Move = {
@@ -22,7 +22,7 @@ export type Move = {
   name: string;
   damage: number;
   chance: number;
-}
+};
 
 // Type Effectiveness
 export type TypeEffectiveness = {

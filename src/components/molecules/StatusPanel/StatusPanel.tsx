@@ -1,25 +1,30 @@
 import styles from "./StatusPanel.module.css";
 import Bars from "../../atoms/Bars/Bars";
-import { useCreature } from "../../../hooks/useCreature";
+import { useUserCreature } from "../../../hooks/useCreature";
 
-export default function StatusPanel() {
-  const { creatures } = useCreature();
+interface StatusPanelProps {
+  user: string;
+  currentHp?: number; // Current HP — pass undefined to default to max HP
+}
 
-  // temporary fixed placeholder. make dynamic later
-  const creature = creatures[0];
+export default function StatusPanel({ user, currentHp }: StatusPanelProps) {
+  const { creature, level, currentXp, xpRequired, loading, error } = useUserCreature(user);
+
+  if (loading) return <section className={styles.statusBarContainer}>Loading...</section>;
+  if (error || !creature) return <section className={styles.statusBarContainer}>{error ?? "No creature found"}</section>;
+
+  // If no currentHp is passed, default to full HP
+  const displayHp = Math.max(0, currentHp ?? creature.hp);
 
   return (
-    <>
-      <section className={styles.statusBarContainer}>
-        <div className={styles.statusBarInfo}>
-          <span>{creature?.name}</span>
-          {/* add dynamic creature lvl here instead of fixed value*/}
-          <span>lv. 1</span>
-        </div>
+    <section className={styles.statusBarContainer}>
+      <div className={styles.statusBarInfo}>
+        <span>{creature.name}</span>
+        <span>Lv. {level}</span>
+      </div>
 
-        <Bars current={500} max={2000} variant="xp" aria="xp bar" />
-        <Bars current={80} max={creature?.hp} variant="hp" aria="hp bar" />
-      </section>
-    </>
+      <Bars current={currentXp} max={xpRequired} variant="xp" aria="xp bar" />
+      <Bars current={displayHp} max={creature.hp} variant="hp" aria="hp bar" />
+    </section>
   );
 }
