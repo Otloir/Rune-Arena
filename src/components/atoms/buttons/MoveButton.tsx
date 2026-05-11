@@ -1,22 +1,3 @@
-/*import Button from "./Button";
-import { Move } from "../../../types/battle.types";
-
-interface Props {
-  move: Move;
-  onClick: (move: Move) => void;
-  disabled?: boolean;
-}
-
-export default function MoveButton({ move, onClick, disabled }: Props) {
-  return (
-    <Button
-      label={move.name}
-      onClick={() => onClick(move)}
-      disabled={disabled}
-      variant={`move ${move.type_type_id}`} // e.g. "fire", "water"
-    />
-  );
-}*/
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import type { MoveWithType } from "./../../../types/move.types";
