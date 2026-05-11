@@ -1,0 +1,22 @@
+.creatureContainer {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 12rem;
+  width: 10rem;
+}
+
+.creatureSprite {
+  width: 5rem;
+  height: 5rem;
+  z-index: 1;
+  position: absolute;
+  padding-bottom: 5rem;
+}
+
+.platform {
+  width: 10rem;
+  height: 3rem;
+  position: relative;
+}
