@@ -46,3 +46,19 @@
   height: 36px;
   object-fit: contain;
 }
+
+/* ── Shapes ── */
+.circle { border-radius: 50%; }
+.square { border-radius: 10px; }
+.pill   { border-radius: 99px; }
+
+/* ── Variants ── */
+.default { background: #f0f2f8; color: #3a3f5c; }
+.default:hover:not(:disabled) { background: #e2e5f3; }
+
+.ghost { background: transparent; color: #6b7399; }
+.ghost:hover:not(:disabled) { background: #f0f2f8; }
+
+/* ── Shadow ── */
+.shadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
+.shadow:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22); }

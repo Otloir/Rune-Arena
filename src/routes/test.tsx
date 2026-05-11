@@ -89,11 +89,11 @@ export default function Test() {
 
 
        <CreatureButton
-         creatureId={1}
+         creatureId="1"
          onSelect={(creature) => console.log("Selected creature:", creature)}
        />
        <CreatureButton
-         creatureId={1}
+         creatureId="1"
          onSelect={(creature) => console.log("Selected creature:", creature)}
          disabled
        />

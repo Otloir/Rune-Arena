@@ -2,19 +2,26 @@ import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
 
-type NavTarget = "menu" | "start" | "external";
+type InternalNav = {
+  to: "menu" | "start";
+  externalUrl?: never;
+};
 
-interface NavButtonProps extends Omit<ButtonProps, "onClick"> {
-  to: NavTarget;
-  externalUrl?: string;     // required when to="external"
-}
+type ExternalNav = {
+  to: "external";
+  externalUrl: string;
+};
 
-const destinations: Record<Exclude<NavTarget, "external">, string> = {
+type NavTarget = InternalNav | ExternalNav;
+
+type NavButtonProps = Omit<ButtonProps, "onClick"> & NavTarget;
+
+const destinations: Record<"menu" | "start", string> = {
   menu:  "/arena",
   start: "/arena/creature-select",
 };
 
-const labels: Record<NavTarget, string> = {
+const labels: Record<"menu" | "start" | "external", string> = {
   menu:     "← Main Menu",
   start:    "Start Game",
   external: "← Back to Site",
@@ -24,9 +31,9 @@ const NavButton: React.FC<NavButtonProps> = ({ to, externalUrl, children, ...res
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (to === "external" && externalUrl) {
+    if (to === "external") {
       window.location.href = externalUrl;
-    } else if (to !== "external") {
+    } else {
       navigate(destinations[to]);
     }
   };
