@@ -1,0 +1,17 @@
+.arena{
+    background-color: rgb(199, 238, 225);
+    padding: 5rem 0;
+}
+
+.arenaContainer{
+    margin: 1rem;
+}
+
+.player {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.opponent{
+    display: flex;
+}

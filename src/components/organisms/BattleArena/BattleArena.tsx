@@ -12,16 +12,18 @@ export default function BattleArena({
   playerTwo = "2",
 }: BattleArenaProps) {
   return (
-    <>
-      <section>
-        <StatusPanel userId={playerTwo} currentHp={50} />
-        <Creature userId={playerTwo} role="opponent" />
-      </section>
+    <section className={styles.arena}>
+      <div className={styles.arenaContainer}>
+        <div className={styles.opponent}>
+          <StatusPanel userId={playerTwo} currentHp={50} />
+          <Creature userId={playerTwo} role="opponent" />
+        </div>
 
-      <section>
-        <StatusPanel userId={playerOne} currentHp={100} />
-        <Creature userId={playerOne} role="player" />
-      </section>
-    </>
+        <div className={styles.player}>
+          <StatusPanel userId={playerOne} currentHp={100} />
+          <Creature userId={playerOne} role="player" />
+        </div>
+      </div>
+    </section>
   );
 }
