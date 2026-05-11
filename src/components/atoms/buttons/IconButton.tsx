@@ -1,6 +1,12 @@
 import React from "react";
 import styles from "./IconButton.module.css";
 
+const iconSizeMap = {
+  sm: 16,
+  md: 22,
+  lg: 28,
+};
+
 interface IconButtonProps {
   onClick?: () => void;
   icon: React.ReactNode;
@@ -38,7 +44,17 @@ const IconButton: React.FC<IconButtonProps> = ({
       className,
     ].join(" ")}
   >
-    {icon}
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: iconSizeMap[size],
+        height: iconSizeMap[size],
+      }}
+    >
+      {icon}
+    </span>
   </button>
 );
 
