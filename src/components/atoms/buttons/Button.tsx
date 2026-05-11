@@ -1,35 +1,3 @@
-/*import styles from "./Button.module.css";
-
-interface ButtonProps {
-  label?: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-  icon?: string;
-  variant?: string;
-}
-
-export default function Button({
-  label,
-  onClick,
-  disabled = false,
-  type = "button",
-  icon,
-  variant = "",
-}: ButtonProps) {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`${styles.button} ${styles[variant] || ""}`}
-    >
-      {icon && <img src={icon} alt="" className={styles.icon} />}
-      {label && <span>{label}</span>}
-    </button>
-  );
-}*/
-
 import React from "react";
 import styles from "./Button.module.css";
 
