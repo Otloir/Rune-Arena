@@ -39,6 +39,28 @@ export async function getUserCreature(userId: string) {
     `,
     )
     .eq("user_id", userId)
+    .limit(1);
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+  return data && data.length > 0 ? data[0] : null;
+}
+
+// Get a specific user's creature by creatureId + level info
+// Joins: User_Creature_Levels → Creatures + Levels filtered by creature_id
+export async function getUserCreatureById(userId: string, creatureId: string) {
+  const { data, error } = await supabase
+    .from("User_Creature_Levels")
+    .select(
+      `
+      current_xp,
+      creature:creature_id ( id, name, front_img, back_img, evade, speed, defense, hp ),
+      level:level_id ( level, xp_required )
+    `,
+    )
+    .eq("user_id", userId)
+    .eq("creature_id", creatureId)
     .single();
   if (error) {
     console.error("Supabase error:", error.message);

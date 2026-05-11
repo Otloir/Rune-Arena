@@ -1,18 +1,27 @@
 import styles from "./StatusPanel.module.css";
 import Bars from "../../atoms/Bars/Bars";
-import { useUserCreature } from "../../../hooks/useCreature";
+import { useCreatureById } from "../../../hooks/useCreature";
 
 interface StatusPanelProps {
-  userId: string;
+  userId: number;
+  creatureId: number;
   currentHp?: number;
 }
 
-export default function StatusPanel({ userId, currentHp }: StatusPanelProps) {
+export default function StatusPanel({
+  userId,
+  creatureId,
+  currentHp,
+}: StatusPanelProps) {
+  // Get the specific creature for this user
   const { creature, level, currentXp, xpRequired, loading, error } =
-    useUserCreature(userId);
+    useCreatureById(userId, creatureId);
 
+  // Show loading state
   if (loading)
     return <section className={styles.statusBarContainer}>Loading...</section>;
+
+  // Show error if something went wrong
   if (error || !creature)
     return (
       <section className={styles.statusBarContainer}>
@@ -20,7 +29,7 @@ export default function StatusPanel({ userId, currentHp }: StatusPanelProps) {
       </section>
     );
 
-  // DisplayHp so it never exceeds max or goes below 0
+  // Make sure HP doesn't go below 0 or above max HP
   const displayHp = Math.min(
     Math.max(0, currentHp ?? creature.hp),
     creature.hp,

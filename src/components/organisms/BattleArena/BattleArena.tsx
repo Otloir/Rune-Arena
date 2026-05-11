@@ -3,25 +3,47 @@ import Creature from "../../molecules/Creature/Creature";
 import styles from "./BattleArena.module.css";
 
 interface BattleArenaProps {
-  playerOne: string;
-  playerTwo: string;
+  playerOne: number;
+  playerTwo: number;
+  playerOneCreatureId: number;
+  playerTwoCreatureId: number;
 }
 
 export default function BattleArena({
   playerOne,
   playerTwo,
+  playerOneCreatureId,
+  playerTwoCreatureId,
 }: BattleArenaProps) {
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
+        {/* opponent */}
         <div className={styles.opponent}>
-          <StatusPanel userId={playerTwo} currentHp={50} />
-          <Creature userId={playerTwo} role="opponent" />
+          <StatusPanel
+            userId={playerTwo}
+            creatureId={playerTwoCreatureId}
+            currentHp={50}
+          />
+          <Creature
+            userId={playerTwo}
+            creatureId={playerTwoCreatureId}
+            role="opponent"
+          />
         </div>
 
+        {/* player/user */}
         <div className={styles.player}>
-          <StatusPanel userId={playerOne} currentHp={100} />
-          <Creature userId={playerOne} role="player" />
+          <StatusPanel
+            userId={playerOne}
+            creatureId={playerOneCreatureId}
+            currentHp={100}
+          />
+          <Creature
+            userId={playerOne}
+            creatureId={playerOneCreatureId}
+            role="player"
+          />
         </div>
       </div>
     </section>
