@@ -39,12 +39,12 @@ export async function getUserCreature(userId: string) {
     `,
     )
     .eq("user_id", userId)
-    .limit(1);
+    .single();
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
   }
-  return data && data.length > 0 ? data[0] : null;
+  return data;
 }
 
 // Get a specific user's creature by creatureId + level info
