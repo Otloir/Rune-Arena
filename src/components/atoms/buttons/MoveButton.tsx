@@ -19,7 +19,7 @@ export default function MoveButton({ move, onClick, disabled }: Props) {
 }*/
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
-import type { MoveWithType } from "../../../types/move.types";
+import type { MoveWithType } from "./../../../types/move.types";
 import styles from "./MoveButton.module.css";
 
 interface MoveButtonProps {
