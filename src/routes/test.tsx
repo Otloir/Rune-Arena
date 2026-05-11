@@ -4,6 +4,7 @@ import { useItem } from "../hooks/useItem";
 import Input from "../components/atoms/Form/Input";
 import Item from "../components/atoms/Item/Item";
 import StatusPanel from "../components/molecules/StatusPanel/StatusPanel";
+//import Creature from "../components/molecules/Creature/Creature";
 import Button from "../components/atoms/buttons/Button";
 import IconButton from "../components/atoms/buttons/IconButton";
 import CreatureButton from "../components/atoms/buttons/CreatureButton";
@@ -19,7 +20,6 @@ export default function Test() {
 
   return (
     <>
-      {/* FORM SECTION */}
       <section id="center">
         <form action="buy">
           <Input type="text" label="hi" />
@@ -27,66 +27,102 @@ export default function Test() {
         </form>
       </section>
 
-      {/* STATUS SECTION */}
       <section>
-        <StatusPanel userId="3" currentHp={100} />
-        <StatusPanel userId="2" currentHp={0} />
+        <StatusPanel userId="1" currentHp={100} />
+        <StatusPanel userId="2" currentHp={50} />
       </section>
 
-      {/* BUTTONS / INTERACTIONS */}
       <section>
-        <Button onClick={() => alert("Clicked!")} />
+       <Button onClick={() => alert("Clicked!")} />
+       <Button onClick={() => alert("Clicked!")} disabled />
+       <Button onClick={() => alert("Clicked!")} variant="danger" size="lg" shadow />
 
-        <IconButton
-          label="Use item"
-          icon={
-            itemLoading ? (
-              <span>...</span>
-            ) : item ? (
-              <img
-                src={item.img}
-                alt={item.name}
-                style={{
-                  width: 24,
-                  height: 24,
-                  objectFit: "contain",
-                }}
-              />
-            ) : (
-              <span>No item</span>
-            )
-          }
-          onClick={() => alert("Clicked!")}
-        />
 
-        <CreatureButton
-          creatureId={1}
-          onSelect={(creature) => console.log("Selected creature:", creature)}
-        />
+       <IconButton
+         label="Use item"
+         icon={
+           itemLoading ? (
+             <span>...</span>
+           ) : item ? (
+             <img
+               src={item.img}
+               alt={item.name}
+               style={{
+                 width: 24,
+                 height: 24,
+                 objectFit: "contain",
+               }}
+             />
+           ) : (
+             <span>No item</span>
+           )
+         }
+         onClick={() => alert("Clicked!")}
+       />
+       <IconButton
+         label="Use item"
+         icon={
+           itemLoading ? (
+             <span>...</span>
+           ) : item ? (
+             <img
+               src={item.img}
+               alt={item.name}
+               style={{
+                 width: 24,
+                 height: 24,
+                 objectFit: "contain",
+               }}
+             />
+           ) : (
+             <span>No item</span>
+           )
+         }
+         onClick={() => alert("Clicked!")}
+         disabled
+       />
 
-        <MoveButton
-          moveId={1}
-          onSelect={(move) => console.log("Selected move:", move)}
-        />
 
-        <NavButton to="menu" />
-      </section>
+       <CreatureButton
+         creatureId={1}
+         onSelect={(creature) => console.log("Selected creature:", creature)}
+       />
+       <CreatureButton
+         creatureId={1}
+         onSelect={(creature) => console.log("Selected creature:", creature)}
+         disabled
+       />
 
-      {/* TYPES LIST */}
+
+       <MoveButton
+         moveId={1}
+         onSelect={(move) => console.log("Selected move:", move)}
+       />
+
+       <MoveButton
+         moveId={1}
+         onSelect={(move) => console.log("Selected move:", move)}
+         disabled
+       />
+
+
+       <NavButton to="menu" />
+       <NavButton to="menu" disabled/>
+       <NavButton to="menu" shape="circle" variant="secondary"/>
+     </section>
+
       <ul>
         {types.map((type) => (
           <li key={type.name}>{type.name}</li>
         ))}
       </ul>
 
-      {/* MOVES LIST */}
       <ul>
         {moves.map((move) => (
           <li key={move.name}>{move.name}</li>
         ))}
       </ul>
 
-      {/* ITEM DISPLAY (standard UI component) */}
       <ul>
         <Item itemId={1} />
       </ul>
