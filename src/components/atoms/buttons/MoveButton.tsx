@@ -20,26 +20,54 @@ const MoveButton: React.FC<MoveButtonProps> = ({
 }) => {
   const [move, setMove] = useState<MoveWithType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("Moves")
-      .select("id, name, damage, chance, move_type_id, move_type:move_type_id(id, name)")
-      .eq("id", moveId)
-      .single()
-      .then(({ data }) => {
-        if (!data) return;
+    let isActive = true;
+
+    const fetchMove = async () => {
+      setLoading(true);
+      setMove(null);
+      setError(null);
+
+      try {
+        const { data, error } = await supabase
+          .from("Moves")
+          .select("id, name, damage, chance, move_type_id, move_type:move_type_id(id, name)")
+          .eq("id", moveId)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data || !isActive) return;
+
         const normalized: MoveWithType = {
           ...data,
           move_type: Array.isArray(data.move_type) ? data.move_type[0] : data.move_type,
         };
+
         setMove(normalized);
-        setLoading(false);
-      });
+      } catch (err) {
+        if (!isActive) return;
+        setError(err instanceof Error ? err.message : "Failed to load move");
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchMove();
+
+    return () => {
+      isActive = false;
+    };
   }, [moveId]);
 
   if (loading) return <div className={`${styles.moveBtn} ${styles.skeleton}`} />;
-  if (!move) return null;
+  if (error || !move) return null;
 
   const typeName = move.move_type.name.toLowerCase();
 
