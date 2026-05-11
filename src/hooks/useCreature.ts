@@ -51,7 +51,7 @@ export function useUserCreature(userId: string) {
         const data = await getUserCreature(userId);
 
         if (!data) {
-          setError("Unable to load creature for this user");
+          setError("Unable to load creature");
           return;
         }
 
