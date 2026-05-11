@@ -22,21 +22,55 @@ const CreatureButton: React.FC<CreatureButtonProps> = ({
 }) => {
   const [creature, setCreature] = useState<Creature | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("Creatures")
-      .select("id, name, front_img, back_img, evade, speed, defense, hp")
-      .eq("id", creatureId)
-      .single()
-      .then(({ data }) => {
-        setCreature(data);
-        setLoading(false);
-      });
+    let isCancelled = false;
+
+    const fetchCreature = async () => {
+      setLoading(true);
+      setError(null);
+      setCreature(null);
+
+      try {
+        const { data, error } = await supabase
+          .from("Creatures")
+          .select("id, name, front_img, back_img, evade, speed, defense, hp")
+          .eq("id", creatureId)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data) {
+          throw new Error("Creature not found.");
+        }
+
+        if (!isCancelled) {
+          setCreature(data);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load creature.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCreature();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [creatureId]);
 
   if (loading) return <div className={`${styles.card} ${styles.skeleton}`} />;
-  if (!creature) return null;
+  if (error) return <div className={styles.card}>{error}</div>;
+  if (!creature) return <div className={styles.card}>Creature unavailable.</div>;
 
   return (
     <button
