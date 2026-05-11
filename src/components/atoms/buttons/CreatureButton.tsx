@@ -4,7 +4,7 @@ import type { Creature } from "../../../types/creature.types";
 import styles from "./CreatureButton.module.css";
 
 interface CreatureButtonProps {
-  creatureId: number;
+  creatureId: Creature["id"];
   onSelect: (creature: Creature) => void;
   selected?: boolean;
   disabled?: boolean;
