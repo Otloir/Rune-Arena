@@ -1,7 +1,6 @@
 import { useType, useMoves } from "../hooks/useCreature";
 import Input from "../components/atoms/Form/Input";
 import Item from "../components/atoms/Item/Item";
-import BattleArena from "../components/organisms/BattleArena/BattleArena";
 
 export default function Test() {
   const { types } = useType();
@@ -15,8 +14,6 @@ export default function Test() {
           <Input type="number" label="Quantity" />
         </form>
       </section>
-
-      <BattleArena playerOne="1" playerTwo="2"/>
 
       <ul>
         {types.map((type) => (
