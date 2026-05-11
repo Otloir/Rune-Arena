@@ -44,6 +44,7 @@ export interface ButtonProps {
   className?: string;
   type?: "button" | "submit" | "reset";
   loading?: boolean;
+  radius?: number;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -57,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({
   className = "",
   type = "button",
   loading = false,
+  radius = undefined,
 }) => (
   <button
     type={type}
@@ -70,6 +72,11 @@ const Button: React.FC<ButtonProps> = ({
       shadow ? styles.shadow : "",
       className,
     ].join(" ")}
+    style={
+      radius !== undefined
+        ? { borderRadius: `${radius}px` }
+        : undefined
+    }
     aria-busy={loading}
   >
     {loading ? <span className={styles.spinner} aria-hidden /> : children}
