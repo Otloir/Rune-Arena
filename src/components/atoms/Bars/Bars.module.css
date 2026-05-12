@@ -25,3 +25,13 @@
   background-color: #0483aa;
   height: 5px;
 }
+
+@media (min-width: 1024px) {
+  .hp {
+    height: 14px;
+  }
+  
+  .xp {
+    height: 9px;
+  }
+}

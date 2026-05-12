@@ -19,31 +19,35 @@ export default function BattleArena({
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
         {/* opponent */}
-        <div className={styles.opponent}>
-          <StatusPanel
-            userId={playerTwo}
-            creatureId={playerTwoCreatureId}
-            currentHp={50}
-          />
-          <Creature
-            userId={playerTwo}
-            creatureId={playerTwoCreatureId}
-            role="opponent"
-          />
+        <div className={styles.opponentContainer}>
+          <div className={styles.opponent}>
+            <StatusPanel
+              userId={playerTwo}
+              creatureId={playerTwoCreatureId}
+              currentHp={50}
+            />
+            <Creature
+              userId={playerTwo}
+              creatureId={playerTwoCreatureId}
+              role="opponent"
+            />
+          </div>
         </div>
 
         {/* player/user */}
-        <div className={styles.player}>
-          <StatusPanel
-            userId={playerOne}
-            creatureId={playerOneCreatureId}
-            currentHp={100}
-          />
-          <Creature
-            userId={playerOne}
-            creatureId={playerOneCreatureId}
-            role="player"
-          />
+        <div className={styles.playerContainer}>
+          <div className={styles.player}>
+            <StatusPanel
+              userId={playerOne}
+              creatureId={playerOneCreatureId}
+              currentHp={100}
+            />
+            <Creature
+              userId={playerOne}
+              creatureId={playerOneCreatureId}
+              role="player"
+            />
+          </div>
         </div>
       </div>
     </section>
