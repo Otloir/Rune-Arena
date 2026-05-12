@@ -1,8 +1,8 @@
-import type { ItemRow } from "./../../../types/item.types";
+import type { Item } from "./../../../types/item.types";
 import styles from "./ItemDisplay.module.css";
 
 interface Props {
-  item: ItemRow;
+  item: Item;
   variant?: "row" | "card";         // controls layout
   onBuy?: () => void;               // optional — shop card only
 }
