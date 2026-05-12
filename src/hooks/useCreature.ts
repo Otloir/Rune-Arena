@@ -8,64 +8,49 @@ import {
   getUserCreatureById,
 } from "../api/creature.database";
 
-// Load creature data
-function useLoadCreature(
-  fetcher: () => Promise<any>,
-  deps: any[],
-  errorPrefix: string,
+// Hook that handles loading/error state for any async fetch.
+// FetchedData is a placeholder for the data type gets passed in
+function useAsyncData<FetchedData>(
+  fetcher: () => Promise<FetchedData | null>,
+  enabled: boolean,
 ) {
-  const [creature, setCreature] = useState<Creature | null>(null);
-  const [level, setLevel] = useState<number>(1);
-  const [currentXp, setCurrentXp] = useState<number>(0);
-  const [xpRequired, setXpRequired] = useState<number>(500);
+  const [data, setData] = useState<FetchedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      setData(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     async function load() {
       setLoading(true);
       setError(null);
-      setCreature(null);
-
+      setData(null);
       try {
-        const data = await fetcher();
-
-        if (!data) {
-          setError(`${errorPrefix}: Unable to load creature`);
+        const result = await fetcher();
+        if (!result) {
+          setError("No data found");
           return;
         }
-
-        // Normalize creature and level (handle both single object and array)
-        const creatureData = Array.isArray(data.creature)
-          ? data.creature[0]
-          : data.creature;
-        const levelData = Array.isArray(data.level)
-          ? data.level[0]
-          : data.level;
-
-        setCreature(creatureData);
-        setLevel(levelData.level);
-        setCurrentXp(data.current_xp);
-        setXpRequired(levelData.xp_required);
+        setData(result);
         setError(null);
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : `${errorPrefix}: Failed to load creature`,
-        );
+        setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, deps);
+  }, [enabled]);
 
-  return { creature, level, currentXp, xpRequired, loading, error };
+  return { data, loading, error };
 }
 
-// Get all creatures
 export function useCreature() {
   const [creatures, setCreatures] = useState<Creature[]>([]);
 
@@ -80,51 +65,62 @@ export function useCreature() {
   return { creatures };
 }
 
-// Get a user's active creature + their level and XP
-export function useUserCreature(userId: string | number | undefined) {
-  if (!userId) {
-    return {
-      creature: null,
-      level: 1,
-      currentXp: 0,
-      xpRequired: 500,
-      loading: false,
-      error: null,
-    };
-  }
-
-  const userIdStr = String(userId);
-  return useLoadCreature(
-    () => getUserCreature(userIdStr),
-    [userIdStr],
-    `User ${userId}`,
+export function useUserCreature(userId: number) {
+  const { data, loading, error } = useAsyncData(
+    () => getUserCreature(userId.toString()),
+    userId > 0,
   );
+
+  const creatureData = data
+    ? Array.isArray(data.creature)
+      ? data.creature[0]
+      : data.creature
+    : null;
+
+  const levelData = data
+    ? Array.isArray(data.level)
+      ? data.level[0]
+      : data.level
+    : null;
+
+  return {
+    creature: creatureData ?? null,
+    level: levelData?.level ?? 1,
+    currentXp: data?.current_xp ?? 0,
+    xpRequired: levelData?.xp_required ?? 500,
+    loading,
+    error,
+  };
 }
 
-// Get a specific user's creature by creatureId + their level and XP
 export function useCreatureById(userId: number, creatureId: number) {
-  if (!userId || !creatureId) {
-    return {
-      creature: null,
-      level: 1,
-      currentXp: 0,
-      xpRequired: 500,
-      loading: false,
-      error: null,
-    };
-  }
-
-  const userIdStr = String(userId);
-  const creatureIdStr = String(creatureId);
-
-  return useLoadCreature(
-    () => getUserCreatureById(userIdStr, creatureIdStr),
-    [userIdStr, creatureIdStr],
-    `User ${userId} Creature ${creatureId}`,
+  const { data, loading, error } = useAsyncData(
+    () => getUserCreatureById(userId.toString(), creatureId.toString()),
+    userId > 0 && creatureId > 0,
   );
+
+  const creatureData = data
+    ? Array.isArray(data.creature)
+      ? data.creature[0]
+      : data.creature
+    : null;
+
+  const levelData = data
+    ? Array.isArray(data.level)
+      ? data.level[0]
+      : data.level
+    : null;
+
+  return {
+    creature: creatureData ?? null,
+    level: levelData?.level ?? 1,
+    currentXp: data?.current_xp ?? 0,
+    xpRequired: levelData?.xp_required ?? 500,
+    loading,
+    error,
+  };
 }
 
-// Get all types
 export function useType() {
   const [types, setTypes] = useState<Type[]>([]);
 
@@ -139,7 +135,6 @@ export function useType() {
   return { types };
 }
 
-// Get all moves
 export function useMoves() {
   const [moves, setMoves] = useState<Move[]>([]);
 

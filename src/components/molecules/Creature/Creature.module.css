@@ -18,8 +18,7 @@
 .platform {
   width: 10rem;
   height: 3rem;
-  position: relative;
-  object-fit: content;
+  position: relative; 
 }
 
 @media (min-width: 1024px) {
