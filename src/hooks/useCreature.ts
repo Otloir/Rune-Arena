@@ -10,7 +10,7 @@ import {
 
 // Hook that handles loading/error state for any async fetch.
 // FetchedData is a placeholder for the data type gets passed in
-function useAsyncData<FetchedData>(
+export function useAsyncData<FetchedData>(
   fetcher: () => Promise<FetchedData | null>,
   enabled: boolean,
 ) {

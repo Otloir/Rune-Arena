@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase";
+import React from "react";
+import { useAsyncData } from "../../../hooks/useCreature";
+import { getCreatureById } from "../../../api/creature.database";
 import type { Creature } from "../../../types/creature.types";
 import styles from "./CreatureButton.module.css";
 
@@ -20,40 +21,15 @@ const CreatureButton: React.FC<CreatureButtonProps> = ({
   shape = "rounded",
   shadow = false,
 }) => {
-  const [creature, setCreature] = useState<Creature | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isCancelled = false;
-    const fetchCreature = async () => {
-      setLoading(true);
-      setError(null);
-      setCreature(null);
-      try {
-        const { data, error } = await supabase
-          .from("Creatures")
-          .select("id, name, front_img, back_img, evade, speed, defense, hp")
-          .eq("id", creatureId)
-          .single();
-        if (error) throw error;
-        if (!data) throw new Error("Creature not found.");
-        if (!isCancelled) setCreature(data);
-      } catch (err) {
-        if (!isCancelled)
-          setError(err instanceof Error ? err.message : "Failed to load creature.");
-      } finally {
-        if (!isCancelled) setLoading(false);
-      }
-    };
-    fetchCreature();
-    return () => { isCancelled = true; };
-  }, [creatureId]);
+  const { data: creature, loading, error } = useAsyncData(
+    () => getCreatureById(String(creatureId)),
+    true,
+  );
 
   if (loading) return (
     <button
       type="button"
-      className={[styles.card, styles[shape], styles.skeleton, shadow ? styles.withShadow : ""].join(" ")}
+      className={[styles.card, styles[shape], styles.loadingPlaceholder, shadow ? styles.withShadow : ""].join(" ")}
       disabled
       aria-busy="true"
       aria-label="Loading creature"
