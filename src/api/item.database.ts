@@ -11,3 +11,20 @@ export async function getItems() {
   }
   return data;
 }
+
+// Get items a specific user has
+export async function getUserItems(userId: number) {
+  const { data, error } = await supabase
+    .from("User_Items")
+    .select(
+      "item:item_id(id, name, property, propvalue, description, price, img)",
+    )
+    .eq("user_id", userId);
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+  if (!data) return [];
+  const items = data.map((row: any) => row.item).filter(Boolean);
+  return items;
+}
