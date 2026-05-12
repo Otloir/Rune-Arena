@@ -40,7 +40,7 @@ export default function Test() {
       <section>
        <Button onClick={() => alert("Clicked!")} color="green" shape="pill"/>
        <Button onClick={() => alert("Clicked!")} disabled color="green" shape="circle"/>
-       <Button onClick={() => alert("Clicked!")} color="red"variant="destructive" size="lg" radius={0} shadow />
+       <Button onClick={() => alert("Clicked!")} color="red" variant="destructive" size="lg" radius={0} shadow />
 
 
        <IconButton
