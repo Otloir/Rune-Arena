@@ -1,24 +1,34 @@
-.statusBarContainer{
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    width: 8rem;
-    color: black;
-    border-radius: 10px;
-    padding: 5px;
-    gap: 5px;
+.statusBarContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 8rem;
+  color: black;
+  border-radius: 10px;
+  padding: 5px;
+  gap: 5px;
+  height: fit-content;
 }
 
 .statusBarInfo {
-    display: inline-flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items:center;
-    font-variant: small-caps;
-    height: 0.8rem;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  font-variant: small-caps;
+  height: 0.8rem;
 }
 
 .statusBarInfo span:last-child {
-    font-size: 13px
+  font-size: 13px;
+}
+
+@media (min-width: 1024px) {
+  .statusBarContainer {
+    width: 10rem;
+  }
+  .statusBarInfo{
+    font-size: larger;
+  }
 }

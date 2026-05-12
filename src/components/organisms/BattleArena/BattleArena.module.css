@@ -1,0 +1,36 @@
+.arena {
+  background-color: rgb(199, 238, 225);
+  padding: 1rem 2rem;
+  height: 60vh;
+}
+
+.arenaContainer {
+  margin: 1rem;
+}
+
+.player {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.opponent {
+  display: flex;
+}
+
+.opponentContainer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.playerContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (min-width: 1024px) {
+  .arena {
+    padding: 5rem 3rem; 
+    overflow: hidden;
+    height: 100vh;
+  }
+}

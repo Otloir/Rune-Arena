@@ -8,8 +8,8 @@
 }
 
 .creatureSprite {
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: auto;
   z-index: 1;
   position: absolute;
   padding-bottom: 5rem;
@@ -18,5 +18,20 @@
 .platform {
   width: 10rem;
   height: 3rem;
-  position: relative;
+  position: relative; 
+}
+
+@media (min-width: 1024px) {
+  .platform {
+    height: 4rem;
+    width: 16rem;
+  }
+  .creatureSprite {
+    width: 6rem;
+    height: auto;
+    padding-bottom: 8rem;
+  }
+  .creatureContainer {
+    width: 20rem;
+  }
 }

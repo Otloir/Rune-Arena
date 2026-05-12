@@ -5,9 +5,52 @@ import {
   getTypes,
   getMoves,
   getUserCreature,
+  getUserCreatureById,
 } from "../api/creature.database";
 
-// Get all creatures
+// Hook that handles loading/error state for any async fetch.
+// FetchedData is a placeholder for the data type gets passed in
+function useAsyncData<FetchedData>(
+  fetcher: () => Promise<FetchedData | null>,
+  enabled: boolean,
+) {
+  const [data, setData] = useState<FetchedData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!enabled) {
+      setData(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      setData(null);
+      try {
+        const result = await fetcher();
+        if (!result) {
+          setError("No data found");
+          return;
+        }
+        setData(result);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, [enabled]);
+
+  return { data, loading, error };
+}
+
 export function useCreature() {
   const [creatures, setCreatures] = useState<Creature[]>([]);
 
@@ -22,69 +65,62 @@ export function useCreature() {
   return { creatures };
 }
 
-// Get a user's active creature + their level and XP
-export function useUserCreature(userId: string) {
-  const [creature, setCreature] = useState<Creature | null>(null);
-  const [level, setLevel] = useState<number>(1);
-  const [currentXp, setCurrentXp] = useState<number>(0);
-  const [xpRequired, setXpRequired] = useState<number>(500);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useUserCreature(userId: number) {
+  const { data, loading, error } = useAsyncData(
+    () => getUserCreature(userId.toString()),
+    userId > 0,
+  );
 
-  useEffect(() => {
-    if (!userId) {
-      setCreature(null);
-      setLevel(1);
-      setCurrentXp(0);
-      setXpRequired(500);
-      setError(null);
-      setLoading(false);
-      return;
-    }
+  const creatureData = data
+    ? Array.isArray(data.creature)
+      ? data.creature[0]
+      : data.creature
+    : null;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
-      setCreature(null); 
+  const levelData = data
+    ? Array.isArray(data.level)
+      ? data.level[0]
+      : data.level
+    : null;
 
-      try {
-        const data = await getUserCreature(userId);
-
-        if (!data) {
-          setError(`Unable to load creature for user ${userId}`);
-          return;
-        }
-
-        const creatureData = Array.isArray(data.creature)
-          ? data.creature[0]
-          : data.creature;
-        const levelData = Array.isArray(data.level)
-          ? data.level[0]
-          : data.level;
-
-        setCreature(creatureData);
-        setLevel(levelData.level);
-        setCurrentXp(data.current_xp);
-        setXpRequired(levelData.xp_required);
-        setError(null);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : `Failed to load creature for user ${userId}`,
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [userId]);
-
-  return { creature, level, currentXp, xpRequired, loading, error };
+  return {
+    creature: creatureData ?? null,
+    level: levelData?.level ?? 1,
+    currentXp: data?.current_xp ?? 0,
+    xpRequired: levelData?.xp_required ?? 500,
+    loading,
+    error,
+  };
 }
 
-// Get all types
+export function useCreatureById(userId: number, creatureId: number) {
+  const { data, loading, error } = useAsyncData(
+    () => getUserCreatureById(userId.toString(), creatureId.toString()),
+    userId > 0 && creatureId > 0,
+  );
+
+  const creatureData = data
+    ? Array.isArray(data.creature)
+      ? data.creature[0]
+      : data.creature
+    : null;
+
+  const levelData = data
+    ? Array.isArray(data.level)
+      ? data.level[0]
+      : data.level
+    : null;
+
+  return {
+    creature: creatureData ?? null,
+    level: levelData?.level ?? 1,
+    currentXp: data?.current_xp ?? 0,
+    xpRequired: levelData?.xp_required ?? 500,
+    loading,
+    error,
+  };
+}
+
 export function useType() {
   const [types, setTypes] = useState<Type[]>([]);
 
@@ -99,7 +135,6 @@ export function useType() {
   return { types };
 }
 
-// Get all moves
 export function useMoves() {
   const [moves, setMoves] = useState<Move[]>([]);
 
