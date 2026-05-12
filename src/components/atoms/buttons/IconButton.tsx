@@ -1,22 +1,18 @@
 import React from "react";
-import styles from "./IconButton.module.css";
+import Button from "./Button";
+import type { ButtonProps } from "./Button";
 
-const iconSizeMap = {
+const iconSizeMap: Record<"sm" | "md" | "lg", number> = {
   sm: 16,
   md: 22,
   lg: 28,
 };
 
-interface IconButtonProps {
-  onClick?: () => void;
+interface IconButtonProps
+  extends Omit<ButtonProps, "children" | "shape"> {
   icon: React.ReactNode;
   label: string;
-  disabled?: boolean;
-  size?: "sm" | "md" | "lg";
   shape?: "circle" | "square" | "pill";
-  variant?: "default" | "ghost";
-  shadow?: boolean;
-  className?: string;
 }
 
 const IconButton: React.FC<IconButtonProps> = ({
@@ -24,38 +20,49 @@ const IconButton: React.FC<IconButtonProps> = ({
   icon,
   label,
   disabled = false,
+  color,
   size = "md",
   shape = "circle",
-  variant = "default",
+  variant = "neutral",
   shadow = false,
   className = "",
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={disabled}
-    aria-label={label}
-    className={[
-      styles.iconBtn,
-      styles[size],
-      styles[shape],
-      styles[variant],
-      shadow ? styles.shadow : "",
-      className,
-    ].join(" ")}
-  >
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: iconSizeMap[size],
-        height: iconSizeMap[size],
-      }}
+  radius,
+  ...nativeProps
+}) => {
+  // Convert IconButton shape to Button-compatible shape
+  const buttonShape: ButtonProps["shape"] =
+    shape === "square" ? "rounded" : shape;
+
+  return (
+    <Button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      aria-disabled={disabled}
+      color={color}
+      size={size}
+      shape={buttonShape}
+      variant={variant}
+      shadow={shadow}
+      className={className}
+      radius={radius}
+      {...nativeProps}
     >
-      {icon}
-    </span>
-  </button>
-);
+      <span
+        aria-hidden="true"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: `${iconSizeMap[size]}px`,
+          height: `${iconSizeMap[size]}px`,
+        }}
+      >
+        {icon}
+      </span>
+    </Button>
+  );
+};
 
 export default IconButton;

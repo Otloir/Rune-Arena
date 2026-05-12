@@ -13,24 +13,19 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.card:hover:not(:disabled) {
-  transform: translateY(-3px);
-}
+.card:hover:not(:disabled) { transform: translateY(-3px); }
 .card:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Shapes ── */
-.default { border-radius: 20px; }
+.rounded { border-radius: 20px; }
 .pill    { border-radius: 99px; padding: 24px; }
 
 /* ── Shadow ── */
-.shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
-.shadow:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2); }
+.withShadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
+.withShadow:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2); }
 
 /* ── Selected ── */
-.selected {
-  border-color: #2db34a;
-  box-shadow: 0 0 0 3px rgba(45, 179, 74, 0.2);
-}
+.selected { border-color: #2db34a; box-shadow: 0 0 0 3px rgba(45, 179, 74, 0.2); }
 
 .selectedBadge {
   position: absolute;
@@ -46,38 +41,16 @@
 }
 
 /* ── Sprite ── */
-.sprite {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-  margin-bottom: 10px;
-}
+.sprite { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
 
 /* ── Name ── */
-.name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin: 0 0 12px;
-}
+.name { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0 0 12px; }
 
 /* ── HP ── */
-.hpRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 6px;
-}
-.hpLabel {
-  font-size: 0.78rem;
-  color: #6b7399;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.hpRow { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; }
+.hpLabel { font-size: 0.78rem; color: #6b7399; display: flex; align-items: center; gap: 4px; }
 .heartIcon { color: #f87171; }
-.hpValue   { font-size: 0.78rem; font-weight: 700; color: #1a1a2e; }
+.hpValue { font-size: 0.78rem; font-weight: 700; color: #1a1a2e; }
 
 .hpBar {
   width: 100%;
@@ -95,15 +68,8 @@
 }
 
 /* ── Stats ── */
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  border-top: 1px solid #f0f2f8;
-  padding-top: 12px;
-}
-.stat     { font-size: 0.85rem; font-weight: 700; color: #3a3f5c; display: flex; align-items: center; gap: 4px; }
+.stats { display: flex; justify-content: center; gap: 20px; width: 100%; border-top: 1px solid #f0f2f8; padding-top: 12px; }
+.stat { font-size: 0.85rem; font-weight: 700; color: #3a3f5c; display: flex; align-items: center; gap: 4px; }
 .statIcon { font-size: 0.8rem; }
 
 /* ── Skeleton ── */

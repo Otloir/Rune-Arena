@@ -38,13 +38,14 @@ export default function Test() {
       </section>
 
       <section>
-       <Button onClick={() => alert("Clicked!")} />
-       <Button onClick={() => alert("Clicked!")} disabled />
-       <Button onClick={() => alert("Clicked!")} variant="danger" size="lg" radius={0} shadow />
+       <Button onClick={() => alert("Clicked!")} color="green" shape="pill"/>
+       <Button onClick={() => alert("Clicked!")} disabled color="green" shape="circle"/>
+       <Button onClick={() => alert("Clicked!")} color="red"variant="destructive" size="lg" radius={0} shadow />
 
 
        <IconButton
          label="Use item"
+         variant="invisible"
          icon={
            itemLoading ? (
              <span>...</span>
@@ -66,6 +67,7 @@ export default function Test() {
        />
        <IconButton
          label="Use item"
+         color="#615134"
          icon={
            itemLoading ? (
              <span>...</span>
@@ -113,8 +115,8 @@ export default function Test() {
 
        <NavButton to="menu" />
        <NavButton to="menu" label="Forbidden Menu..." disabled />
-       <NavButton to="menu" shape="circle" variant="secondary"/>
-       <NavButton to="menu" label="Incorrect File Menu..." icon={<img src="./../../../src/assets/images/vite.svg" alt="Vite" />} variant="ghost"/>
+       <NavButton to="menu" shape="circle" variant="neutral"/>
+       <NavButton to="menu" label="Incorrect File Menu..." icon={<img src="./../../../src/assets/images/vite.svg" alt="Vite" />} variant="action"/>
      </section>
 
       <ul>

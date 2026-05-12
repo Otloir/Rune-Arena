@@ -15,20 +15,19 @@ type ExternalNav = {
 
 type NavTarget = InternalNav | ExternalNav;
 
-type NavButtonProps = Omit<ButtonProps, "onClick"> &
-  NavTarget & {
-    icon?: React.ReactNode;
-    label?: string;
-  };
+type NavButtonProps = Omit<ButtonProps, "onClick"> & NavTarget & {
+  icon?: React.ReactNode;
+  label?: string;
+};
 
 const destinations: Record<"menu" | "start", string> = {
-  menu: "/arena",
+  menu:  "/arena",
   start: "/arena/creature-select",
 };
 
 const defaultLabels: Record<"menu" | "start" | "external", string> = {
-  menu: "Main Menu",
-  start: "Start Game",
+  menu:     "Main Menu",
+  start:    "Start Game",
   external: "Back to Site",
 };
 
@@ -54,20 +53,11 @@ const NavButton: React.FC<NavButtonProps> = ({
 
   return (
     <Button onClick={handleClick} {...rest}>
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
         {icon && (
           <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            aria-hidden="true"
+            style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
             {icon}
           </span>

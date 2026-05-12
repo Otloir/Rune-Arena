@@ -15,15 +15,15 @@
 .moveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ── Shapes ── */
-.default { border-radius: 12px; }
+.rounded { border-radius: 12px; }
 .pill    { border-radius: 99px; }
 
 /* ── Shadow ── */
-.shadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important; }
+.withShadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important; }
 
-/* ── Left / Right layout ── */
+/* ── Layout ── */
 .left  { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.right { display: flex; flex-direction: column; align-items: flex-end;   gap: 3px; }
 
 .moveName { font-size: 0.95rem; font-weight: 700; color: #fff; }
 .typeTag  {
@@ -36,16 +36,16 @@
   padding: 2px 7px;
   border-radius: 99px;
 }
-.stat { font-size: 0.78rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
+.moveStat { font-size: 0.78rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
 
-/* ── Type colors ── */
-.fire     { background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 3px 0 #b91c1c; }
-.water    { background: linear-gradient(135deg, #38bdf8, #3b82f6); box-shadow: 0 3px 0 #1d4ed8; }
-.grass    { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 3px 0 #14532d; }
-.ice      { background: linear-gradient(135deg, #a5f3fc, #0891b2); box-shadow: 0 3px 0 #0e7490; }
-.rock     { background: linear-gradient(135deg, #a8a29e, #57534e); box-shadow: 0 3px 0 #292524; }
-.electric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 3px 0 #92400e; }
-.normal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
+/* ── Type colors — prefixed to avoid collisions ── */
+.typeFire     { background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 3px 0 #b91c1c; }
+.typeWater    { background: linear-gradient(135deg, #38bdf8, #3b82f6); box-shadow: 0 3px 0 #1d4ed8; }
+.typeGrass    { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 3px 0 #14532d; }
+.typeIce      { background: linear-gradient(135deg, #a5f3fc, #0891b2); box-shadow: 0 3px 0 #0e7490; }
+.typeRock     { background: linear-gradient(135deg, #a8a29e, #57534e); box-shadow: 0 3px 0 #292524; }
+.typeElectric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 3px 0 #92400e; }
+.typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
 
 /* ── Skeleton ── */
 .skeleton {
