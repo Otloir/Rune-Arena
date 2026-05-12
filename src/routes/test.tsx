@@ -44,50 +44,52 @@ export default function Test() {
 
 
        <IconButton
-         label="Use item"
-         variant="invisible"
-         icon={
-           itemLoading ? (
-             <span>...</span>
-           ) : item ? (
-             <img
-               src={item.img}
-               alt={item.name}
-               style={{
-                 width: 24,
-                 height: 24,
-                 objectFit: "contain",
-               }}
-             />
-           ) : (
-             <span>No item</span>
-           )
-         }
-         onClick={() => alert("Clicked!")}
-       />
+          label="Use item"
+          variant="invisible"
+          iconSize="1.5rem"
+          icon={
+            itemLoading ? (
+              <span>...</span>
+            ) : item ? (
+              <img
+                src={item.img}
+                alt={item.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              <span>No item</span>
+            )
+          }
+          onClick={() => alert("Clicked!")}
+        />
        <IconButton
-         label="Use item"
-         color="#615134"
-         icon={
-           itemLoading ? (
-             <span>...</span>
-           ) : item ? (
-             <img
-               src={item.img}
-               alt={item.name}
-               style={{
-                 width: 24,
-                 height: 24,
-                 objectFit: "contain",
-               }}
-             />
-           ) : (
-             <span>No item</span>
-           )
-         }
-         onClick={() => alert("Clicked!")}
-         disabled
-       />
+          label="Use item"
+          variant="invisible"
+          iconSize="50px"
+          disabled
+          icon={
+            itemLoading ? (
+              <span>...</span>
+            ) : item ? (
+              <img
+                src={item.img}
+                alt={item.name}
+                style={{
+                  width: "50%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              <span>No item</span>
+            )
+          }
+          onClick={() => alert("Clicked!")}
+        />
 
 
        <CreatureButton

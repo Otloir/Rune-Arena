@@ -2,18 +2,19 @@ import React from "react";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
 
-const iconSizeMap: Record<"sm" | "md" | "lg", number> = {
-  sm: 16,
-  md: 22,
-  lg: 28,
-};
-
 interface IconButtonProps
   extends Omit<ButtonProps, "children" | "shape"> {
   icon: React.ReactNode;
   label: string;
   shape?: "circle" | "square" | "pill";
+  iconSize?: string;
 }
+
+const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
+  sm: "1rem",
+  md: "1.375rem",
+  lg: "1.75rem",
+};
 
 const IconButton: React.FC<IconButtonProps> = ({
   onClick,
@@ -27,8 +28,12 @@ const IconButton: React.FC<IconButtonProps> = ({
   shadow = false,
   className = "",
   radius,
+  iconSize,
   ...nativeProps
 }) => {
+  // Resolve icon size inside component scope
+  const resolvedIconSize = iconSize ?? iconSizeMap[size];
+
   // Convert IconButton shape to Button-compatible shape
   const buttonShape: ButtonProps["shape"] =
     shape === "square" ? "rounded" : shape;
@@ -55,8 +60,8 @@ const IconButton: React.FC<IconButtonProps> = ({
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: `${iconSizeMap[size]}px`,
-          height: `${iconSizeMap[size]}px`,
+          width: resolvedIconSize,
+          height: resolvedIconSize,
         }}
       >
         {icon}
