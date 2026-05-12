@@ -102,12 +102,7 @@
 /* tablet */
 @media (min-width: 768px) {
   .card {
-    width: 260px;
-  }
-
-  .cardImg {
-    width: 80px;
-    height: 80px;
+    width: 339px;
   }
 }
 
