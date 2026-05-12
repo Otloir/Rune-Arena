@@ -1,19 +1,20 @@
-import { useUserCreature } from "../../../hooks/useCreature";
+import { useCreatureById } from "../../../hooks/useCreature";
+import platformImage from "../../../assets/images/platform.png";
 import styles from "./Creature.module.css";
 
 interface CreatureProps {
-  userId: string;
-  role?: "player" | "opponent";
+  userId: number;
+  creatureId: number;
+  role: "player" | "opponent";
 }
 
-export default function Creature({ userId, role = "player" }: CreatureProps) {
-  const { creature, loading, error } = useUserCreature(userId);
-
-  // Platform image is now stored in public folder for stable, client-side access
-  const platformImage = "src/assets/images/platform.png";
+export default function Creature({ userId, creatureId, role }: CreatureProps) {
+  // Get the specific creature for this user
+  const { creature, loading, error } = useCreatureById(userId, creatureId);
 
   if (loading)
     return <section className={styles.creatureContainer}>Loading...</section>;
+
   if (error || !creature)
     return (
       <section className={styles.creatureContainer}>
@@ -21,26 +22,21 @@ export default function Creature({ userId, role = "player" }: CreatureProps) {
       </section>
     );
 
-  const imageSpriteBack = creature.back_img;
-  const imageSpriteFront = creature.front_img;
+  // Show front image for opponent, back image for player
+  let spriteImage = creature.back_img;
+  let spriteDescription = "back";
 
-  let spriteSrc: string;
-  let spriteAlt: string;
-
-  switch (role) {
-    case "player":
-      spriteSrc = imageSpriteBack;
-      spriteAlt = `${creature.name} back sprite`;
-      break;
-    case "opponent":
-      spriteSrc = imageSpriteFront;
-      spriteAlt = `${creature.name} front sprite`;
-      break;
+  if (role === "opponent") {
+    spriteImage = creature.front_img;
+    spriteDescription = "front";
   }
+
+  const spriteAlt = `${creature.name} ${spriteDescription} sprite`;
+
   return (
     <section className={styles.creatureContainer}>
       <img
-        src={spriteSrc}
+        src={spriteImage}
         alt={spriteAlt}
         width="500"
         height="600"
@@ -56,4 +52,3 @@ export default function Creature({ userId, role = "player" }: CreatureProps) {
     </section>
   );
 }
-    

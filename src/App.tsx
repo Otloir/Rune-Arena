@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Test from "./routes/test";
 import Lobby from "./routes/Lobby";
+import Arena from "./routes/Arena";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Lobby />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/arena" element={<Arena />} />
         </Routes>
       </BrowserRouter>
     </>
