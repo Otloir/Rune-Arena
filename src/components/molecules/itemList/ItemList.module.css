@@ -1,4 +1,4 @@
-.itemList{
+.itemList, .shopItemList {
   display: flex;
   gap: 16px;
   flex-direction: column;
@@ -6,7 +6,7 @@
 
 /* tablet */
 @media (min-width: 768px) {
-  .itemList{
+  .shopItemList {
     display: grid;
     gap: 1rem;
     grid-template-columns: 1fr 1fr;
@@ -16,7 +16,7 @@
 
 /* desktop */
 @media (min-width: 1024px) {
-  .itemList{
+  .shopItemList {
     grid-template-columns: 1fr 1fr 1fr;
   }
 }
