@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
@@ -14,20 +15,31 @@ type ExternalNav = {
 
 type NavTarget = InternalNav | ExternalNav;
 
-type NavButtonProps = Omit<ButtonProps, "onClick"> & NavTarget;
+type NavButtonProps = Omit<ButtonProps, "onClick"> &
+  NavTarget & {
+    icon?: React.ReactNode;
+    label?: string;
+  };
 
 const destinations: Record<"menu" | "start", string> = {
-  menu:  "/arena",
+  menu: "/arena",
   start: "/arena/creature-select",
 };
 
-const labels: Record<"menu" | "start" | "external", string> = {
-  menu:     "← Main Menu",
-  start:    "Start Game",
-  external: "← Back to Site",
+const defaultLabels: Record<"menu" | "start" | "external", string> = {
+  menu: "Main Menu",
+  start: "Start Game",
+  external: "Back to Site",
 };
 
-const NavButton: React.FC<NavButtonProps> = ({ to, externalUrl, children, ...rest }) => {
+const NavButton: React.FC<NavButtonProps> = ({
+  to,
+  externalUrl,
+  children,
+  icon,
+  label,
+  ...rest
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -38,9 +50,30 @@ const NavButton: React.FC<NavButtonProps> = ({ to, externalUrl, children, ...res
     }
   };
 
+  const displayText = children ?? label ?? defaultLabels[to];
+
   return (
     <Button onClick={handleClick} {...rest}>
-      {children ?? labels[to]}
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        {icon && (
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {icon}
+          </span>
+        )}
+        <span>{displayText}</span>
+      </span>
     </Button>
   );
 };

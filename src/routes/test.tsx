@@ -112,8 +112,9 @@ export default function Test() {
 
 
        <NavButton to="menu" />
-       <NavButton to="menu" disabled/>
+       <NavButton to="menu" label="Forbidden Menu..." disabled />
        <NavButton to="menu" shape="circle" variant="secondary"/>
+       <NavButton to="menu" label="Incorrect File Menu..." icon={<img src="./../../../src/assets/images/vite.svg" alt="Vite" />} variant="ghost"/>
      </section>
 
       <ul>
