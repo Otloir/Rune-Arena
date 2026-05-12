@@ -118,7 +118,7 @@ const CreatureButton: React.FC<CreatureButtonProps> = ({
         <div className={styles.hpFill} style={{ width: "100%" }} />
       </div>
       <div className={styles.stats} aria-label="Creature stats">
-        <span className={styles.stat} aria-label={`Attack: ${creature.evade}`}>
+        <span className={styles.stat} aria-label={`Evade: ${creature.evade}`}>
           <span className={styles.statIcon} aria-hidden="true">🗡️</span> {creature.evade}
         </span>
         <span className={styles.stat} aria-label={`Defense: ${creature.defense}`}>

@@ -14,7 +14,11 @@ export interface ButtonProps extends NativeButtonProps {
   size?: "sm" | "md" | "lg";
   shape?: "rounded" | "circle" | "pill";
   shadow?: boolean;
-  color?: string;
+  /**
+   * Optional background color override. Must be a 6-digit hex color (`#RRGGBB`).
+   * The bottom shadow will automatically be derived as a darkened version of this color.
+   */
+  color?: `#${string}`;
   className?: string;
   type?: "button" | "submit" | "reset";
   loading?: boolean;
@@ -22,16 +26,13 @@ export interface ButtonProps extends NativeButtonProps {
 }
 
 function darkenHex(hex: string, amount = 40): string {
-  const cleanHex = hex.replace("#", "");
-  const n = parseInt(cleanHex, 16);
-
+  const match = hex.trim().match(/^#([0-9a-fA-F]{6})$/);
+  if (!match) return hex;
+  const n = parseInt(match[1], 16);
   const r = Math.max(0, (n >> 16) - amount);
   const g = Math.max(0, ((n >> 8) & 0xff) - amount);
   const b = Math.max(0, (n & 0xff) - amount);
-
-  return `#${[r, g, b]
-    .map((v) => v.toString(16).padStart(2, "0"))
-    .join("")}`;
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -50,6 +51,10 @@ const Button: React.FC<ButtonProps> = ({
   style,
   ...nativeProps
 }) => {
+  if (color && !/^#[0-9a-fA-F]{6}$/.test(color)) {
+    console.warn(`Button: invalid color "${color}" — must be a 6-digit hex e.g. #ff0000`);
+  }
+
   const customStyle: React.CSSProperties | undefined = color
     ? ({
         "--btn-custom-bg": color,

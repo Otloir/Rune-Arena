@@ -28,19 +28,9 @@ export default function Test() {
       </section>
 
       <section>
-        <Creature userId="2" role="opponent" />
-        <Creature userId="1" role="player" />
-      </section>
-
-      <section>
-        <StatusPanel userId="1" currentHp={100} />
-        <StatusPanel userId="2" currentHp={50} />
-      </section>
-
-      <section>
-       <Button onClick={() => alert("Clicked!")} color="green" shape="pill"/>
-       <Button onClick={() => alert("Clicked!")} disabled color="green" shape="circle"/>
-       <Button onClick={() => alert("Clicked!")} color="red" variant="destructive" size="lg" radius={0} shadow />
+       <Button onClick={() => alert("Clicked!")} color="#33ff32" shape="pill"/>
+       <Button onClick={() => alert("Clicked!")} disabled color="#00ccff" shape="circle"/>
+       <Button onClick={() => alert("Clicked!")} color="#ff0000" variant="destructive" size="lg" radius={0} shadow />
 
 
        <IconButton

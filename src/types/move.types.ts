@@ -3,7 +3,7 @@ export type MoveType = {
   name: string;
 };
 
-export type Move = {
+export type MoveRow = {
   id: number;
   name: string;
   damage: number;
@@ -11,6 +11,6 @@ export type Move = {
   move_type_id: number;
 };
 
-export type MoveWithType = Move & {
+export type MoveWithType = MoveRow & {
   move_type: MoveType;
 };
