@@ -97,14 +97,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-}
-
-/* tablet */
-@media (min-width: 768px) {
-  .card {
-    width: 339px;
-  }
-}
+} 
 
 .price {
   display: flex;
