@@ -47,8 +47,8 @@
 .typeElectric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 3px 0 #92400e; }
 .typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
 
-/* ── Skeleton ── */
-.skeleton {
+/* ── LoadingPlaceholder ── */
+.loeadingPlaceholder {
   height: 58px;
   border-radius: 12px;
   background: linear-gradient(90deg, #e2e5f0 25%, #eceff5 50%, #e2e5f0 75%);

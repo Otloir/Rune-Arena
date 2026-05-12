@@ -3,8 +3,6 @@ import { useItem } from "../hooks/useItem";
 
 import Input from "../components/atoms/Form/Input";
 import Item from "../components/atoms/Item/Item";
-import StatusPanel from "../components/molecules/StatusPanel/StatusPanel";
-import Creature from "../components/molecules/Creature/Creature";
 import Button from "../components/atoms/buttons/Button";
 import IconButton from "../components/atoms/buttons/IconButton";
 import CreatureButton from "../components/atoms/buttons/CreatureButton";
@@ -95,14 +93,24 @@ export default function Test() {
 
        <MoveButton
          moveId={1}
+         damageLabel="Damage: "
          onSelect={(move) => console.log("Selected move:", move)}
        />
 
        <MoveButton
-         moveId={1}
-         onSelect={(move) => console.log("Selected move:", move)}
-         disabled
-       />
+          moveId={1}
+          damageLabel={
+            itemLoading ? "..." : item ? (
+              <img
+                src={item.img}
+                alt={item.name}
+                style={{ width: "16px", height: "16px", objectFit: "contain" }}
+              />
+            ) : "⚔️"
+          }
+          onSelect={(move) => console.log("Selected move:", move)}
+          disabled
+        />
 
 
        <NavButton to="menu" />

@@ -9,6 +9,7 @@ interface MoveButtonProps {
   disabled?: boolean;
   shape?: "rounded" | "pill";
   shadow?: boolean;
+  damageLabel?: React.ReactNode;
 }
 
 const MoveButton: React.FC<MoveButtonProps> = ({
@@ -17,13 +18,14 @@ const MoveButton: React.FC<MoveButtonProps> = ({
   disabled = false,
   shape = "rounded",
   shadow = false,
+  damageLabel = "⚔️",
 }) => {
   const { move, loading, error } = useMove(moveId);
 
   if (loading) {
     return (
       <div
-        className={`${styles.moveBtn} ${styles.skeleton}`}
+        className={`${styles.moveBtn} ${styles.loadingPlaceholder}`}
         role="status"
         aria-label="Loading move"
         aria-busy="true"
@@ -49,19 +51,11 @@ const MoveButton: React.FC<MoveButtonProps> = ({
           <span className={styles.moveName}>Move unavailable</span>
           <span className={styles.typeTag}>Unknown</span>
         </div>
-
         <div className={styles.right}>
-          <span
-            className={styles.moveStat}
-            aria-label="Damage unknown"
-          >
-            ⚔️ --
+          <span className={styles.moveStat} aria-label="Damage unknown">
+            {damageLabel} --
           </span>
-
-          <span
-            className={styles.moveStat}
-            aria-label="Accuracy unknown"
-          >
+          <span className={styles.moveStat} aria-label="Accuracy unknown">
             --%
           </span>
         </div>
@@ -69,13 +63,10 @@ const MoveButton: React.FC<MoveButtonProps> = ({
     );
   }
 
-  const moveTypeName =
-    move.move_type?.name?.toLowerCase() ?? "normal";
-
+  const moveTypeName = move.move_type?.name?.toLowerCase() ?? "normal";
   const typeClass =
-    styles[
-      `type${moveTypeName.charAt(0).toUpperCase()}${moveTypeName.slice(1)}`
-    ] ?? styles.typeNormal;
+    styles[`type${moveTypeName.charAt(0).toUpperCase()}${moveTypeName.slice(1)}`]
+    ?? styles.typeNormal;
 
   return (
     <button
@@ -91,27 +82,14 @@ const MoveButton: React.FC<MoveButtonProps> = ({
       aria-label={`${move.name}, ${move.move_type.name} type, ${move.damage} damage, ${move.chance}% accuracy`}
     >
       <div className={styles.left}>
-        <span className={styles.moveName}>
-          {move.name}
-        </span>
-
-        <span className={styles.typeTag}>
-          {move.move_type.name}
-        </span>
+        <span className={styles.moveName}>{move.name}</span>
+        <span className={styles.typeTag}>{move.move_type.name}</span>
       </div>
-
       <div className={styles.right}>
-        <span
-          className={styles.moveStat}
-          aria-label={`Damage: ${move.damage}`}
-        >
-          ⚔️ {move.damage}
+        <span className={styles.moveStat} aria-label={`Damage: ${move.damage}`}>
+          {damageLabel} {move.damage}
         </span>
-
-        <span
-          className={styles.moveStat}
-          aria-label={`Accuracy: ${move.chance}%`}
-        >
+        <span className={styles.moveStat} aria-label={`Accuracy: ${move.chance}%`}>
           {move.chance}%
         </span>
       </div>

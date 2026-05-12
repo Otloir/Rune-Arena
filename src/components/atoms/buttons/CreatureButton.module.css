@@ -71,15 +71,3 @@
 .stats { display: flex; justify-content: center; gap: 20px; width: 100%; border-top: 1px solid #f0f2f8; padding-top: 12px; }
 .stat { font-size: 0.85rem; font-weight: 700; color: #3a3f5c; display: flex; align-items: center; gap: 4px; }
 .statIcon { font-size: 0.8rem; }
-
-/* ── Skeleton ── */
-.skeleton {
-  height: 260px;
-  width: 220px;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #e2e5f0 25%, #eceff5 50%, #e2e5f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  pointer-events: none;
-}
-@keyframes shimmer { to { background-position: -200% 0; } }
