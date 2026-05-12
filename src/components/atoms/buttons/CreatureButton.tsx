@@ -68,9 +68,35 @@ const CreatureButton: React.FC<CreatureButtonProps> = ({
     };
   }, [creatureId]);
 
-  if (loading) return <div className={`${styles.card} ${styles.skeleton}`} />;
-  if (error) return <div className={styles.card}>{error}</div>;
-  if (!creature) return <div className={styles.card}>Creature unavailable.</div>;
+  if (loading)
+    return (
+      <button
+        type="button"
+        className={[styles.card, styles[shape], styles.skeleton, shadow ? styles.shadow : ""].join(" ")}
+        disabled
+        aria-busy="true"
+      />
+    );
+  if (error)
+    return (
+      <button
+        type="button"
+        className={[styles.card, styles[shape], shadow ? styles.shadow : ""].join(" ")}
+        disabled
+      >
+        {error}
+      </button>
+    );
+  if (!creature)
+    return (
+      <button
+        type="button"
+        className={[styles.card, styles[shape], shadow ? styles.shadow : ""].join(" ")}
+        disabled
+      >
+        Creature unavailable.
+      </button>
+    );
 
   return (
     <button
