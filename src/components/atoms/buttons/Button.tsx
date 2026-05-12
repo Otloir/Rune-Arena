@@ -1,7 +1,12 @@
 import React from "react";
 import styles from "./Button.module.css";
 
-export interface ButtonProps {
+type NativeButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "onClick" | "disabled" | "type" | "children"
+>;
+
+export interface ButtonProps extends NativeButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
   disabled?: boolean;
@@ -26,7 +31,9 @@ const Button: React.FC<ButtonProps> = ({
   className = "",
   type = "button",
   loading = false,
-  radius = undefined,
+  radius,
+  style,
+  ...nativeProps
 }) => (
   <button
     type={type}
@@ -40,12 +47,12 @@ const Button: React.FC<ButtonProps> = ({
       shadow ? styles.shadow : "",
       className,
     ].join(" ")}
-    style={
-      radius !== undefined
-        ? { borderRadius: `${radius}px` }
-        : undefined
-    }
+    style={{
+      ...(radius !== undefined ? { borderRadius: `${radius}px` } : {}),
+      ...style,
+    }}
     aria-busy={loading}
+    {...nativeProps}
   >
     {loading ? <span className={styles.spinner} aria-hidden /> : children}
   </button>
