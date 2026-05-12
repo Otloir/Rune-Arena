@@ -67,7 +67,31 @@ const MoveButton: React.FC<MoveButtonProps> = ({
   }, [moveId]);
 
   if (loading) return <div className={`${styles.moveBtn} ${styles.skeleton}`} />;
-  if (error || !move) return null;
+  if (error || !move) {
+    return (
+      <button
+        type="button"
+        className={[
+          styles.moveBtn,
+          styles.normal,
+          styles[shape],
+          shadow ? styles.shadow : "",
+        ].join(" ")}
+        disabled
+        title={error ?? "Move unavailable"}
+        aria-label={error ?? "Move unavailable"}
+      >
+        <div className={styles.left}>
+          <span className={styles.moveName}>Move unavailable</span>
+          <span className={styles.typeTag}>Unknown</span>
+        </div>
+        <div className={styles.right}>
+          <span className={styles.stat} title="Damage">⚔️ --</span>
+          <span className={styles.stat} title="Accuracy">--%</span>
+        </div>
+      </button>
+    );
+  }
 
   const typeName = move.move_type.name.toLowerCase();
 
