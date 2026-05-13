@@ -1,45 +1,46 @@
 import { useItem } from "./../../../hooks/useItem";
+import type { Item as ItemType } from "./../../../types/item.types";
 import styles from "./Item.module.css";
 
 interface ItemProps {
-  itemId: number;
+  item?: ItemType;
+  itemId?: number;
   variant?: "row" | "card";
-  store?: boolean;
+  type?: "store" | "inventory";
   onBuy?: () => void;
 }
 
 const Item: React.FC<ItemProps> = ({
+  item,
   itemId,
   variant = "row",
-  store,
+  type,
   onBuy,
 }) => {
-  const { item, loading, error, retry } = useItem(itemId);
-
-  if (loading) return <div>Loading...</div>;
-  if (error)
-    return (
-      <div>
-        <p>{error}</p>
-        <button onClick={retry}>Retry</button>
-      </div>
-    );
-  if (!item) return <div>No item found.</div>;
+  const { item: fetchedItem } = useItem(itemId && !item ? itemId : undefined);
+  const displayItem = item || fetchedItem;
+  if (!displayItem) return <div>No item found.</div>;
 
   if (variant === "card") {
     return (
       <div className={styles.card}>
-        <img src={item.img} alt={item.name} className={styles.cardImg} />
-        <h3 className={styles.cardName}>{item.name}</h3>
+        {displayItem.img && (
+          <img
+            src={displayItem.img}
+            alt={displayItem.name}
+            className={styles.cardImg}
+          />
+        )}
+        <h3 className={styles.cardName}>{displayItem.name}</h3>
         <p className={styles.cardDescription}>
-          Increases {item.property} by {item.propvalue}
+          Increases {displayItem.property} by {displayItem.propvalue}
         </p>
         <div className={styles.cardFooter}>
           <span className={styles.price}>
-            <span className={styles.coinIcon}>🪙</span>
-            {item.price}
+            <span className={styles.coinIcon}>€</span>
+            {displayItem.price}
           </span>
-          {store === true && (
+          {type === "store" && onBuy && (
             <button className={styles.buyBtn} onClick={onBuy}>
               Buy
             </button>
@@ -50,16 +51,23 @@ const Item: React.FC<ItemProps> = ({
   }
 
   // default: "row" (bag / inventory)
+  // TODO: make quantity display a dynamic quantity and not a fixed one
   return (
     <div className={styles.row}>
-      <img src={item.img} alt={item.name} className={styles.rowImg} />
+      {displayItem.img && (
+        <img
+          src={displayItem.img}
+          alt={displayItem.name}
+          className={styles.rowImg}
+        />
+      )}
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
-          <span className={styles.rowName}>{item.name}</span>
+          <span className={styles.rowName}>{displayItem.name}</span>
           <span className={styles.rowQuantity}>×1</span>
         </div>
         <p className={styles.rowDescription}>
-          Increases {item.property} by {item.propvalue}
+          Increases {displayItem.property} by {displayItem.propvalue}
         </p>
       </div>
     </div>

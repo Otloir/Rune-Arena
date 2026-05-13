@@ -1,4 +1,9 @@
 import { supabase } from "../lib/supabase";
+import type { Item as ItemType } from "../types/item.types";
+
+interface UserItemsRow {
+  item: ItemType[] | ItemType | null;
+}
 
 // Get all items from the database
 export async function getItems() {
@@ -25,6 +30,11 @@ export async function getUserItems(userId: number) {
     return null;
   }
   if (!data) return [];
-  const items = data.map((row: any) => row.item).filter(Boolean);
+  const items = data
+    .map((row: UserItemsRow) => {
+      const item = Array.isArray(row.item) ? row.item[0] : row.item;
+      return item;
+    })
+    .filter((item): item is ItemType => Boolean(item));
   return items;
 }
