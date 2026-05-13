@@ -22,19 +22,25 @@ const Item: React.FC<ItemProps> = ({
     loading,
     error,
   } = useItem(itemId && !item ? itemId : undefined);
+
   const displayItem = item || fetchedItem;
 
-  // If an item was passed in directly, skip loading/error states entirely
+  // loading / error only when fetching
   if (!item) {
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+    if (loading) return <div aria-busy="true">Loading item...</div>;
+    if (error) return <div role="alert">{error}</div>;
   }
 
-  if (!displayItem) return <div>No item found.</div>;
+  if (!displayItem) return <div role="status">No item found.</div>;
+
+  const description = `Increases ${displayItem.property} by ${displayItem.propvalue}`;
 
   if (variant === "card") {
     return (
-      <div className={styles.card}>
+      <article
+        className={styles.card}
+        aria-label={`${displayItem.name} item card`}
+      >
         {displayItem.img && (
           <img
             src={displayItem.img}
@@ -42,29 +48,38 @@ const Item: React.FC<ItemProps> = ({
             className={styles.cardImg}
           />
         )}
+
         <h3 className={styles.cardName}>{displayItem.name}</h3>
-        <p className={styles.cardDescription}>
-          Increases {displayItem.property} by {displayItem.propvalue}
-        </p>
+
+        <p className={styles.cardDescription}>{description}</p>
+
         <div className={styles.cardFooter}>
           <span className={styles.price}>
-            <span className={styles.coinIcon}>€</span>
+            <span aria-hidden="true" className={styles.coinIcon}>
+              €
+            </span>
             {displayItem.price}
           </span>
+
           {type === "store" && onBuy && (
-            <button className={styles.buyBtn} onClick={onBuy}>
+            <button
+              className={styles.buyBtn}
+              onClick={onBuy}
+              aria-label={`Buy ${displayItem.name} for ${displayItem.price} euros`}
+            >
               Buy
             </button>
           )}
         </div>
-      </div>
+      </article>
     );
   }
 
-  // default: "row" (bag / inventory)
-  // TODO: make quantity display dynamic and not fixed
   return (
-    <div className={styles.row}>
+    <article
+      className={styles.row}
+      aria-label={`${displayItem.name} inventory item`}
+    >
       {displayItem.img && (
         <img
           src={displayItem.img}
@@ -72,16 +87,22 @@ const Item: React.FC<ItemProps> = ({
           className={styles.rowImg}
         />
       )}
+
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
-          <span className={styles.rowQuantity}>×1</span>
+
+          <span
+            className={styles.rowQuantity}
+            aria-label="Quantity owned"
+          >
+            ×1
+          </span>
         </div>
-        <p className={styles.rowDescription}>
-          Increases {displayItem.property} by {displayItem.propvalue}
-        </p>
+
+        <p className={styles.rowDescription}>{description}</p>
       </div>
-    </div>
+    </article>
   );
 };
 
