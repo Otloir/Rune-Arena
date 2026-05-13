@@ -1,7 +1,5 @@
 .arena {
   background-color: rgb(199, 238, 225);
-  padding: 1rem 2rem;
-
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -11,8 +9,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  min-height: 0; /* 🔥 critical for flex overflow control */
+  min-height: 0;
 }
 
 .player {
@@ -27,50 +24,54 @@
 .opponentContainer {
   display: flex;
   flex-direction: row-reverse;
+  align-items: flex-end; /* pulls FIRE MAN down toward center */
+  padding-top: 2rem;  
 }
 
 .playerContainer {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  padding-bottom: 0; 
 }
 
 .opponentContainer,
 .playerContainer {
   flex: 1;
-  min-height: 0; /* 🔥 prevents pushing controls offscreen */
+  min-height: 120px; /* guarantees the field never collapses fully */
   display: flex;
-  align-items: center;
-}
-
-.controlsContainer {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-
-  /* 🔥 ensures it never gets compressed out */
-  min-height: 80px;
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .opponentContainer,
   .playerContainer {
-    flex: 0.8; /* 🔥 less aggressive than 1 */
+    flex: 0.8;
   }
 
   .arena {
-    padding: 2rem 2rem; /* between mobile and desktop */
+    padding: 2rem 2rem;
   }
 
   .arenaContainer {
-    justify-content: center; /* prevents vertical stretching */
+    justify-content: center;
   }
 }
 
 @media (min-width: 1024px) {
   .arena {
-    padding: 5rem 3rem; 
+    padding: 0;
     overflow: hidden;
     height: 100vh;
   }
+}
+
+/* in BattleArena.module.css */
+.controlsWrapper {
+  flex-shrink: 0;
+  padding: 0 1rem 0 1rem; /* remove bottom padding — panel sits flush */
+}
+
+/* in BattleControls.module.css */
+.controlsPanel {
+  border-radius: 20px; /* was 20px 20px 0 0 */
 }

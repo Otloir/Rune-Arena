@@ -1,5 +1,6 @@
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
+import BattleControls from "../../molecules/BattleControls/BattleControls";
 import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
 import styles from "./BattleArena.module.css";
 import { useCreatureById } from "../../../hooks/useCreature";
@@ -77,24 +78,19 @@ export default function BattleArena({
           </div>
         </div>
 
-        {/* Battle log */}
-        <div className={styles.battleLog} aria-live="polite">
-          {battleLog.map((entry, i) => (
-            <p key={i}>{entry}</p>
-          ))}
-        </div>
-
-        {/* Player controls */}
-        <div className={styles.controlsContainer}>
-          <MovesPanel
+        {/* Bottom controls panel */}
+        <div className={styles.controlsWrapper}>
+          <BattleControls
             creatureId={playerOneCreatureId}
             creatureLevel={playerOneLevel}
             onMoveSelect={handlePlayerMove}
             disabled={turnOwner !== "player" || isProcessing}
+            battleLog={battleLog}
+            playerCreature={playerOneCreature}
           />
         </div>
 
-        {/* PVP opponent controls — hidden in PVE, ready for PVP */}
+        {/* PVP opponent controls */}
         {mode === "pvp" && (
           <div className={styles.opponentControlsContainer}>
             <MovesPanel

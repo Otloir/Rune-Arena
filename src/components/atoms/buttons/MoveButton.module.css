@@ -48,7 +48,7 @@
 .typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
 
 /* ── LoadingPlaceholder ── */
-.loeadingPlaceholder {
+.loadingPlaceholder {
   height: 58px;
   border-radius: 12px;
   background: linear-gradient(90deg, #e2e5f0 25%, #eceff5 50%, #e2e5f0 75%);
@@ -57,3 +57,13 @@
   pointer-events: none;
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (max-width: 1280px) {
+  .moveBtn {
+    padding: 8px 12px;
+  }
+
+  .moveName { font-size: 0.85rem; }
+  .typeTag  { font-size: 0.6rem; padding: 1px 5px; }
+  .moveStat { font-size: 0.72rem; }
+}
