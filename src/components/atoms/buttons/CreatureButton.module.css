@@ -1,0 +1,73 @@
+.card {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  position: relative;
+  background: #ffffff;
+  border: 2px solid transparent;
+  padding: 20px 20px 16px;
+  width: 220px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.card:hover:not(:disabled) { transform: translateY(-3px); }
+.card:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Shapes ── */
+.rounded { border-radius: 20px; }
+.pill    { border-radius: 99px; padding: 24px; }
+
+/* ── Shadow ── */
+.withShadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
+.withShadow:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2); }
+
+/* ── Selected ── */
+.selected { border-color: #2db34a; box-shadow: 0 0 0 3px rgba(45, 179, 74, 0.2); }
+
+.selectedBadge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 0 18px 0 12px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Sprite ── */
+.sprite { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
+
+/* ── Name ── */
+.name { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0 0 12px; }
+
+/* ── HP ── */
+.hpRow { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; }
+.hpLabel { font-size: 0.78rem; color: #6b7399; display: flex; align-items: center; gap: 4px; }
+.heartIcon { color: #f87171; }
+.hpValue { font-size: 0.78rem; font-weight: 700; color: #1a1a2e; }
+
+.hpBar {
+  width: 100%;
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.hpFill {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+/* ── Stats ── */
+.stats { display: flex; justify-content: center; gap: 20px; width: 100%; border-top: 1px solid #f0f2f8; padding-top: 12px; }
+.stat { font-size: 0.85rem; font-weight: 700; color: #3a3f5c; display: flex; align-items: center; gap: 4px; }
+.statIcon { font-size: 0.8rem; }

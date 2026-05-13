@@ -1,0 +1,59 @@
+.moveBtn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.moveBtn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
+.moveBtn:active:not(:disabled) { transform: scale(0.97); }
+.moveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Shapes ── */
+.rounded { border-radius: 12px; }
+.pill    { border-radius: 99px; }
+
+/* ── Shadow ── */
+.withShadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important; }
+
+/* ── Layout ── */
+.left  { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.right { display: flex; flex-direction: column; align-items: flex-end;   gap: 3px; }
+
+.moveName { font-size: 0.95rem; font-weight: 700; color: #fff; }
+.typeTag  {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+.moveStat { font-size: 0.78rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
+
+/* ── Type colors — prefixed to avoid collisions ── */
+.typeFire     { background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 3px 0 #b91c1c; }
+.typeWater    { background: linear-gradient(135deg, #38bdf8, #3b82f6); box-shadow: 0 3px 0 #1d4ed8; }
+.typeGrass    { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 3px 0 #14532d; }
+.typeIce      { background: linear-gradient(135deg, #a5f3fc, #0891b2); box-shadow: 0 3px 0 #0e7490; }
+.typeRock     { background: linear-gradient(135deg, #a8a29e, #57534e); box-shadow: 0 3px 0 #292524; }
+.typeElectric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 3px 0 #92400e; }
+.typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
+
+/* ── LoadingPlaceholder ── */
+.loeadingPlaceholder {
+  height: 58px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e2e5f0 25%, #eceff5 50%, #e2e5f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  pointer-events: none;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
