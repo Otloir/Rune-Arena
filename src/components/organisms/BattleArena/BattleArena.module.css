@@ -1,11 +1,18 @@
 .arena {
   background-color: rgb(199, 238, 225);
   padding: 1rem 2rem;
-  height: 60vh;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .arenaContainer {
-  margin: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0; /* 🔥 critical for flex overflow control */
 }
 
 .player {
@@ -25,6 +32,24 @@
 .playerContainer {
   display: flex;
   flex-direction: row;
+}
+
+.opponentContainer,
+.playerContainer {
+  flex: 1;
+  min-height: 0; /* 🔥 prevents pushing controls offscreen */
+  display: flex;
+  align-items: center;
+}
+
+.controlsContainer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+
+  /* 🔥 ensures it never gets compressed out */
+  min-height: 80px;
 }
 
 @media (min-width: 1024px) {
