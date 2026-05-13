@@ -14,6 +14,10 @@ interface UseBattleProps {
   mode: BattleMode;
 }
 
+// =========================
+// DATABASE HELPERS
+// =========================
+
 // Fetch move IDs available to a creature
 async function fetchCreatureMoveIds(
   creatureId: number,
@@ -36,15 +40,48 @@ async function fetchCreatureMoveIds(
   return data.map((entry) => entry.move_id).slice(0, 4);
 }
 
-/**
- * Combined hit calculation:
- * - Move chance = base accuracy
- * - Defender evade = additional dodge reduction
- *
- * Example:
- * Move chance 90 + defender evade 15
- * Final hit chance = 75%
- */
+// Fetch all type IDs attached to a creature
+async function fetchCreatureTypeIds(creatureId: number): Promise<number[]> {
+  const { data, error } = await supabase
+    .from("Creature_Types")
+    .select("type_id")
+    .eq("creature_id", creatureId);
+
+  if (error || !data) return [];
+
+  return data.map((entry) => entry.type_id);
+}
+
+// Fetch type effectiveness multiplier
+async function fetchTypeEffectiveness(
+  attackerTypeId: number,
+  defenderTypeIds: number[]
+): Promise<number> {
+  if (!defenderTypeIds.length) return 1;
+
+  let multiplier = 1;
+
+  for (const defenderTypeId of defenderTypeIds) {
+    const { data, error } = await supabase
+      .from("Type_Effectiveness")
+      .select("effectiveness")
+      .eq("attacker_id", attackerTypeId)
+      .eq("defender_id", defenderTypeId)
+      .single();
+
+    if (!error && data?.effectiveness !== undefined) {
+      multiplier *= Number(data.effectiveness);
+    }
+  }
+
+  return multiplier;
+}
+
+// =========================
+// BATTLE CALCULATIONS
+// =========================
+
+// Hit check
 function attackHits(
   moveChance: number = 100,
   defenderEvade: number = 0
@@ -55,6 +92,40 @@ function attackHits(
   );
 
   return Math.random() * 100 < finalHitChance;
+}
+
+// Defense reduction
+function calculateDefenseAdjustedDamage(
+  baseDamage: number,
+  defense: number = 0
+): number {
+  const reductionMultiplier = Math.max(0, 1 - defense / 100);
+  return Math.max(1, Math.floor(baseDamage * reductionMultiplier));
+}
+
+// Full damage pipeline
+async function calculateFinalDamage(
+  move: MoveWithType,
+  defender: Creature,
+  defenderTypeIds: number[]
+): Promise<number> {
+  // Step 1: defense
+  let damage = calculateDefenseAdjustedDamage(
+    move.damage,
+    defender.defense ?? 0
+  );
+
+  // Step 2: type effectiveness
+  if (move.move_type_id) {
+    const effectiveness = await fetchTypeEffectiveness(
+      move.move_type_id,
+      defenderTypeIds
+    );
+
+    damage = Math.max(1, Math.floor(damage * effectiveness));
+  }
+
+  return damage;
 }
 
 export function useBattle({
@@ -69,13 +140,19 @@ export function useBattle({
   const [isProcessing, setIsProcessing] = useState(false);
   const [battleLog, setBattleLog] = useState<string[]>([]);
   const [opponentMoveIds, setOpponentMoveIds] = useState<number[]>([]);
+  const [playerTypeIds, setPlayerTypeIds] = useState<number[]>([]);
+  const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
 
-  // Battle log helper
+  // =========================
+  // LOGGING
+  // =========================
   const log = useCallback((message: string) => {
     setBattleLog((prev) => [...prev, message]);
   }, []);
 
-  // Initialize battle state
+  // =========================
+  // INITIALIZE BATTLE
+  // =========================
   useEffect(() => {
     if (!playerCreature || !opponentCreature) return;
 
@@ -98,22 +175,41 @@ export function useBattle({
     ]);
   }, [playerCreature, opponentCreature]);
 
-  // Load NPC moves
+  // =========================
+  // FETCH CREATURE TYPES
+  // =========================
+  useEffect(() => {
+  if (playerCreature?.id) {
+        fetchCreatureTypeIds(Number(playerCreature.id)).then(setPlayerTypeIds);
+    }
+
+    if (opponentCreature?.id) {
+        fetchCreatureTypeIds(Number(opponentCreature.id)).then(setOpponentTypeIds);
+    }
+    }, [playerCreature, opponentCreature]);
+
+  // =========================
+  // FETCH NPC MOVES
+  // =========================
   useEffect(() => {
     if (mode !== "pve" || !opponentCreatureId) return;
 
     fetchCreatureMoveIds(opponentCreatureId).then((ids) => {
-      console.log("Opponent move IDs:", ids);
       setOpponentMoveIds(ids);
     });
   }, [opponentCreatureId, mode]);
 
-  // Player damages opponent
+  // =========================
+  // PLAYER ATTACKS OPPONENT
+  // =========================
   const damageOpponent = useCallback(
-    (move: MoveWithType) => {
-      const defenderEvade = opponentCreature?.evade ?? 0;
+    async (move: MoveWithType) => {
+      if (!opponentCreature) return;
+
+      const defenderEvade = opponentCreature.evade ?? 0;
       const moveChance = move.chance ?? 100;
 
+      // MISS CHECK
       if (!attackHits(moveChance, defenderEvade)) {
         log(
           `${playerCreature?.name} used ${move.name}, but it missed!`
@@ -121,24 +217,41 @@ export function useBattle({
         return;
       }
 
+      // DAMAGE CALCULATION
+      const finalDamage = await calculateFinalDamage(
+        move,
+        opponentCreature,
+        opponentTypeIds
+      );
+
       setOpponentHp((prev) => {
-        const current = prev ?? opponentCreature?.hp ?? 0;
-        return Math.max(0, current - move.damage);
+        const current = prev ?? opponentCreature.hp;
+        return Math.max(0, current - finalDamage);
       });
 
       log(
-        `${playerCreature?.name} used ${move.name} for ${move.damage} damage!`
+        `${playerCreature?.name} used ${move.name} for ${finalDamage} damage!`
       );
     },
-    [playerCreature, opponentCreature, log]
+    [
+      playerCreature,
+      opponentCreature,
+      opponentTypeIds,
+      log,
+    ]
   );
 
-  // Opponent damages player
+  // =========================
+  // OPPONENT ATTACKS PLAYER
+  // =========================
   const damagePlayer = useCallback(
-    (move: MoveWithType) => {
-      const defenderEvade = playerCreature?.evade ?? 0;
+    async (move: MoveWithType) => {
+      if (!playerCreature) return;
+
+      const defenderEvade = playerCreature.evade ?? 0;
       const moveChance = move.chance ?? 100;
 
+      // MISS CHECK
       if (!attackHits(moveChance, defenderEvade)) {
         log(
           `${opponentCreature?.name} used ${move.name}, but it missed!`
@@ -146,19 +259,33 @@ export function useBattle({
         return;
       }
 
+      // DAMAGE CALCULATION
+      const finalDamage = await calculateFinalDamage(
+        move,
+        playerCreature,
+        playerTypeIds
+      );
+
       setPlayerHp((prev) => {
-        const current = prev ?? playerCreature?.hp ?? 0;
-        return Math.max(0, current - move.damage);
+        const current = prev ?? playerCreature.hp;
+        return Math.max(0, current - finalDamage);
       });
 
       log(
-        `${opponentCreature?.name} used ${move.name} for ${move.damage} damage!`
+        `${opponentCreature?.name} used ${move.name} for ${finalDamage} damage!`
       );
     },
-    [playerCreature, opponentCreature, log]
+    [
+      playerCreature,
+      opponentCreature,
+      playerTypeIds,
+      log,
+    ]
   );
 
-  // NPC move execution
+  // =========================
+  // NPC TURN
+  // =========================
   const executeOpponentTurn = useCallback(
     async (moveIds: number[]) => {
       if (!moveIds.length) {
@@ -178,13 +305,16 @@ export function useBattle({
         return;
       }
 
-      damagePlayer(move);
+      await damagePlayer(move);
+
       setTurnOwner("player");
     },
     [opponentCreature, damagePlayer, log]
   );
 
-  // Automatic NPC turns
+  // =========================
+  // AUTO NPC TURNS
+  // =========================
   useEffect(() => {
     if (
       mode !== "pve" ||
@@ -214,14 +344,16 @@ export function useBattle({
     executeOpponentTurn,
   ]);
 
-  // Player turn handler
+  // =========================
+  // PLAYER TURN
+  // =========================
   const handlePlayerMove = useCallback(
     async (move: MoveWithType) => {
       if (turnOwner !== "player" || isProcessing) return;
 
       setIsProcessing(true);
 
-      damageOpponent(move);
+      await damageOpponent(move);
 
       setTurnOwner("opponent");
 
@@ -230,14 +362,16 @@ export function useBattle({
     [turnOwner, isProcessing, damageOpponent]
   );
 
-  // PVP turn handler
+  // =========================
+  // PVP TURN
+  // =========================
   const handleOpponentMove = useCallback(
     async (move: MoveWithType) => {
       if (turnOwner !== "opponent" || isProcessing) return;
 
       setIsProcessing(true);
 
-      damagePlayer(move);
+      await damagePlayer(move);
 
       setTurnOwner("player");
 
@@ -246,6 +380,9 @@ export function useBattle({
     [turnOwner, isProcessing, damagePlayer]
   );
 
+  // =========================
+  // RETURN
+  // =========================
   const resolvedPlayerHp = playerHp ?? playerCreature?.hp ?? 0;
   const resolvedOpponentHp = opponentHp ?? opponentCreature?.hp ?? 0;
 
