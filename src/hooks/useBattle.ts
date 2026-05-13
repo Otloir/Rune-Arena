@@ -41,41 +41,40 @@ async function fetchCreatureMoveIds(
 }
 
 // Fetch all type IDs attached to a creature
-async function fetchCreatureTypeIds(creatureId: number): Promise<number[]> {
-  const { data, error } = await supabase
-    .from("Creature_Types")
-    .select("type_id")
-    .eq("creature_id", creatureId);
-
-  if (error || !data) return [];
-
-  return data.map((entry) => entry.type_id);
-}
-
-// Fetch type effectiveness multiplier
-async function fetchTypeEffectiveness(
-  attackerTypeId: number,
-  defenderTypeIds: number[]
-): Promise<number> {
-  if (!defenderTypeIds.length) return 1;
-
-  let multiplier = 1;
-
-  for (const defenderTypeId of defenderTypeIds) {
+    async function fetchCreatureTypeIds(creatureId: number): Promise<number[]> {
     const { data, error } = await supabase
-      .from("Type_Effectiveness")
-      .select("effectiveness")
-      .eq("attacker_id", attackerTypeId)
-      .eq("defender_id", defenderTypeId)
-      .single();
+        .from("Creature_Types")
+        .select("type_id")
+        .eq("creature_id", creatureId);
 
-    if (!error && data?.effectiveness !== undefined) {
-      multiplier *= Number(data.effectiveness);
+    if (error || !data) return [];
+
+    return data.map((entry) => entry.type_id);
     }
-  }
 
-  return multiplier;
-}
+    // Fetch type effectiveness multiplier
+    function getTypeMultiplier(
+    map: Map<number, Map<number, number>>,
+    attackerTypeId: number,
+    defenderTypeIds: number[]
+    ): number {
+    let multiplier = 1;
+
+    const attackerMap = map.get(attackerTypeId);
+
+    if (!attackerMap) return 1;
+
+    for (const defId of defenderTypeIds) {
+        const value = attackerMap.get(defId);
+        if (value !== undefined) {
+        multiplier *= value;
+        }
+    }
+
+    return multiplier;
+    }
+
+
 
 // =========================
 // BATTLE CALCULATIONS
@@ -107,23 +106,21 @@ function calculateDefenseAdjustedDamage(
 async function calculateFinalDamage(
   move: MoveWithType,
   defender: Creature,
-  defenderTypeIds: number[]
+  defenderTypeIds: number[],
+  effectivenessMap: Map<number, Map<number, number>>
 ): Promise<number> {
-  // Step 1: defense
   let damage = calculateDefenseAdjustedDamage(
     move.damage,
     defender.defense ?? 0
   );
 
-  // Step 2: type effectiveness
-  if (move.move_type_id) {
-    const effectiveness = await fetchTypeEffectiveness(
-      move.move_type_id,
-      defenderTypeIds
-    );
+  const multiplier = getTypeMultiplier(
+    effectivenessMap,
+    move.move_type_id,
+    defenderTypeIds
+  );
 
-    damage = Math.max(1, Math.floor(damage * effectiveness));
-  }
+  damage = Math.max(1, Math.floor(damage * multiplier));
 
   return damage;
 }
@@ -142,6 +139,37 @@ export function useBattle({
   const [opponentMoveIds, setOpponentMoveIds] = useState<number[]>([]);
   const [playerTypeIds, setPlayerTypeIds] = useState<number[]>([]);
   const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
+
+// =========================
+//FETCH TYPE EFFECTIVENESS
+// =========================
+  const [effectivenessMap, setEffectivenessMap] = useState<
+    Map<number, Map<number, number>>
+    >(new Map());
+    
+  async function fetchAllTypeEffectiveness() {
+    const { data, error } = await supabase
+        .from("Type_Effectiveness")
+        .select("attacker_id, defender_id, effectiveness");
+
+    if (error || !data) return new Map();
+
+    const map = new Map<number, Map<number, number>>();
+
+    for (const row of data) {
+        if (!map.has(row.attacker_id)) {
+        map.set(row.attacker_id, new Map());
+        }
+
+        map.get(row.attacker_id)!.set(
+        row.defender_id,
+        Number(row.effectiveness)
+        );
+    }
+
+    return map;
+    }
+
 
   // =========================
   // LOGGING
@@ -175,6 +203,15 @@ export function useBattle({
     ]);
   }, [playerCreature, opponentCreature]);
 
+  useEffect(() => {
+    async function loadEffectiveness() {
+        const map = await fetchAllTypeEffectiveness();
+        setEffectivenessMap(map);
+    }
+
+    loadEffectiveness();
+    }, []);
+
   // =========================
   // FETCH CREATURE TYPES
   // =========================
@@ -199,6 +236,7 @@ export function useBattle({
     });
   }, [opponentCreatureId, mode]);
 
+  
   // =========================
   // PLAYER ATTACKS OPPONENT
   // =========================
@@ -221,7 +259,8 @@ export function useBattle({
       const finalDamage = await calculateFinalDamage(
         move,
         opponentCreature,
-        opponentTypeIds
+        opponentTypeIds,
+        effectivenessMap
       );
 
       setOpponentHp((prev) => {
@@ -263,7 +302,8 @@ export function useBattle({
       const finalDamage = await calculateFinalDamage(
         move,
         playerCreature,
-        playerTypeIds
+        playerTypeIds,
+        effectivenessMap
       );
 
       setPlayerHp((prev) => {
