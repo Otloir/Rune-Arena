@@ -111,5 +111,14 @@ body,
 }
 
 html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh; /* 🔥 modern fix for mobile browsers */
+}
+
+html {
   height: -webkit-fill-available;
 }
