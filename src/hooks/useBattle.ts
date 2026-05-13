@@ -15,7 +15,10 @@ interface UseBattleProps {
 }
 
 // Fetch move IDs available to a creature
-async function fetchCreatureMoveIds(creatureId: number, level?: number): Promise<number[]> {
+async function fetchCreatureMoveIds(
+  creatureId: number,
+  level?: number
+): Promise<number[]> {
   let query = supabase
     .from("Creature_Moves")
     .select("move_id, level_id")
@@ -27,7 +30,9 @@ async function fetchCreatureMoveIds(creatureId: number, level?: number): Promise
   }
 
   const { data, error } = await query;
+
   if (error || !data) return [];
+
   return data.map((entry) => entry.move_id).slice(0, 4);
 }
 
@@ -44,100 +49,161 @@ export function useBattle({
   const [battleLog, setBattleLog] = useState<string[]>([]);
   const [opponentMoveIds, setOpponentMoveIds] = useState<number[]>([]);
 
-  // Initialize HP and turn order once creatures load
+  // Utility logger
+  const log = useCallback((message: string) => {
+    setBattleLog((prev) => [...prev, message]);
+  }, []);
+
+  // Initialize HP and determine who starts
   useEffect(() => {
     if (!playerCreature || !opponentCreature) return;
+
     setPlayerHp(playerCreature.hp);
     setOpponentHp(opponentCreature.hp);
 
-    // Higher speed goes first; ties go to player
     const firstTurn: TurnOwner =
-      opponentCreature.speed > playerCreature.speed ? "opponent" : "player";
+      opponentCreature.speed > playerCreature.speed
+        ? "opponent"
+        : "player";
+
     setTurnOwner(firstTurn);
 
     setBattleLog([
-      `${firstTurn === "player" ? playerCreature.name : opponentCreature.name} goes first!`,
+      `${
+        firstTurn === "player"
+          ? playerCreature.name
+          : opponentCreature.name
+      } goes first!`,
     ]);
   }, [playerCreature, opponentCreature]);
 
-  // Fetch opponent's available moves for PVE
+  // Fetch opponent moves for PVE
   useEffect(() => {
-  if (mode !== "pve" || !opponentCreatureId) return;
-  fetchCreatureMoveIds(opponentCreatureId).then((ids) => {
-    console.log("Opponent move IDs:", ids);
-    setOpponentMoveIds(ids);
-  });
-}, [opponentCreatureId, mode]);
+    if (mode !== "pve" || !opponentCreatureId) return;
 
-  const log = (message: string) =>
-    setBattleLog((prev) => [...prev, message]);
-
-  // Apply damage to opponent
-  const damageOpponent = useCallback((move: MoveWithType) => {
-    setOpponentHp((prev) => {
-      const current = prev ?? opponentCreature?.hp ?? 0;
-      return Math.max(0, current - move.damage);
+    fetchCreatureMoveIds(opponentCreatureId).then((ids) => {
+      console.log("Opponent move IDs:", ids);
+      setOpponentMoveIds(ids);
     });
-    log(`${playerCreature?.name} used ${move.name} for ${move.damage} damage!`);
-  }, [playerCreature, opponentCreature]);
+  }, [opponentCreatureId, mode]);
 
-  // Apply damage to player
-  const damagePlayer = useCallback((move: MoveWithType) => {
-    setPlayerHp((prev) => {
-      const current = prev ?? playerCreature?.hp ?? 0;
-      return Math.max(0, current - move.damage);
-    });
-    log(`${opponentCreature?.name} used ${move.name} for ${move.damage} damage!`);
-  }, [playerCreature, opponentCreature]);
+  // Player damages opponent
+  const damageOpponent = useCallback(
+    (move: MoveWithType) => {
+      setOpponentHp((prev) => {
+        const current = prev ?? opponentCreature?.hp ?? 0;
+        return Math.max(0, current - move.damage);
+      });
 
-  // PVE: pick and execute a random opponent move
-  const executeOpponentTurn = useCallback(async () => {
-    if (!opponentMoveIds.length) {
-      log(`${opponentCreature?.name} has no moves!`);
+      log(
+        `${playerCreature?.name} used ${move.name} for ${move.damage} damage!`
+      );
+    },
+    [playerCreature, opponentCreature, log]
+  );
+
+  // Opponent damages player
+  const damagePlayer = useCallback(
+    (move: MoveWithType) => {
+      setPlayerHp((prev) => {
+        const current = prev ?? playerCreature?.hp ?? 0;
+        return Math.max(0, current - move.damage);
+      });
+
+      log(
+        `${opponentCreature?.name} used ${move.name} for ${move.damage} damage!`
+      );
+    },
+    [playerCreature, opponentCreature, log]
+  );
+
+  // Execute random NPC move
+  const executeOpponentTurn = useCallback(
+    async (moveIds: number[]) => {
+      if (!moveIds.length) {
+        log(`${opponentCreature?.name} has no moves!`);
+        setTurnOwner("player");
+        return;
+      }
+
+      const randomId =
+        moveIds[Math.floor(Math.random() * moveIds.length)];
+
+      const move = await getMoveById(randomId);
+
+      if (!move) {
+        log("Opponent's move failed.");
+        setTurnOwner("player");
+        return;
+      }
+
+      damagePlayer(move);
       setTurnOwner("player");
+    },
+    [opponentCreature, damagePlayer, log]
+  );
+
+  // Automatically run opponent turn in PVE
+  useEffect(() => {
+    if (
+      mode !== "pve" ||
+      turnOwner !== "opponent" ||
+      isProcessing ||
+      opponentMoveIds.length === 0
+    ) {
       return;
     }
 
-    const randomId = opponentMoveIds[Math.floor(Math.random() * opponentMoveIds.length)];
-    const move = await getMoveById(randomId);
+    const runOpponentTurn = async () => {
+      setIsProcessing(true);
 
-    if (!move) {
-      log("Opponent's move failed.");
-      setTurnOwner("player");
-      return;
-    }
-
-    damagePlayer(move);
-    setTurnOwner("player");
-  }, [opponentMoveIds, opponentCreature, damagePlayer]);
-
-  // Called when the player selects a move
-  const handlePlayerMove = useCallback(async (move: MoveWithType) => {
-    if (turnOwner !== "player" || isProcessing) return;
-    setIsProcessing(true);
-
-    damageOpponent(move);
-
-    if (mode === "pve") {
-      // Small delay so the player can see their attack land
       await new Promise((res) => setTimeout(res, 800));
-      await executeOpponentTurn();
-    } else {
-      // PVP: just pass the turn
+
+      await executeOpponentTurn(opponentMoveIds);
+
+      setIsProcessing(false);
+    };
+
+    runOpponentTurn();
+  }, [
+    mode,
+    turnOwner,
+    isProcessing,
+    opponentMoveIds,
+    executeOpponentTurn,
+  ]);
+
+  // Player move handler
+  const handlePlayerMove = useCallback(
+    async (move: MoveWithType) => {
+      if (turnOwner !== "player" || isProcessing) return;
+
+      setIsProcessing(true);
+
+      damageOpponent(move);
+
       setTurnOwner("opponent");
-    }
 
-    setIsProcessing(false);
-  }, [turnOwner, isProcessing, damageOpponent, executeOpponentTurn, mode]);
+      setIsProcessing(false);
+    },
+    [turnOwner, isProcessing, damageOpponent]
+  );
 
-  // PVP only: called when the opponent player selects a move
-  const handleOpponentMove = useCallback(async (move: MoveWithType) => {
-    if (turnOwner !== "opponent" || isProcessing) return;
-    setIsProcessing(true);
-    damagePlayer(move);
-    setTurnOwner("player");
-    setIsProcessing(false);
-  }, [turnOwner, isProcessing, damagePlayer]);
+  // PVP opponent move handler
+  const handleOpponentMove = useCallback(
+    async (move: MoveWithType) => {
+      if (turnOwner !== "opponent" || isProcessing) return;
+
+      setIsProcessing(true);
+
+      damagePlayer(move);
+
+      setTurnOwner("player");
+
+      setIsProcessing(false);
+    },
+    [turnOwner, isProcessing, damagePlayer]
+  );
 
   const resolvedPlayerHp = playerHp ?? playerCreature?.hp ?? 0;
   const resolvedOpponentHp = opponentHp ?? opponentCreature?.hp ?? 0;
@@ -149,6 +215,6 @@ export function useBattle({
     isProcessing,
     battleLog,
     handlePlayerMove,
-    handleOpponentMove,   // expose for future PVP use
+    handleOpponentMove,
   };
 }
