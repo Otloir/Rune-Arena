@@ -1,6 +1,9 @@
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
+import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
 import styles from "./BattleArena.module.css";
+import type { MoveWithType } from "../../../types/move.types";
+import { useCreatureById } from "../../../hooks/useCreature";
 
 interface BattleArenaProps {
   playerOne: number;
@@ -15,10 +18,19 @@ export default function BattleArena({
   playerOneCreatureId,
   playerTwoCreatureId,
 }: BattleArenaProps) {
+  const {
+    level: playerOneLevel,
+  } = useCreatureById(playerOne, playerOneCreatureId);
+
+  const handleMoveSelect = (move: MoveWithType) => {
+    console.log("Player selected move:", move);
+    // TODO: battle logic here
+  };
+
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
-        {/* opponent */}
+        {/* Opponent */}
         <div className={styles.opponentContainer}>
           <div className={styles.opponent}>
             <StatusPanel
@@ -34,7 +46,7 @@ export default function BattleArena({
           </div>
         </div>
 
-        {/* player/user */}
+        {/* Player */}
         <div className={styles.playerContainer}>
           <div className={styles.player}>
             <StatusPanel
@@ -48,6 +60,15 @@ export default function BattleArena({
               role="player"
             />
           </div>
+        </div>
+
+        {/* Controls */}
+        <div className={styles.controlsContainer}>
+          <MovesPanel
+            creatureId={playerOneCreatureId}
+            creatureLevel={playerOneLevel}
+            onMoveSelect={handleMoveSelect}
+          />
         </div>
       </div>
     </section>
