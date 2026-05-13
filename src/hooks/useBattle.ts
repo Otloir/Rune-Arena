@@ -36,6 +36,16 @@ async function fetchCreatureMoveIds(
   return data.map((entry) => entry.move_id).slice(0, 4);
 }
 
+// Accuracy check based on defender evade stat
+function attackHits(defenderEvade: number = 0): boolean {
+  // Example:
+  // evade 0 = 100% hit chance
+  // evade 10 = 90% hit chance
+  // evade 25 = 75% hit chance
+  const hitChance = Math.max(10, 100 - defenderEvade);
+  return Math.random() * 100 < hitChance;
+}
+
 export function useBattle({
   playerCreature,
   opponentCreature,
@@ -54,7 +64,7 @@ export function useBattle({
     setBattleLog((prev) => [...prev, message]);
   }, []);
 
-  // Initialize HP and determine who starts
+  // Initialize battle state
   useEffect(() => {
     if (!playerCreature || !opponentCreature) return;
 
@@ -77,7 +87,7 @@ export function useBattle({
     ]);
   }, [playerCreature, opponentCreature]);
 
-  // Fetch opponent moves for PVE
+  // Fetch opponent moves
   useEffect(() => {
     if (mode !== "pve" || !opponentCreatureId) return;
 
@@ -87,9 +97,16 @@ export function useBattle({
     });
   }, [opponentCreatureId, mode]);
 
-  // Player damages opponent
+  // Player attacks opponent
   const damageOpponent = useCallback(
     (move: MoveWithType) => {
+      const defenderEvade = opponentCreature?.evade ?? 0;
+
+      if (!attackHits(defenderEvade)) {
+        log(`${playerCreature?.name} used ${move.name}, but it missed!`);
+        return;
+      }
+
       setOpponentHp((prev) => {
         const current = prev ?? opponentCreature?.hp ?? 0;
         return Math.max(0, current - move.damage);
@@ -102,9 +119,16 @@ export function useBattle({
     [playerCreature, opponentCreature, log]
   );
 
-  // Opponent damages player
+  // Opponent attacks player
   const damagePlayer = useCallback(
     (move: MoveWithType) => {
+      const defenderEvade = playerCreature?.evade ?? 0;
+
+      if (!attackHits(defenderEvade)) {
+        log(`${opponentCreature?.name} used ${move.name}, but it missed!`);
+        return;
+      }
+
       setPlayerHp((prev) => {
         const current = prev ?? playerCreature?.hp ?? 0;
         return Math.max(0, current - move.damage);
@@ -117,7 +141,7 @@ export function useBattle({
     [playerCreature, opponentCreature, log]
   );
 
-  // Execute random NPC move
+  // NPC turn logic
   const executeOpponentTurn = useCallback(
     async (moveIds: number[]) => {
       if (!moveIds.length) {
@@ -143,7 +167,7 @@ export function useBattle({
     [opponentCreature, damagePlayer, log]
   );
 
-  // Automatically run opponent turn in PVE
+  // Automatic opponent turn
   useEffect(() => {
     if (
       mode !== "pve" ||
@@ -173,7 +197,7 @@ export function useBattle({
     executeOpponentTurn,
   ]);
 
-  // Player move handler
+  // Player turn
   const handlePlayerMove = useCallback(
     async (move: MoveWithType) => {
       if (turnOwner !== "player" || isProcessing) return;
@@ -189,7 +213,7 @@ export function useBattle({
     [turnOwner, isProcessing, damageOpponent]
   );
 
-  // PVP opponent move handler
+  // PVP opponent turn
   const handleOpponentMove = useCallback(
     async (move: MoveWithType) => {
       if (turnOwner !== "opponent" || isProcessing) return;
