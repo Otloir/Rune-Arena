@@ -1,3 +1,4 @@
+import { useState } from "react";
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
 import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
@@ -18,13 +19,39 @@ export default function BattleArena({
   playerOneCreatureId,
   playerTwoCreatureId,
 }: BattleArenaProps) {
+  // Player creature info
   const {
     level: playerOneLevel,
+    creature: playerOneCreature,
   } = useCreatureById(playerOne, playerOneCreatureId);
 
+  // Opponent creature info
+  const {
+    creature: playerTwoCreature,
+  } = useCreatureById(playerTwo, playerTwoCreatureId);
+
+  // Dynamic HP state
+  const [playerHp, setPlayerHp] = useState<number | null>(null);
+  const [opponentHp, setOpponentHp] = useState<number | null>(null);
+
+  // Initialize HP once creatures load
+  const resolvedPlayerHp =
+    playerHp ?? playerOneCreature?.hp ?? 0;
+
+  const resolvedOpponentHp =
+    opponentHp ?? playerTwoCreature?.hp ?? 0;
+
   const handleMoveSelect = (move: MoveWithType) => {
-    console.log("Player selected move:", move);
-    // TODO: battle logic here
+    if (!playerTwoCreature) return;
+
+    setOpponentHp((prevHp) => {
+      const currentHp = prevHp ?? playerTwoCreature.hp;
+      return Math.max(0, currentHp - move.damage);
+    });
+
+    console.log(
+      `${playerOneCreature?.name} used ${move.name} for ${move.damage} damage!`,
+    );
   };
 
   return (
@@ -36,7 +63,7 @@ export default function BattleArena({
             <StatusPanel
               userId={playerTwo}
               creatureId={playerTwoCreatureId}
-              currentHp={50}
+              currentHp={resolvedOpponentHp}
             />
             <Creature
               userId={playerTwo}
@@ -52,7 +79,7 @@ export default function BattleArena({
             <StatusPanel
               userId={playerOne}
               creatureId={playerOneCreatureId}
-              currentHp={100}
+              currentHp={resolvedPlayerHp}
             />
             <Creature
               userId={playerOne}
