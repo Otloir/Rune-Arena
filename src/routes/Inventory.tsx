@@ -1,14 +1,9 @@
-import ItemList from "../components/molecules/itemList/ItemList";
+import InventoryPage from "../components/views/Inventory/InventoryPage";
 
-interface InventoryItemProps {
-  userId?: number;
-}
-export default function Inventory({ userId }: InventoryItemProps) {
-  // TODO: currently a hardcoded user id. update to a dynamic one when we get ids from the centralbank
-  userId = 1;
+export default function Inventory() {
   return (
     <>
-      <ItemList userId={userId} variant="row" type="inventory" />
+    <InventoryPage />
     </>
   );
 }

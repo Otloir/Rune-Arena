@@ -1,0 +1,13 @@
+.lobbyPage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.creatureSelectButtons, .creatureSelectButtons form {
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+}
