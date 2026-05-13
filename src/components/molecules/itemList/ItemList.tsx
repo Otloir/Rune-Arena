@@ -41,7 +41,11 @@ export default function ItemList({ type, variant, userId }: ListProps) {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className={type ? styles.shopItemList : styles.inventoryItemList}>
+    <div
+      className={
+        type === "store" ? styles.shopItemList : styles.inventoryItemList
+      }
+    >
       {items.map((item) => (
         <Item
           key={item.id}

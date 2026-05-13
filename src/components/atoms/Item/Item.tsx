@@ -17,8 +17,19 @@ const Item: React.FC<ItemProps> = ({
   type,
   onBuy,
 }) => {
-  const { item: fetchedItem } = useItem(itemId && !item ? itemId : undefined);
+  const {
+    item: fetchedItem,
+    loading,
+    error,
+  } = useItem(itemId && !item ? itemId : undefined);
   const displayItem = item || fetchedItem;
+
+  // If an item was passed in directly, skip loading/error states entirely
+  if (!item) {
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+  }
+
   if (!displayItem) return <div>No item found.</div>;
 
   if (variant === "card") {
@@ -51,7 +62,7 @@ const Item: React.FC<ItemProps> = ({
   }
 
   // default: "row" (bag / inventory)
-  // TODO: make quantity display a dynamic quantity and not a fixed one
+  // TODO: make quantity display dynamic and not fixed
   return (
     <div className={styles.row}>
       {displayItem.img && (

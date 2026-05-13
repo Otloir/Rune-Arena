@@ -8,7 +8,12 @@ export const useItem = (itemId?: number) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchItem = async () => {
-    if (!itemId) return;
+    if (itemId == null) {
+      setItem(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     const { data, error } = await supabase
