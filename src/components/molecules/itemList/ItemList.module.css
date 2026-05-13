@@ -1,0 +1,22 @@
+.inventoryItemList, .shopItemList {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+}
+
+/* tablet */
+@media (min-width: 768px) {
+  .shopItemList {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .shopItemList {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
