@@ -4,6 +4,8 @@
     "useDefineForClassFields": true,
     "lib": ["es2023", "dom", "dom.iterable"],
     "module": "esnext",
+    "rootDir": "src",
+    "outDir": "dist",
     "skipLibCheck": true,
     "strict": true,
     "resolveJsonModule": true,
