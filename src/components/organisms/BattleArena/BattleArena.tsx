@@ -1,16 +1,16 @@
-import { useState } from "react";
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
 import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
 import styles from "./BattleArena.module.css";
-import type { MoveWithType } from "../../../types/move.types";
 import { useCreatureById } from "../../../hooks/useCreature";
+import { useBattle } from "../../../hooks/useBattle";
 
 interface BattleArenaProps {
   playerOne: number;
   playerTwo: number;
   playerOneCreatureId: number;
   playerTwoCreatureId: number;
+  mode?: "pve" | "pvp";
 }
 
 export default function BattleArena({
@@ -18,52 +18,40 @@ export default function BattleArena({
   playerTwo,
   playerOneCreatureId,
   playerTwoCreatureId,
+  mode = "pve",
 }: BattleArenaProps) {
-  // Player creature info
+  const { creature: playerOneCreature, level: playerOneLevel } =
+    useCreatureById(playerOne, playerOneCreatureId);
+
+  const { creature: playerTwoCreature, level: playerTwoLevel } =
+    useCreatureById(playerTwo, playerTwoCreatureId);
+
   const {
-    level: playerOneLevel,
-    creature: playerOneCreature,
-  } = useCreatureById(playerOne, playerOneCreatureId);
-
-  // Opponent creature info
-  const {
-    creature: playerTwoCreature,
-  } = useCreatureById(playerTwo, playerTwoCreatureId);
-
-  // Dynamic HP state
-  const [playerHp, setPlayerHp] = useState<number | null>(null);
-  const [opponentHp, setOpponentHp] = useState<number | null>(null);
-
-  // Initialize HP once creatures load
-  const resolvedPlayerHp =
-    playerHp ?? playerOneCreature?.hp ?? 0;
-
-  const resolvedOpponentHp =
-    opponentHp ?? playerTwoCreature?.hp ?? 0;
-
-  const handleMoveSelect = (move: MoveWithType) => {
-    if (!playerTwoCreature) return;
-
-    setOpponentHp((prevHp) => {
-      const currentHp = prevHp ?? playerTwoCreature.hp;
-      return Math.max(0, currentHp - move.damage);
-    });
-
-    console.log(
-      `${playerOneCreature?.name} used ${move.name} for ${move.damage} damage!`,
-    );
-  };
+    playerHp,
+    opponentHp,
+    turnOwner,
+    isProcessing,
+    battleLog,
+    handlePlayerMove,
+    handleOpponentMove,
+  } = useBattle({
+    playerCreature: playerOneCreature,
+    opponentCreature: playerTwoCreature,
+    opponentCreatureId: playerTwoCreatureId,
+    mode,
+  });
 
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
+
         {/* Opponent */}
         <div className={styles.opponentContainer}>
           <div className={styles.opponent}>
             <StatusPanel
               userId={playerTwo}
               creatureId={playerTwoCreatureId}
-              currentHp={resolvedOpponentHp}
+              currentHp={opponentHp}
             />
             <Creature
               userId={playerTwo}
@@ -79,7 +67,7 @@ export default function BattleArena({
             <StatusPanel
               userId={playerOne}
               creatureId={playerOneCreatureId}
-              currentHp={resolvedPlayerHp}
+              currentHp={playerHp}
             />
             <Creature
               userId={playerOne}
@@ -89,14 +77,35 @@ export default function BattleArena({
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Battle log */}
+        <div className={styles.battleLog} aria-live="polite">
+          {battleLog.map((entry, i) => (
+            <p key={i}>{entry}</p>
+          ))}
+        </div>
+
+        {/* Player controls */}
         <div className={styles.controlsContainer}>
           <MovesPanel
             creatureId={playerOneCreatureId}
             creatureLevel={playerOneLevel}
-            onMoveSelect={handleMoveSelect}
+            onMoveSelect={handlePlayerMove}
+            disabled={turnOwner !== "player" || isProcessing}
           />
         </div>
+
+        {/* PVP opponent controls — hidden in PVE, ready for PVP */}
+        {mode === "pvp" && (
+          <div className={styles.opponentControlsContainer}>
+            <MovesPanel
+              creatureId={playerTwoCreatureId}
+              creatureLevel={playerTwoLevel}
+              onMoveSelect={handleOpponentMove}
+              disabled={turnOwner !== "opponent" || isProcessing}
+            />
+          </div>
+        )}
+
       </div>
     </section>
   );
