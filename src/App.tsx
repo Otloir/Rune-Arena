@@ -5,7 +5,6 @@ import Test from "./routes/test";
 import Lobby from "./routes/Lobby";
 import Arena from "./routes/Arena";
 import Store from "./routes/Store";
-import Inventory from "./routes/Inventory";
 
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
           <Route path="/test" element={<Test />} />
           <Route path="/arena" element={<Arena />} />
           <Route path="/store" element={<Store />} />
-          <Route path="/inventory" element={<Inventory />} />
         </Routes>
       </BrowserRouter>
     </>

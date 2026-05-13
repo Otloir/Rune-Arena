@@ -3,7 +3,8 @@ import BattleArena from "./../../organisms/BattleArena/BattleArena";
 
 export default function ArenaPage() {
   const location = useLocation();
-  const playerOneCreatureId = location.state?.playerOneCreatureId || 2;
+  const playerOneUserId = location.state?.playerOneUserId;
+  const playerOneCreatureId = location.state?.playerOneCreatureId;
 
   // TODO: make more dynamic later with multiplayer and bot/singleplayer version
   // player 1 = the user
@@ -11,7 +12,7 @@ export default function ArenaPage() {
   return (
     <>
       <BattleArena
-        playerOne={1}
+        playerOne={playerOneUserId}
         playerTwo={2}
         playerOneCreatureId={parseInt(playerOneCreatureId)}
         playerTwoCreatureId={3}
