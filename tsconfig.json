@@ -1,23 +1,14 @@
 {
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "compilerOptions": {
-    "target": "es2023",
-    "useDefineForClassFields": true,
-    "lib": ["es2023", "dom", "dom.iterable"],
-    "module": "esnext",
-    "rootDir": "src",
-    "outDir": "dist",
-    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "nodenext",
     "strict": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "types": ["vite/client"]
-  },
-  "include": ["src"]
+    "rootDir": ".",
+    "outDir": "dist"
+  }
 }
