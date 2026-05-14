@@ -40,6 +40,23 @@ export default function ItemList({ type, variant, userId }: ListProps) {
   if (loading) return <div>Loading items...</div>;
   if (error) return <div>{error}</div>;
 
+  if (items.length === 0 && type === "inventory") {
+    return (
+      <div className={styles.emptyState}>
+        <p>Your inventory is empty</p>
+        <p>Visit the store to get started!</p>
+      </div>
+    );
+  }
+
+  if (items.length === 0 && type === "store") {
+    return (
+      <div className={styles.emptyState}>
+        <p>No items available in the store</p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={

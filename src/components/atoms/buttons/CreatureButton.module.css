@@ -27,7 +27,7 @@
 /* ── Selected ── */
 .selected { border-color: #2db34a; box-shadow: 0 0 0 3px rgba(45, 179, 74, 0.2); }
 
-.selectedBadge {
+/* .selectedBadge {
   position: absolute;
   top: -1px;
   right: -1px;
@@ -38,7 +38,7 @@
   padding: 5px 10px;
   border-radius: 0 18px 0 12px;
   letter-spacing: 0.02em;
-}
+} */
 
 /* ── Sprite ── */
 .sprite { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }

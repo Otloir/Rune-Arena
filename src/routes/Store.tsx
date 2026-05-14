@@ -1,9 +1,9 @@
-import ItemList from "../components/molecules/itemList/ItemList";
+import StorePage from "../components/views/Store/StorePage";
 
 export default function Store() {
   return (
     <>
-      <ItemList type="store" variant="card" />
+      <StorePage />
     </>
   );
 }
