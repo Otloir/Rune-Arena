@@ -3,6 +3,7 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .arenaContainer {
@@ -12,6 +13,7 @@
   min-height: 0;
 }
 
+/* ── KEEP EXISTING LAYOUT (important) ── */
 .player {
   display: flex;
   flex-direction: row-reverse;
@@ -21,57 +23,37 @@
   display: flex;
 }
 
+/* ── FIX: prevent vertical stretching ── */
+.playerContainer,
 .opponentContainer {
+  flex: 1;
+  min-height: 0; /* 🔥 critical fix */
   display: flex;
+}
+
+/* preserve your alignment exactly */
+.opponentContainer {
   flex-direction: row-reverse;
-  align-items: flex-end; /* pulls FIRE MAN down toward center */
-  padding-top: 2rem;  
+  align-items: flex-end;
+  padding-top: 2rem;
 }
 
 .playerContainer {
-  display: flex;
   flex-direction: row;
   align-items: center;
-  padding-bottom: 0; 
 }
 
-.opponentContainer,
-.playerContainer {
-  flex: 1;
-  min-height: 120px; /* guarantees the field never collapses fully */
-  display: flex;
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .opponentContainer,
-  .playerContainer {
-    flex: 0.8;
-  }
-
-  .arena {
-    padding: 2rem 2rem;
-  }
-
-  .arenaContainer {
-    justify-content: center;
-  }
-}
-
-@media (min-width: 1024px) {
-  .arena {
-    padding: 0;
-    overflow: hidden;
-    height: 100vh;
-  }
-}
-
-/* in BattleArena.module.css */
+/* ── controls safe zone ── */
 .controlsWrapper {
   flex-shrink: 0;
-  padding: 0 1rem 0 1rem; /* remove bottom padding — panel sits flush */
+  padding: 0 1rem;
+  overflow: hidden;
 }
 
-/* in BattleControls.module.css */
-.controlsPanel {
-  border-radius: 20px; /* was 20px 20px 0 0 */
+/* ── desktop only adjustments ── */
+@media (min-width: 1024px) {
+  .arena {
+    height: 100vh;
+    overflow: hidden;
+  }
 }

@@ -3,35 +3,48 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   height: 12rem;
   width: 10rem;
+  max-width: 100%;
 }
 
 .creatureSprite {
   width: 4rem;
   height: auto;
-  z-index: 1;
   position: absolute;
+  z-index: 1;
   padding-bottom: 5rem;
 }
 
+/* platform stays unchanged */
 .platform {
   width: 10rem;
   height: 3rem;
-  position: relative; 
+  position: relative;
 }
 
+/* ── only scaling fixes ── */
+@media (max-width: 768px) {
+  .creatureContainer {
+    transform: scale(0.85);
+    transform-origin: center;
+  }
+}
+
+/* desktop enhancements only */
 @media (min-width: 1024px) {
-  .platform {
-    height: 4rem;
-    width: 16rem;
-  }
-  .creatureSprite {
-    width: 6rem;
-    height: auto;
-    padding-bottom: 8rem;
-  }
   .creatureContainer {
     width: 20rem;
+  }
+
+  .creatureSprite {
+    width: 6rem;
+    padding-bottom: 8rem;
+  }
+
+  .platform {
+    width: 16rem;
+    height: 4rem;
   }
 }
