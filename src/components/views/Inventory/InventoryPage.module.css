@@ -62,3 +62,21 @@
   font-size: 24px;
   color: #333;
 }
+
+/* tablet */
+@media (min-width: 768px) {
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .modal {
+    width: 40%;
+    height: 80%;
+  }
+}

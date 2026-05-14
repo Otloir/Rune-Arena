@@ -63,37 +63,45 @@ export default function LobbyPage() {
       />
       <section className={styles.lobbyPage}>
         <section>
-          <h1>RuneArena</h1>
-          <p>Choose your fighter and dominate the arena!</p>
+          <nav>
+            <Button> Back to Tivoli </Button>
+            <Button> Info </Button>
+          </nav>
+          <div>
+            <h1>RuneArena</h1>
+            <p>Choose your fighter and dominate the arena!</p>
+          </div>
           <nav>
             <Button onClick={navigateStore}> Store </Button>
             <Button onClick={openInventory}> Inventory </Button>
           </nav>
         </section>
         <section>
-          <section className={styles.creatureSelectButtons}>
+          <section className={styles.creatureSelectContainer}>
+            <h2>Select Your Creature</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleStartArena();
               }}
             >
-              <h2>Select Your Creature</h2>
-              <CreatureButton
-                creatureId="1"
-                onSelect={() => handleCreatureSelect("1")}
-                selected={selectedCreatureId === "1"}
-              />
-              <CreatureButton
-                creatureId="2"
-                onSelect={() => handleCreatureSelect("2")}
-                selected={selectedCreatureId === "2"}
-              />
-              <CreatureButton
-                creatureId="3"
-                onSelect={() => handleCreatureSelect("3")}
-                selected={selectedCreatureId === "3"}
-              />
+              <div className={styles.creatureSelectButtons}>
+                <CreatureButton
+                  creatureId="1"
+                  onSelect={() => handleCreatureSelect("1")}
+                  selected={selectedCreatureId === "1"}
+                />
+                <CreatureButton
+                  creatureId="2"
+                  onSelect={() => handleCreatureSelect("2")}
+                  selected={selectedCreatureId === "2"}
+                />
+                <CreatureButton
+                  creatureId="3"
+                  onSelect={() => handleCreatureSelect("3")}
+                  selected={selectedCreatureId === "3"}
+                />
+              </div>
               <Button type="submit" disabled={!selectedCreatureId}>
                 Start (1€)
               </Button>
