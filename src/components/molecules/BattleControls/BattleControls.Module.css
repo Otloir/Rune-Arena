@@ -1,27 +1,31 @@
 .controlsPanel {
   display: flex;
-  flex-direction: row;
-  gap: 16px;
+  flex-direction: column;
+  gap: 1rem;
   width: 100%;
   flex-shrink: 0;
-  padding: 20px;
+  min-height: 16rem;
+  max-height: 22rem;
+  padding: 1.25rem;
   box-sizing: border-box;
   background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-  min-height: 260px; /* taller floor so buttons always fit */
+  border-radius: 1.25rem;
+  box-shadow: 0 -0.25rem 1.25rem rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-/* ── Left: log ── */
+/* ── LOG ── */
 .logPanel {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   min-width: 0;
   background: #f5f6fa;
-  border-radius: 14px;
-  padding: 12px 14px;
+  border-radius: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 9rem;
   overflow: hidden;
 }
 
@@ -35,12 +39,12 @@
 
 .logScroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
   scrollbar-width: none;
-  min-height: 0;
 }
 
 .logScroll::-webkit-scrollbar { display: none; }
@@ -50,15 +54,18 @@
   font-size: 0.8rem;
   color: #4a5080;
   line-height: 1.4;
+  flex-shrink: 0;
 }
 
-/* ── Right: moves + buttons ── */
+/* ── ACTIONS ── */
 .actionPanel {
-  flex: 1.2;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   min-width: 0;
+  flex: 1 1 auto;
+  min-height: 8rem;
+  overflow: hidden;
 }
 
 .actionTitle {
@@ -69,12 +76,18 @@
   flex-shrink: 0;
 }
 
+.movesWrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .actionButtons {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 0.625rem;
   flex-shrink: 0;
-  min-height: 44px;
+  min-height: 2.75rem;
 }
 
 .actionBtn {
@@ -82,20 +95,29 @@
   min-width: 0;
 }
 
-/* ── Mobile ── */
-@media (max-width: 640px) {
+/* ── Tablet + Desktop ── */
+@media (min-width: 641px) {
   .controlsPanel {
-    flex-direction: column;
-    border-radius: 20px 20px 0 0;
+    flex-direction: row;           /* log left, moves right */
+    border-radius: 1.25rem 1.25rem 0 0;
+    height: min(40vh, 22rem);      /* bounded — scroll kicks in above this */
+    max-height: min(40vh, 22rem);
   }
 
   .logPanel {
-    max-height: 100px;
+    height: 100%;                 /* keep the log panel bounded by the controls panel */
+    max-height: unset;
+    flex: 1;
+    min-height: 0;
   }
-}
 
-.movesWrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  .logScroll {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .actionPanel {
+    flex: 1.2;
+  }
 }
