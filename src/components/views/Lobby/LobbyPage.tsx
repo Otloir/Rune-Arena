@@ -14,13 +14,13 @@ export default function LobbyPage() {
 
   // Disable body scroll when inventory is open
   useEffect(() => {
-    if (isInventoryOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
+    if (!isInventoryOpen) {
+      return;
     }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = previousOverflow;
     };
   }, [isInventoryOpen]);
 
@@ -52,7 +52,7 @@ export default function LobbyPage() {
   };
 
   //TODO: make userid be dynamic and not hardcoded
-  const userId = 4;
+  const userId = 1;
 
   return (
     <>
@@ -94,11 +94,7 @@ export default function LobbyPage() {
                 onSelect={() => handleCreatureSelect("3")}
                 selected={selectedCreatureId === "3"}
               />
-              <Button
-                onClick={handleStartArena}
-                type="submit"
-                disabled={!selectedCreatureId}
-              >
+              <Button type="submit" disabled={!selectedCreatureId}>
                 Start (1€)
               </Button>
             </form>

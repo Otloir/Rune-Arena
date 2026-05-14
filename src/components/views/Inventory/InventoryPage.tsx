@@ -2,7 +2,7 @@ import ItemList from "../../molecules/itemList/ItemList";
 import style from "./InventoryPage.module.css";
 
 interface InventoryPageProps {
-  userId?: number;
+  userId: number;
   isOpen: boolean;
   onClose: () => void;
 }
