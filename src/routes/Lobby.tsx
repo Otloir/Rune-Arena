@@ -1,7 +1,10 @@
+
+import LobbyPage from "../components/views/Lobby/LobbyPage";
+
 export default function Lobby() {
   return (
     <>
-      <h1>Lobby</h1>
+      <LobbyPage />
     </>
   );
 }
