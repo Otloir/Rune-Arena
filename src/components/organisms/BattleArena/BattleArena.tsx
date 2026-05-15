@@ -1,6 +1,6 @@
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
-import BattleControls from "../../molecules/BattleControls/BattleControls";
+import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
 import styles from "./BattleArena.module.css";
 import { useCreatureById } from "../../../hooks/useCreature";
@@ -88,7 +88,7 @@ export default function BattleArena({
 
         {/* Bottom controls panel */}
         <div className={styles.controlsWrapper}>
-          <BattleControls
+          <PlayerPanel
             creatureId={playerOneCreatureId}
             creatureLevel={playerOneLevel}
             onMoveSelect={handlePlayerMove}
