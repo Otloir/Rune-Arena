@@ -59,6 +59,25 @@
   overflow: hidden;
 }
 
+/* ── PVP opponent controls panel ── */
+.opponentControlsContainer {
+  flex: 0 0 auto;
+  padding: 0 1rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingState {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
 /* ── desktop only adjustments ── */
 @media (min-width: 1024px) {
   .arena {

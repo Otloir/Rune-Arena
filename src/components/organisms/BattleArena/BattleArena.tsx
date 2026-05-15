@@ -42,6 +42,14 @@ export default function BattleArena({
     mode,
   });
 
+  if (!playerOneCreature || !playerTwoCreature) {
+    return (
+      <section className={styles.arena}>
+        <div className={styles.loadingState}>Loading battle...</div>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
