@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
+  --text: #000000;
+  --text-h: #000000;
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
@@ -34,9 +34,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
+    --text: #000000;
     --text-h: #f3f4f6;
-    --bg: #16171d;
+    --bg: #faebd7;
+    ;
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
@@ -54,13 +55,13 @@
 
 body {
   margin: 0;
+  color: var(text);
 }
 
 h1,
 h2 {
   font-family: var(--heading);
   font-weight: 500;
-  color: var(--text-h);
 }
 
 h1 {

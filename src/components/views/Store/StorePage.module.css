@@ -1,0 +1,14 @@
+.storePage{
+  padding: 3rem 1rem 1rem 1rem;
+}
+
+.userShopInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.userShopInfo div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

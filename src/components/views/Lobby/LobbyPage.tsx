@@ -66,7 +66,6 @@ export default function LobbyPage() {
       <section className={styles.lobbyPage}>
         <section>
           <nav>
-            <Button> Back to Tivoli </Button>
             <Button> Info </Button>
           </nav>
           <div>
@@ -75,7 +74,7 @@ export default function LobbyPage() {
           </div>
           <nav>
             <Button onClick={navigateStore}> Store </Button>
-            <Button onClick={openInventory}> Inventory </Button>
+            <Button onClick={openInventory}> Bag </Button>
           </nav>
         </section>
         <section>
@@ -105,7 +104,7 @@ export default function LobbyPage() {
                 />
               </div>
               <Button type="submit" disabled={!selectedCreatureId}>
-                Start (1€)
+                Start
               </Button>
             </form>
           </section>
