@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Jacquard+12&family=Jersey+25&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap');
 
 :root {
   --text: #000000;
@@ -13,9 +14,14 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: "Google Sans Flex", 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+  --pixel: "Pixelify Sans", sans-serif;
+  --jersy: "Jersey 25", sans-serif;
+  --jacquard: "Jacquard 12", system-ui;
+  --press: "Press Start 2P", system-ui;
+  
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -59,9 +65,9 @@ body {
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
+h2, h3 {
+  font-family: var(--press);
+  font-weight: 400;
 }
 
 h1 {
@@ -85,18 +91,6 @@ h2 {
 p {
   margin: 0;
 }
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+span, p, button{
+  font-family: var(--press);
 }
