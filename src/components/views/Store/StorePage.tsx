@@ -46,7 +46,7 @@ export default function StorePage() {
       />
       <section id="top" className={styles.storePage}>
         <div className={styles.userShopInfo}>
-          <h1>Item Shop</h1>
+          <h1>Marketplace</h1>
           <div>
             {/* TODO: hardcoded, make dynamic and be based on the users money */}
             <div className={styles.userMoneyDisplay}>

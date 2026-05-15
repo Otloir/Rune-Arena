@@ -98,8 +98,7 @@ const Item: React.FC<ItemProps> = ({
           </span>
         </div>
         <p className={styles.rowProperty}>
-          {displayItem.propvalue}
-          {displayItem.property}
+          {displayItem.property} {displayItem.propvalue}
         </p>
         <p className={styles.rowDescription}>{displayItem.description}</p>
       </div>

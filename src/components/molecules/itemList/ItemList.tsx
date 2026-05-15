@@ -3,6 +3,7 @@ import Item from "../../atoms/Item/Item";
 import { getItems, getUserItems, buyItem } from "../../../api/item.database";
 import type { Item as ItemType } from "../../../types/item.types";
 import styles from "./ItemList.module.css";
+import PurchaseModal from "../PurchaseModal/PurchaseModal";
 
 interface ListProps {
   type?: "store" | "inventory";
@@ -14,8 +15,11 @@ export default function ItemList({ type, variant, userId }: ListProps) {
   const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [purchaseStatus, setPurchaseStatus] = useState<{
+    itemName: string;
+    status: "success" | "failure";
+  } | null>(null);
 
-  
   const handleBuy = async (item: ItemType) => {
     // userId is required to buy — if missing, do nothing
     if (userId == null) {
@@ -24,10 +28,14 @@ export default function ItemList({ type, variant, userId }: ListProps) {
     }
     const success = await buyItem(userId, item.id);
     if (success) {
-      alert(`${item.name} added to your inventory!`);
+      setPurchaseStatus({ itemName: item.name, status: "success" });
     } else {
-      alert("Purchase failed, please try again.");
+      setPurchaseStatus({ itemName: item.name, status: "failure" });
     }
+  };
+
+  const closePurchaseModal = () => {
+    setPurchaseStatus(null);
   };
 
   useEffect(() => {
@@ -74,6 +82,12 @@ export default function ItemList({ type, variant, userId }: ListProps) {
         type === "store" ? styles.shopItemList : styles.inventoryItemList
       }
     >
+      <PurchaseModal
+        itemName={purchaseStatus?.itemName || ""}
+        status={purchaseStatus?.status || null}
+        isOpen={purchaseStatus !== null}
+        onClose={closePurchaseModal}
+      />
       {items.map((item) => (
         <Item
           key={item.id}
