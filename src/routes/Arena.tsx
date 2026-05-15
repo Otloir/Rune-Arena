@@ -7,8 +7,8 @@
     return (
       <>
         <BattleArena
-          playerOne={1}
-          playerTwo={2}
+          playerOneId={1}
+          playerTwoId={2}
           playerOneCreatureId={1}
           playerTwoCreatureId={3}
         />

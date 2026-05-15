@@ -7,25 +7,25 @@ import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 
 interface BattleArenaProps {
-  playerOne: number;
-  playerTwo: number;
+  playerOneId: number;
+  playerTwoId: number;
   playerOneCreatureId: number;
   playerTwoCreatureId: number;
   mode?: "pve" | "pvp";
 }
 
 export default function BattleArena({
-  playerOne,
-  playerTwo,
+  playerOneId,
+  playerTwoId,
   playerOneCreatureId,
   playerTwoCreatureId,
   mode = "pve",
 }: BattleArenaProps) {
   const { creature: playerOneCreature, level: playerOneLevel } =
-    useCreatureById(playerOne, playerOneCreatureId);
+    useCreatureById(playerOneId, playerOneCreatureId);
 
   const { creature: playerTwoCreature, level: playerTwoLevel } =
-    useCreatureById(playerTwo, playerTwoCreatureId);
+    useCreatureById(playerTwoId, playerTwoCreatureId);
 
   const {
     playerHp,
@@ -58,12 +58,13 @@ export default function BattleArena({
         <div className={styles.opponentContainer}>
           <div className={styles.opponent}>
             <StatusPanel
-              userId={playerTwo}
+              userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               currentHp={opponentHp}
+              side="opponent"
             />
             <Creature
-              userId={playerTwo}
+              userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               role="opponent"
             />
@@ -74,12 +75,13 @@ export default function BattleArena({
         <div className={styles.playerContainer}>
           <div className={styles.player}>
             <StatusPanel
-              userId={playerOne}
+              userId={playerOneId}
               creatureId={playerOneCreatureId}
               currentHp={playerHp}
+              side="player"
             />
             <Creature
-              userId={playerOne}
+              userId={playerOneId}  
               creatureId={playerOneCreatureId}
               role="player"
             />

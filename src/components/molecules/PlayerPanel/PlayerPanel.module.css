@@ -4,13 +4,20 @@
   gap: 1rem;
   width: 100%;
   flex-shrink: 0;
+  /*
+   * 16rem — floor: enough to show the log + at least one row of move buttons
+   *         without the panel feeling cramped on small phones.
+   * 22rem — ceiling: stops the panel from eating too much vertical space on
+   *         taller phones; pairs with the 40vh floor in BattleArena so the
+   *         battlefield above always has room to breathe.
+   */
   min-height: 16rem;
   max-height: 22rem;
   padding: 1.25rem;
   box-sizing: border-box;
   background: #fff;
   border-radius: 1.25rem;
-  box-shadow: 0 -0.25rem 1.25rem rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -0.25rem 1.25rem rgba(0, 0, 0, 0.08); /* upward shadow to lift panel off the arena */
   overflow: visible;
 }
 
@@ -25,7 +32,12 @@
   padding: 0.75rem 0.875rem;
   overflow: hidden;
 
-  /* MOBILE: hard-lock log height */
+  /*
+   * 6.5rem — MOBILE: hard-locks the log to roughly 3–4 lines of text so it
+   *          never grows and squashes the move buttons below it. On desktop
+   *          (≥641px) this is overridden and the log expands to fill its flex
+   *          column instead.
+   */
   flex: 0 0 6.5rem;
   min-height: 6.5rem;
   max-height: 6.5rem;
@@ -68,6 +80,11 @@
   gap: 0.5rem;
   min-width: 0;
   flex: 1 1 auto;
+  /*
+   * 8rem — floor for the action panel: guarantees there's always enough
+   *        room to render the move grid and action buttons without clipping,
+   *        even when the log panel is at its locked 6.5rem height above.
+   */
   min-height: 8rem;
   overflow: visible;
 }
@@ -84,7 +101,7 @@
   flex: 1;
   min-height: 0;
   overflow: visible;
-  padding-bottom: 1rem;
+  padding-bottom: 1rem; /* gap between move grid and the action buttons row */
 }
 
 .actionButtons {
@@ -92,7 +109,7 @@
   flex-direction: row;
   gap: 0.625rem;
   flex-shrink: 0;
-  min-height: 2.75rem;
+  min-height: 2.75rem; /* tall enough for comfortable tap targets on mobile (≥44px) */
 }
 
 .actionBtn {
@@ -106,13 +123,17 @@
     flex-direction: row;
     border-radius: 1.25rem 1.25rem 0 0;
 
-    /* RESTORE YOUR DESKTOP SIZING */
+    /*
+     * min(40vh, 22rem) — matches the 40vh basis set on .controlsWrapper in
+     * BattleArena, but clamps to 22rem so the panel never exceeds the mobile
+     * max-height on very tall desktop windows.
+     */
     height: min(40vh, 22rem);
     max-height: min(40vh, 22rem);
   }
 
   .logPanel {
-    /* YOUR ORIGINAL DESKTOP BEHAVIOR */
+    /* On desktop the log expands freely to fill its flex column */
     height: 100%;
     max-height: unset;
     flex: 1;
@@ -126,6 +147,6 @@
   }
 
   .actionPanel {
-    flex: 1.2;
+    flex: 1.2; /* action side gets slightly more width than the log side */
   }
 }

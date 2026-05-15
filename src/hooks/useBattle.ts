@@ -44,7 +44,7 @@ async function fetchAllTypeEffectiveness() {
     .from("Type_Effectiveness")
     .select("attacker_id, defender_id, effectiveness");
 
-  if (error || !data) return new Map();
+  if (error || !data) return null; // null = fetch failed, distinct from an empty table
 
   const map = new Map<number, Map<number, number>>();
 
@@ -151,7 +151,10 @@ export function useBattle({
   const [playerTypeIds, setPlayerTypeIds] = useState<number[]>([]);
   const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
   const [effectivenessMap, setEffectivenessMap] =
-    useState<Map<number, Map<number, number>>>(new Map());
+    useState<Map<number, Map<number, number>> | null>(null);
+  // null  = not yet loaded (or failed to load)
+  // Map   = successfully loaded (may be empty if the table has no rows)
+  const [battleError, setBattleError] = useState<string | null>(null);
 
   // =========================
   // READY STATE
@@ -164,7 +167,7 @@ export function useBattle({
   const isReady =
     !!playerCreature &&
     !!opponentCreature &&
-    effectivenessMap.size > 0;
+    effectivenessMap !== null; // null means still loading or load failed
 
   const log = useCallback((msg: string) => {
     setBattleLog((p) => [...p, msg]);
@@ -199,6 +202,18 @@ export function useBattle({
   useEffect(() => {
     async function load() {
       const map = await fetchAllTypeEffectiveness();
+
+      if (map === null) {
+        // fetchAllTypeEffectiveness returns null only on a Supabase error —
+        // type effectiveness data is unavailable. Surface an error instead of
+        // leaving isReady permanently false with no feedback to the player.
+        console.error("[useBattle] Failed to load Type_Effectiveness table.");
+        setBattleError(
+          "Could not load battle data. Please check your connection and try again."
+        );
+        return;
+      }
+
       setEffectivenessMap(map);
     }
     load();
@@ -250,7 +265,7 @@ export function useBattle({
 
   const damageOpponent = useCallback(
     async (move: MoveWithType) => {
-      if (!isReady || !opponentCreature) return;
+      if (!isReady || !opponentCreature || !effectivenessMap) return;
 
       const attackerName = playerCreature?.name ?? "Your creature";
       const moveName = move.name;
@@ -286,7 +301,7 @@ export function useBattle({
 
   const damagePlayer = useCallback(
     async (move: MoveWithType) => {
-      if (!isReady || !playerCreature) return;
+      if (!isReady || !playerCreature || !effectivenessMap) return;
 
       const attackerName = opponentCreature?.name ?? "The opponent";
       const moveName = move.name;
@@ -416,6 +431,7 @@ export function useBattle({
     turnOwner,
     isProcessing,
     battleLog,
+    battleError,
     handlePlayerMove,
     handleOpponentMove,
   };

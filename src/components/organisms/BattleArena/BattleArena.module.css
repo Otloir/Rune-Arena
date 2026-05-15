@@ -41,7 +41,7 @@
 .opponentContainer {
   flex-direction: row-reverse;
   align-items: flex-end;
-  padding-top: 2rem;
+  padding-top: 2rem; /* breathing room above the opponent's sprite/status panel */
 }
 
 .playerContainer {
@@ -51,7 +51,15 @@
 
 /* ── controls safe zone ── */
 .controlsWrapper {
-  flex: 0 0 40vh;     /* instead of flex-basis */
+  /*
+   * 40vh — takes up 40% of the viewport height so the battle field above
+   *         gets the remaining 60%; feels balanced on most phone screens.
+   * 18rem — floor: prevents the panel from collapsing too small on short
+   *         viewports (e.g. landscape phones) where 40vh would be tiny.
+   * 26rem — ceiling: stops the panel from dominating on tall viewports
+   *         (e.g. large tablets in portrait) where 40vh would be too large.
+   */
+  flex: 0 0 40vh;
   height: 40vh;
   min-height: 18rem;
   max-height: 26rem;
