@@ -27,7 +27,7 @@
 
 /* ensure long names don't break layout */
 .statusBarInfo span {
-  min-width: 0;
+  /*min-width: 0; -- This line can seemingly be ignored, reenable if layout breaks*/
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

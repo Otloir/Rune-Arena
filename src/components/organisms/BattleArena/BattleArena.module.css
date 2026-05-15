@@ -11,7 +11,8 @@
   display: flex;
   flex-direction: column;
 
-  min-height: 0;
+  /*safeguard for flex issues, kept as backup for now*/
+  /*min-height: 0;*/
 
   /*  prevents full-page reflow compression */
   height: 100%;

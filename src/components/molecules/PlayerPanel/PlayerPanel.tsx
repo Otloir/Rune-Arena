@@ -73,7 +73,7 @@ export default function PlayerPanel({
             variant="neutral"
             onClick={() => {
               if (!playerCreature) return;
-              alert(
+              console.log(
                 `${playerCreature.name}\n` +
                 `HP: ${playerCreature.hp}\n` +
                 `Defense: ${playerCreature.defense}\n` +
