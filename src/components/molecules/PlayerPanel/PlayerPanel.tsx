@@ -31,7 +31,11 @@ export default function PlayerPanel({
   }, [battleLog]);
 
   return (
-    <div className={styles.controlsPanel}>
+    <div
+      className={styles.controlsPanel}
+      aria-label="Battle controls"
+      role="region"
+    >
 
       {/* Left: battle log */}
       <div className={styles.logPanel}>
@@ -59,13 +63,18 @@ export default function PlayerPanel({
             disabled={disabled}
           />
         </div>
-        <div className={styles.actionButtons}>
+        <div
+          className={styles.actionButtons}
+          role="group"
+          aria-label="Battle actions"
+        >
           <Button
             variant="action"
             color="#a855f7"
             onClick={() => console.log("Use item — placeholder")}
             disabled={disabled}
             className={styles.actionBtn}
+            aria-label="Use item (not yet available)"
           >
             Use Item
           </Button>
@@ -82,6 +91,11 @@ export default function PlayerPanel({
               );
             }}
             className={styles.actionBtn}
+            aria-label={
+              playerCreature
+                ? `View stats for ${playerCreature.name}`
+                : "View creature stats"
+            }
           >
             View Stats
           </Button>

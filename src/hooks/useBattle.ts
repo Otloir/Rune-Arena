@@ -154,15 +154,17 @@ export function useBattle({
     useState<Map<number, Map<number, number>>>(new Map());
 
   // =========================
-  // READY STATE (IMPORTANT FIX)
+  // READY STATE
   // =========================
 
+  // NOTE: playerTypeIds/opponentTypeIds may be empty if a creature has no
+  // types in the database. We warn about this below when types are loaded,
+  // and treat a typeless creature as valid (battle can still proceed using
+  // a neutral ×1 multiplier for all damage calculations).
   const isReady =
     !!playerCreature &&
     !!opponentCreature &&
-    effectivenessMap.size > 0 &&
-    playerTypeIds.length > 0 &&
-    opponentTypeIds.length > 0;
+    effectivenessMap.size > 0;
 
   const log = useCallback((msg: string) => {
     setBattleLog((p) => [...p, msg]);
@@ -208,11 +210,27 @@ export function useBattle({
 
   useEffect(() => {
     if (playerCreature?.id) {
-      fetchCreatureTypeIds(Number(playerCreature.id)).then(setPlayerTypeIds);
+      fetchCreatureTypeIds(Number(playerCreature.id)).then((ids) => {
+        if (ids.length === 0) {
+          console.warn(
+            `[useBattle] Player creature "${playerCreature.name}" (id: ${playerCreature.id}) ` +
+            `has no types in the database. Damage multipliers will default to ×1.`
+          );
+        }
+        setPlayerTypeIds(ids);
+      });
     }
 
     if (opponentCreature?.id) {
-      fetchCreatureTypeIds(Number(opponentCreature.id)).then(setOpponentTypeIds);
+      fetchCreatureTypeIds(Number(opponentCreature.id)).then((ids) => {
+        if (ids.length === 0) {
+          console.warn(
+            `[useBattle] Opponent creature "${opponentCreature.name}" (id: ${opponentCreature.id}) ` +
+            `has no types in the database. Damage multipliers will default to ×1.`
+          );
+        }
+        setOpponentTypeIds(ids);
+      });
     }
   }, [playerCreature, opponentCreature]);
 
@@ -234,8 +252,11 @@ export function useBattle({
     async (move: MoveWithType) => {
       if (!isReady || !opponentCreature) return;
 
+      const attackerName = playerCreature?.name ?? "Your creature";
+      const moveName = move.name;
+
       if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
-        log(`${playerCreature?.name} used ${move.name}, but it missed!`);
+        log(`${attackerName} used ${moveName}, but it missed!`);
         return;
       }
 
@@ -250,7 +271,7 @@ export function useBattle({
         Math.max(0, (p ?? opponentCreature.hp) - result.damage)
       );
 
-        log(`${playerCreature?.name} used ${move.name} for ${result.damage} damage!`);
+      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
 
       if (result.message) {
         log(result.message);
@@ -267,8 +288,11 @@ export function useBattle({
     async (move: MoveWithType) => {
       if (!isReady || !playerCreature) return;
 
+      const attackerName = opponentCreature?.name ?? "The opponent";
+      const moveName = move.name;
+
       if (!attackHits(move.chance ?? 100, playerCreature.evade ?? 0)) {
-        log(`${opponentCreature?.name} used ${move.name}, but it missed!`);
+        log(`${attackerName} used ${moveName}, but it missed!`);
         return;
       }
 
@@ -281,9 +305,9 @@ export function useBattle({
 
       setPlayerHp((p) =>
         Math.max(0, (p ?? playerCreature.hp) - result.damage)
-      );    
+      );
 
-      log(`${opponentCreature?.name} used ${move.name} for ${result.damage} damage!`);
+      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
 
       if (result.message) {
         log(result.message);
@@ -299,7 +323,7 @@ export function useBattle({
   const executeOpponentTurn = useCallback(
     async (ids: number[]) => {
       if (!ids.length) {
-        log(`${opponentCreature?.name} has no moves!`);
+        log(`${opponentCreature?.name ?? "The opponent"} has no moves!`);
         setTurnOwner("player");
         return;
       }
@@ -321,7 +345,7 @@ export function useBattle({
   );
 
   // =========================
-  // AUTO NPC TURN (FIXED GATE)
+  // AUTO NPC TURN
   // =========================
 
   useEffect(() => {
@@ -330,7 +354,7 @@ export function useBattle({
       turnOwner !== "opponent" ||
       isProcessing ||
       !opponentMoveIds.length ||
-      !isReady   
+      !isReady
     ) return;
 
     const run = async () => {
@@ -367,7 +391,7 @@ export function useBattle({
   );
 
   // =========================
-  // PVP MOVE (RESTORED)
+  // PVP MOVE
   // =========================
 
   const handleOpponentMove = useCallback(

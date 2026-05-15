@@ -45,7 +45,7 @@ export default function BattleArena({
   if (!playerOneCreature || !playerTwoCreature) {
     return (
       <section className={styles.arena}>
-        <div className={styles.loadingState}>Loading battle...</div>
+        <div className={styles.loadingState} role="status" aria-live="polite" aria-label="Loading battle...">Loading battle...</div>
       </section>
     );
   }

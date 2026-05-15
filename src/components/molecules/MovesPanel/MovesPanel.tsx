@@ -5,7 +5,7 @@ import { useCreatureMoves } from "../../../hooks/useCreatureMoves";
 
 interface MovesPanelProps {
   creatureId: number;
-  creatureLevel?: number;
+  creatureLevel?: number; //When creatureLevel is undefined, all moves load
   onMoveSelect: (move: MoveWithType) => void;
   disabled?: boolean;
   shadow?: boolean;
@@ -62,7 +62,7 @@ export default function MovesPanel({
             className={styles.emptyMoveSlot}
             aria-label="Empty move slot"
           >
-            No Move
+            No Move available
           </button>
         ),
       )}
