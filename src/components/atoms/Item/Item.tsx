@@ -25,15 +25,12 @@ const Item: React.FC<ItemProps> = ({
 
   const displayItem = item || fetchedItem;
 
-  // loading / error only when fetching
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
     if (error) return <div role="alert">{error}</div>;
   }
 
   if (!displayItem) return <div role="status">No item found.</div>;
-
-  const description = `Increases ${displayItem.property} by ${displayItem.propvalue}`;
 
   if (variant === "card") {
     return (
@@ -51,7 +48,7 @@ const Item: React.FC<ItemProps> = ({
 
         <h3 className={styles.cardName}>{displayItem.name}</h3>
 
-        <p className={styles.cardDescription}>{description}</p>
+        <p className={styles.cardDescription}>{displayItem.description}</p>
 
         <div className={styles.cardFooter}>
           <span className={styles.price}>
@@ -92,15 +89,13 @@ const Item: React.FC<ItemProps> = ({
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
 
-          <span
-            className={styles.rowQuantity}
-            aria-label="Quantity owned"
-          >
-            ×1
+          {/* Show quantity if available, otherwise default to 1 */}
+          <span className={styles.rowQuantity} aria-label="Quantity owned">
+            × {displayItem.quantity ?? 1}
           </span>
         </div>
 
-        <p className={styles.rowDescription}>{description}</p>
+        <p className={styles.rowDescription}>{displayItem.description}</p>
       </div>
     </article>
   );

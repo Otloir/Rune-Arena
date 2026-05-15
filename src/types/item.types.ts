@@ -7,4 +7,5 @@ export type Item = {
   description: string;
   price: number;
   img: string;
+  quantity?: number; // how many the user owns — only set for inventory items
 };

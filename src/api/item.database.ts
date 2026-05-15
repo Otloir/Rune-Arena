@@ -17,7 +17,7 @@ export async function getItems() {
   return data;
 }
 
-// Get items a specific user has
+// Get items a specific user has, grouped by item so duplicates show as quantity
 export async function getUserItems(userId: number) {
   const { data, error } = await supabase
     .from("User_Items")
@@ -30,13 +30,29 @@ export async function getUserItems(userId: number) {
     return null;
   }
   if (!data) return [];
-  const items = data
+
+  // Flatten joined rows into a flat list of items
+  const flatItems = data
     .map((row: UserItemsRow) => {
       const item = Array.isArray(row.item) ? row.item[0] : row.item;
       return item;
     })
     .filter((item): item is ItemType => Boolean(item));
-  return items;
+
+  // Group items by id and count how many the user has of each
+  const grouped = flatItems.reduce<Record<number, ItemType>>((acc, item) => {
+    if (acc[item.id]) {
+      // Item already seen — increment quantity
+      acc[item.id].quantity = (acc[item.id].quantity ?? 1) + 1;
+    } else {
+      // First time seeing this item — add it with quantity 1
+      acc[item.id] = { ...item, quantity: 1 };
+    }
+    return acc;
+  }, {});
+
+  // Convert the grouped object back into an array
+  return Object.values(grouped);
 }
 
 // Add an item to a user's inventory
