@@ -6,17 +6,18 @@ import InventoryPage from "../Inventory/InventoryPage";
 import styles from "./LobbyPage.module.css";
 
 export default function LobbyPage() {
+  // TODO: make userId dynamic when auth is in place
+  const userId: number = 1;
+
+  const navigate = useNavigate();
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
   );
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const navigate = useNavigate();
 
   // Disable body scroll when inventory is open
   useEffect(() => {
-    if (!isInventoryOpen) {
-      return;
-    }
+    if (!isInventoryOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -29,32 +30,21 @@ export default function LobbyPage() {
   };
 
   const handleStartArena = () => {
-    if (selectedCreatureId) {
-      navigate("/arena", {
-        state: {  
-          playerOneUserId: userId,
-          playerOneCreatureId: selectedCreatureId,
-        },
-      });
-    }
-  };
-
-  const navigateStore = () => {
-    navigate("/store", {
-      state: { userId }, // ← pass userId in navigation state
+    if (!selectedCreatureId) return;
+    navigate("/arena", {
+      state: {
+        playerOneUserId: userId,
+        playerOneCreatureId: selectedCreatureId,
+      },
     });
   };
 
-  const openInventory = () => {
-    setIsInventoryOpen(true);
+  const navigateStore = () => {
+    navigate("/store", { state: { userId } });
   };
 
-  const closeInventory = () => {
-    setIsInventoryOpen(false);
-  };
-
-  //TODO: make userid be dynamic and not hardcoded
-  const userId = 1;
+  const openInventory = () => setIsInventoryOpen(true);
+  const closeInventory = () => setIsInventoryOpen(false);
 
   return (
     <>
@@ -66,17 +56,18 @@ export default function LobbyPage() {
       <section className={styles.lobbyPage}>
         <section>
           <nav>
-            <Button> Info </Button>
+            <Button>Info</Button>
           </nav>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
           </div>
           <nav>
-            <Button onClick={navigateStore}> Store </Button>
-            <Button onClick={openInventory}> Bag </Button>
+            <Button onClick={navigateStore}>Store</Button>
+            <Button onClick={openInventory}>Bag</Button>
           </nav>
         </section>
+
         <section>
           <section className={styles.creatureSelectContainer}>
             <h2>Select Your Creature</h2>

@@ -1,41 +1,38 @@
-import Button from "../../atoms/buttons/Button";
 import { useState, useEffect } from "react";
-import ItemList from "../../molecules/itemList/ItemList";
 import { useNavigate, useLocation } from "react-router-dom";
+import Button from "../../atoms/buttons/Button";
+import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
 import styles from "./StorePage.module.css";
 
 export default function StorePage() {
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  // All hooks at the top
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+
+  // Read userId passed from LobbyPage via navigation state
+  const userId: number | undefined = location.state?.userId;
 
   // Disable body scroll when inventory is open
   useEffect(() => {
-    if (!isInventoryOpen) {
-      return;
-    }
+    if (!isInventoryOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
   }, [isInventoryOpen]);
-  const location = useLocation();
 
-  // Read userId passed from LobbyPage via navigation state
-  const userId = location.state?.userId;
-
-  const navigateLobby = () => {
+  // Redirect to lobby if userId is missing (e.g. navigated here directly)
+  if (!userId) {
     navigate("/");
-  };
+    return null;
+  }
 
-  const openInventory = () => {
-    setIsInventoryOpen(true);
-  };
-
-  const closeInventory = () => {
-    setIsInventoryOpen(false);
-  };
+  const navigateLobby = () => navigate("/");
+  const openInventory = () => setIsInventoryOpen(true);
+  const closeInventory = () => setIsInventoryOpen(false);
 
   return (
     <>
@@ -48,13 +45,13 @@ export default function StorePage() {
         <div className={styles.userShopInfo}>
           <h1>Marketplace</h1>
           <div>
-            {/* TODO: hardcoded, make dynamic and be based on the users money */}
+            {/* TODO: make dynamic based on the user's actual balance */}
             <div className={styles.userMoneyDisplay}>
               <span>X€</span>
             </div>
             <Button
               onClick={openInventory}
-              backgroundColor={"#DBEAFE"}
+              backgroundColor="#DBEAFE"
               textColor="black"
               size="sm"
             >
@@ -62,7 +59,8 @@ export default function StorePage() {
             </Button>
           </div>
         </div>
-        <Button onClick={navigateLobby}> Back to select </Button>
+
+        <Button onClick={navigateLobby}>Back to select</Button>
         <ItemList type="store" variant="card" userId={userId} />
         <Button
           onClick={() =>
@@ -71,8 +69,7 @@ export default function StorePage() {
               ?.scrollIntoView({ behavior: "smooth" })
           }
         >
-          {" "}
-          Back to top{" "}
+          Back to top
         </Button>
       </section>
     </>
