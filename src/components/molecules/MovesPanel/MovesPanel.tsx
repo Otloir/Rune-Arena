@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import MoveButton from "../../atoms/buttons/MoveButton";
 import type { MoveWithType } from "../../../types/move.types";
