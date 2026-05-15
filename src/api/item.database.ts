@@ -38,3 +38,15 @@ export async function getUserItems(userId: number) {
     .filter((item): item is ItemType => Boolean(item));
   return items;
 }
+
+// Add an item to a user's inventory
+export async function buyItem(userId: number, itemId: number) {
+  const { error } = await supabase
+    .from("User_Items")
+    .insert({ user_id: userId, item_id: itemId });
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return false;
+  }
+  return true;
+}

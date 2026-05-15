@@ -31,7 +31,7 @@ export default function LobbyPage() {
   const handleStartArena = () => {
     if (selectedCreatureId) {
       navigate("/arena", {
-        state: {
+        state: {  
           playerOneUserId: userId,
           playerOneCreatureId: selectedCreatureId,
         },
@@ -40,7 +40,9 @@ export default function LobbyPage() {
   };
 
   const navigateStore = () => {
-    navigate("/store");
+    navigate("/store", {
+      state: { userId }, // ← pass userId in navigation state
+    });
   };
 
   const openInventory = () => {

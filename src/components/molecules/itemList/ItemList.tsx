@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Item from "../../atoms/Item/Item";
-import { getItems, getUserItems } from "../../../api/item.database";
+import { getItems, getUserItems, buyItem } from "../../../api/item.database";
 import type { Item as ItemType } from "../../../types/item.types";
 import styles from "./ItemList.module.css";
 
@@ -9,14 +9,25 @@ interface ListProps {
   variant: "card" | "row";
   userId?: number;
 }
+
 export default function ItemList({ type, variant, userId }: ListProps) {
   const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const handleBuy = (item: ItemType) => {
-    console.log("Buying:", item.name);
-    // TODO: Implement purchase logic 
+  
+  const handleBuy = async (item: ItemType) => {
+    // userId is required to buy — if missing, do nothing
+    if (userId == null) {
+      console.error("Cannot buy item: no userId provided");
+      return;
+    }
+    const success = await buyItem(userId, item.id);
+    if (success) {
+      alert(`${item.name} added to your inventory!`);
+    } else {
+      alert("Purchase failed, please try again.");
+    }
   };
 
   useEffect(() => {
