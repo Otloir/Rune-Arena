@@ -49,10 +49,16 @@ export default function StorePage() {
           <h1>Item Shop</h1>
           <div>
             {/* TODO: hardcoded, make dynamic and be based on the users money */}
-            <span>X€</span>
-            <Button onClick={openInventory} backgroundColor={"#DBEAFE"} textColor="black">
-              {" "}
-              Bag{" "}
+            <div className={styles.userMoneyDisplay}>
+              <span>X€</span>
+            </div>
+            <Button
+              onClick={openInventory}
+              backgroundColor={"#DBEAFE"}
+              textColor="black"
+              size="sm"
+            >
+              Bag
             </Button>
           </div>
         </div>

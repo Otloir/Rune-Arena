@@ -48,6 +48,10 @@ const Item: React.FC<ItemProps> = ({
 
         <h3 className={styles.cardName}>{displayItem.name}</h3>
 
+        <p className={styles.cardProperty}>
+          {displayItem.property} {displayItem.propvalue}
+        </p>
+
         <p className={styles.cardDescription}>{displayItem.description}</p>
 
         <div className={styles.cardFooter}>
@@ -88,13 +92,15 @@ const Item: React.FC<ItemProps> = ({
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
-
           {/* Show quantity if available, otherwise default to 1 */}
           <span className={styles.rowQuantity} aria-label="Quantity owned">
             × {displayItem.quantity ?? 1}
           </span>
         </div>
-
+        <p className={styles.rowProperty}>
+          {displayItem.propvalue}
+          {displayItem.property}
+        </p>
         <p className={styles.rowDescription}>{displayItem.description}</p>
       </div>
     </article>
