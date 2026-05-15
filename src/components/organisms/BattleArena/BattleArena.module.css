@@ -13,7 +13,7 @@
 
   min-height: 0;
 
-  /* 🔥 prevents full-page reflow compression */
+  /*  prevents full-page reflow compression */
   height: 100%;
 }
 
@@ -31,7 +31,7 @@
 .playerContainer,
 .opponentContainer {
   flex: 1 1 auto;
-  min-height: 0; /* 🔥 critical fix */
+  min-height: 0; /* critical fix */
   display: flex;
   
 }

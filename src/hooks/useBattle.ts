@@ -330,7 +330,7 @@ export function useBattle({
       turnOwner !== "opponent" ||
       isProcessing ||
       !opponentMoveIds.length ||
-      !isReady   // 🔥 THIS is the critical fix
+      !isReady   
     ) return;
 
     const run = async () => {
