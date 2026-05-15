@@ -23,10 +23,12 @@
   background: #f5f6fa;
   border-radius: 0.875rem;
   padding: 0.75rem 0.875rem;
-  flex: 0 1 auto;
-  min-height: 0;
-  max-height: 9rem;
   overflow: hidden;
+
+  /* MOBILE: hard-lock log height */
+  flex: 0 0 6.5rem;
+  min-height: 6.5rem;
+  max-height: 6.5rem;
 }
 
 .logTitle {
@@ -47,7 +49,9 @@
   scrollbar-width: none;
 }
 
-.logScroll::-webkit-scrollbar { display: none; }
+.logScroll::-webkit-scrollbar {
+  display: none;
+}
 
 .logEntry {
   margin: 0;
@@ -95,17 +99,20 @@
   min-width: 0;
 }
 
-/* ── Tablet + Desktop ── */
+/* ── TABLET + DESKTOP ── */
 @media (min-width: 641px) {
   .controlsPanel {
-    flex-direction: row;           /* log left, moves right */
+    flex-direction: row;
     border-radius: 1.25rem 1.25rem 0 0;
-    height: min(40vh, 22rem);      /* bounded — scroll kicks in above this */
+
+    /* RESTORE YOUR DESKTOP SIZING */
+    height: min(40vh, 22rem);
     max-height: min(40vh, 22rem);
   }
 
   .logPanel {
-    height: 100%;                 /* keep the log panel bounded by the controls panel */
+    /* YOUR ORIGINAL DESKTOP BEHAVIOR */
+    height: 100%;
     max-height: unset;
     flex: 1;
     min-height: 0;
