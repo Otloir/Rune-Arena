@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import MovesPanel from "../MovesPanel/MovesPanel";
 import Button from "../../atoms/buttons/Button";
-import styles from "./BattleControls.module.css";
+import styles from "./PlayerPanel.module.css";
 import type { MoveWithType } from "../../../types/move.types";
 import type { Creature } from "../../../types/creature.types";
 
-interface BattleControlsProps {
+interface PlayerPanelProps {
   creatureId: number;
   creatureLevel: number;
   onMoveSelect: (move: MoveWithType) => void;
@@ -14,14 +14,14 @@ interface BattleControlsProps {
   playerCreature: Creature | null;
 }
 
-export default function BattleControls({
+export default function PlayerPanel({
   creatureId,
   creatureLevel,
   onMoveSelect,
   disabled,
   battleLog,
   playerCreature,
-}: BattleControlsProps) {
+}: PlayerPanelProps) {
   const logScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
