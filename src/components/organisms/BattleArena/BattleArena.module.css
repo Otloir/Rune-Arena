@@ -10,7 +10,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+
   min-height: 0;
+
+  /* 🔥 prevents full-page reflow compression */
+  height: 100%;
 }
 
 /* ── KEEP EXISTING LAYOUT (important) ── */
@@ -26,9 +30,10 @@
 /* ── FIX: prevent vertical stretching ── */
 .playerContainer,
 .opponentContainer {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0; /* 🔥 critical fix */
   display: flex;
+  
 }
 
 /* preserve your alignment exactly */
@@ -45,7 +50,11 @@
 
 /* ── controls safe zone ── */
 .controlsWrapper {
-  flex-shrink: 0;
+  flex: 0 0 40vh;     /* instead of flex-basis */
+  height: 40vh;
+  min-height: 18rem;
+  max-height: 26rem;
+
   padding: 0 1rem;
   overflow: hidden;
 }

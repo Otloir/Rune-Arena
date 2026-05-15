@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import MovesPanel from "../MovesPanel/MovesPanel";
 import Button from "../../atoms/buttons/Button";
 import styles from "./BattleControls.module.css";
@@ -21,13 +22,26 @@ export default function BattleControls({
   battleLog,
   playerCreature,
 }: BattleControlsProps) {
+  const logScrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const node = logScrollRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [battleLog]);
+
   return (
     <div className={styles.controlsPanel}>
 
       {/* Left: battle log */}
       <div className={styles.logPanel}>
         <h3 className={styles.logTitle}>Battle Log</h3>
-        <div className={styles.logScroll} aria-live="polite" aria-label="Battle log">
+        <div
+          ref={logScrollRef}
+          className={styles.logScroll}
+          aria-live="polite"
+          aria-label="Battle log"
+        >
           {battleLog.map((entry, i) => (
             <p key={i} className={styles.logEntry}>{entry}</p>
           ))}
