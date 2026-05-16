@@ -77,16 +77,21 @@ const Button: React.FC<ButtonProps> = ({
   style,
   ...nativeProps
 }) => {
-  if (backgroundColor && !/^#[0-9a-fA-F]{6}$/.test(backgroundColor)) {
+  const isValidBackgroundColor =
+    !backgroundColor || /^#[0-9a-fA-F]{6}$/.test(backgroundColor);
+
+  if (backgroundColor && !isValidBackgroundColor) {
     console.warn(
       `Button: invalid color "${backgroundColor}" — must be a 6-digit hex e.g. #ff0000`,
     );
   }
 
-  const customStyle: React.CSSProperties | undefined = backgroundColor
+  const useCustomColor = Boolean(backgroundColor && isValidBackgroundColor);
+
+  const customStyle: React.CSSProperties | undefined = useCustomColor
     ? ({
-        "--btn-custom-bg": backgroundColor,
-        "--btn-custom-border": darkenHex(backgroundColor),
+        "--btn-custom-bg": backgroundColor!,
+        "--btn-custom-border": darkenHex(backgroundColor!),
       } as React.CSSProperties)
     : undefined;
 
@@ -103,7 +108,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       className={[
         styles.btn,
-        backgroundColor ? styles.customColor : styles[variant],
+        useCustomColor ? styles.customColor : styles[variant],
         styles[size],
         styles[shape],
         shadow ? styles.withShadow : "",

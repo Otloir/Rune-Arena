@@ -16,15 +16,12 @@ export default function PurchaseModal({
   if (!isOpen || !status) return null;
 
   const isSuccess = status === "success";
+  const modalClassName = `${styles.modal}${status === "failure" ? ` ${styles.failure}` : ""}`;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div
-        className={`${styles.modal} ${styles[status]}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={modalClassName} onClick={(e) => e.stopPropagation()}>
         <div className={styles.content}>
-          <div className={styles.icon}>{isSuccess ? "✓" : "✕"}</div>
           <h2 className={styles.title}>
             {isSuccess ? "Purchase Successful!" : "Purchase Failed"}
           </h2>
