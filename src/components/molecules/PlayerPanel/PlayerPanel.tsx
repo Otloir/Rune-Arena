@@ -82,7 +82,7 @@ export default function PlayerPanel({
             variant="neutral"
             onClick={() => {
               if (!playerCreature) return;
-              console.log(
+              console.log( //PLACEHOLDER CONSOLE LOG, WILL BE REMOVED WHEN VIEW STATS IS IMPLEMENTED
                 `${playerCreature.name}\n` +
                 `HP: ${playerCreature.hp}\n` +
                 `Defense: ${playerCreature.defense}\n` +

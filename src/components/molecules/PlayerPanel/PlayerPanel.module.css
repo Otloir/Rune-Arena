@@ -31,16 +31,7 @@
   border-radius: 0.875rem;
   padding: 0.75rem 0.875rem;
   overflow: hidden;
-
-  /*
-   * 6.5rem — MOBILE: hard-locks the log to roughly 3–4 lines of text so it
-   *          never grows and squashes the move buttons below it. On desktop
-   *          (≥641px) this is overridden and the log expands to fill its flex
-   *          column instead.
-   */
-  flex: 0 0 6.5rem;
-  min-height: 6.5rem;
-  max-height: 6.5rem;
+  /* Height is set per breakpoint below — see mobile and tablet/desktop media queries */
 }
 
 .logTitle {
@@ -115,6 +106,19 @@
 .actionBtn {
   flex: 1;
   min-width: 0;
+}
+
+/* ── MOBILE ONLY ── */
+@media (max-width: 640px) {
+  .logPanel {
+    /*
+     * 6.5rem — hard-locks the log to roughly 3–4 lines of text so it never
+     *          grows and squashes the move buttons below it on small screens.
+     */
+    flex: 0 0 6.5rem;
+    min-height: 6.5rem;
+    max-height: 6.5rem;
+  }
 }
 
 /* ── TABLET + DESKTOP ── */

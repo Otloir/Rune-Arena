@@ -1,31 +1,42 @@
 .moveBtn {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   border: none;
-  padding: 12px 16px;
+  padding: 0.75rem 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  /* Fixed height keeps all buttons uniform regardless of name length */
+  height: 3.625rem;
   transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
 }
 
-.moveBtn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
+.moveBtn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-0.125rem); }
 .moveBtn:active:not(:disabled) { transform: scale(0.97); }
 .moveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ── Shapes ── */
-.rounded { border-radius: 12px; }
-.pill    { border-radius: 99px; }
+.rounded { border-radius: 0.75rem; }
+.pill    { border-radius: 99rem; }
 
 /* ── Shadow ── */
-.withShadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important; }
+.withShadow { box-shadow: 0 0.25rem 0.875rem rgba(0, 0, 0, 0.25) !important; }
 
 /* ── Layout ── */
-.left  { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.right { display: flex; flex-direction: column; align-items: flex-end;   gap: 3px; }
+.left  { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; min-width: 0; }
+.right { display: flex; flex-direction: column; align-items: flex-end;   gap: 0.1875rem; flex-shrink: 0; }
 
-.moveName { font-size: 0.95rem; font-weight: 700; color: #fff; }
+.moveName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  /* Truncate names that are too long rather than stretching the button */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
 .typeTag  {
   font-size: 0.65rem;
   font-weight: 700;
@@ -33,24 +44,24 @@
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.25);
   color: #fff;
-  padding: 2px 7px;
-  border-radius: 99px;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 99rem;
 }
 .moveStat { font-size: 0.78rem; font-weight: 600; color: rgba(255, 255, 255, 0.85); }
 
 /* ── Type colors — prefixed to avoid collisions ── */
-.typeFire     { background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 3px 0 #b91c1c; }
-.typeWater    { background: linear-gradient(135deg, #38bdf8, #3b82f6); box-shadow: 0 3px 0 #1d4ed8; }
-.typeGrass    { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 3px 0 #14532d; }
-.typeIce      { background: linear-gradient(135deg, #a5f3fc, #0891b2); box-shadow: 0 3px 0 #0e7490; }
-.typeRock     { background: linear-gradient(135deg, #a8a29e, #57534e); box-shadow: 0 3px 0 #292524; }
-.typeElectric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 3px 0 #92400e; }
-.typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 3px 0 #44403c; }
+.typeFire     { background: linear-gradient(135deg, #f97316, #ef4444); box-shadow: 0 0.1875rem 0 #b91c1c; }
+.typeWater    { background: linear-gradient(135deg, #38bdf8, #3b82f6); box-shadow: 0 0.1875rem 0 #1d4ed8; }
+.typeGrass    { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 0.1875rem 0 #14532d; }
+.typeIce      { background: linear-gradient(135deg, #a5f3fc, #0891b2); box-shadow: 0 0.1875rem 0 #0e7490; }
+.typeRock     { background: linear-gradient(135deg, #a8a29e, #57534e); box-shadow: 0 0.1875rem 0 #292524; }
+.typeElectric { background: linear-gradient(135deg, #fde047, #ca8a04); box-shadow: 0 0.1875rem 0 #92400e; }
+.typeNormal   { background: linear-gradient(135deg, #a8a29e, #78716c); box-shadow: 0 0.1875rem 0 #44403c; }
 
 /* ── LoadingPlaceholder ── */
 .loadingPlaceholder {
-  height: 58px;
-  border-radius: 12px;
+  height: 3.625rem;
+  border-radius: 0.75rem;
   background: linear-gradient(90deg, #e2e5f0 25%, #eceff5 50%, #e2e5f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
@@ -58,12 +69,13 @@
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
-@media (max-width: 1280px) {
+@media (max-width: 80rem) {
   .moveBtn {
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
+    height: 3.25rem;
   }
 
   .moveName { font-size: 0.85rem; }
-  .typeTag  { font-size: 0.6rem; padding: 1px 5px; }
+  .typeTag  { font-size: 0.6rem; padding: 0.0625rem 0.3125rem; }
   .moveStat { font-size: 0.72rem; }
 }
