@@ -54,16 +54,6 @@
   gap: 16px;
 }
 
-@keyframes scaleIn {
-  from {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
 .title {
   margin: 0;
