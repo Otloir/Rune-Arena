@@ -36,6 +36,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .rowName {
@@ -54,6 +55,13 @@
   margin: 0;
   font-size: 0.875rem;
   color: #6b7399;
+}
+
+.rowProperty {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4f5678;
 }
 
 /* ════════════════════════
@@ -91,12 +99,19 @@
   margin: 0 0 20px;
 }
 
+.cardProperty {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4f5678;
+}
+
 .cardFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-} 
+}
 
 .price {
   display: flex;

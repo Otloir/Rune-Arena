@@ -1,5 +1,4 @@
 .btn {
-  font-family: 'Nunito', sans-serif;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -7,34 +6,69 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease, filter 0.15s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    filter 0.15s ease;
   position: relative;
   white-space: nowrap;
   user-select: none;
 }
 
-.btn:active:not(:disabled) { transform: scale(0.96); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 /* ── Sizes ── */
-.sm { font-size: 0.8rem;  padding: 6px 14px; }
-.md { font-size: 0.95rem; padding: 10px 22px; }
-.lg { font-size: 1.1rem;  padding: 14px 32px; }
+.sm {
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+.md {
+  font-size: 0.95rem;
+  padding: 10px 22px;
+}
+.lg {
+  font-size: 1.1rem;
+  padding: 14px 32px;
+}
 
 /* ── Shapes ── */
-.rounded { border-radius: 12px; }
-.pill    { border-radius: 99px; }
-.circle  {
+.rounded {
+  border-radius: 12px;
+}
+.pill {
+  border-radius: 99px;
+}
+.circle {
   border-radius: 50%;
   padding: 0;
 }
-.circle.sm { width: 32px;  height: 32px; }
-.circle.md { width: 44px;  height: 44px; }
-.circle.lg { width: 58px;  height: 58px; }
+.circle.sm {
+  width: 32px;
+  height: 32px;
+}
+.circle.md {
+  width: 44px;
+  height: 44px;
+}
+.circle.lg {
+  width: 58px;
+  height: 58px;
+}
 
 /* ── Shadow ── */
-.withShadow { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
-.withShadow:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22); }
+.withShadow {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.withShadow:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
 
 /* ── Variants ── */
 .action {
@@ -80,7 +114,7 @@
 /* ── Custom color ── */
 .customColor {
   background: var(--btn-custom-bg);
-  color: #fff;
+  color: var(--btn-custom-text, #fff);
   box-shadow: 0 3px 0 var(--btn-custom-border);
 }
 .customColor:hover:not(:disabled) {
@@ -98,7 +132,11 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* invis */
 
