@@ -1,6 +1,31 @@
 import React from "react";
 import styles from "./Button.module.css";
 
+/*
+Button options:
+- variant: visual style of the button.
+  - action: primary green.
+  - neutral: default button.
+  - destructive: red button.
+  - outline: bordered button with transparent fill.
+  - invisible: button with no background or shadow.
+- size: controls the button's scale and padding.
+- shape: controls the button's outline shape.
+  - rounded: standard rounded corners.
+  - circle: equal width and height.
+  - pill: fully pill-shaped corners.
+- shadow: adds the raised shadow style.
+- textColor: overrides the text color.
+- backgroundColor: overrides the background color for custom-colored buttons.
+- className: adds extra CSS classes.
+- type: button behavior inside forms.
+  - button: normal button.
+  - submit: submits a form.
+  - reset: resets a form.
+- loading: shows the spinner and disables interaction.
+- radius: custom border radius in pixels.
+*/
+
 type NativeButtonProps = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   "onClick" | "disabled" | "type" | "children"
@@ -15,10 +40,10 @@ export interface ButtonProps extends NativeButtonProps {
   shape?: "rounded" | "circle" | "pill";
   shadow?: boolean;
   /**
-   * Optional background color override. Must be a 6-digit hex color (`#RRGGBB`).
-   * The bottom shadow will automatically be derived as a darkened version of this color.
+   * Optional text color override. Accepts any valid CSS color string.
    */
-  color?: `#${string}`;
+  textColor?: string;
+  backgroundColor?: `#${string}`;
   className?: string;
   type?: "button" | "submit" | "reset";
   loading?: boolean;
@@ -43,7 +68,8 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   shape = "rounded",
   shadow = false,
-  color,
+  textColor,
+  backgroundColor,
   className = "",
   type = "button",
   loading = false,
@@ -51,14 +77,27 @@ const Button: React.FC<ButtonProps> = ({
   style,
   ...nativeProps
 }) => {
-  if (color && !/^#[0-9a-fA-F]{6}$/.test(color)) {
-    console.warn(`Button: invalid color "${color}" — must be a 6-digit hex e.g. #ff0000`);
+  const isValidBackgroundColor =
+    !backgroundColor || /^#[0-9a-fA-F]{6}$/.test(backgroundColor);
+
+  if (backgroundColor && !isValidBackgroundColor) {
+    console.warn(
+      `Button: invalid color "${backgroundColor}" — must be a 6-digit hex e.g. #ff0000`,
+    );
   }
 
-  const customStyle: React.CSSProperties | undefined = color
+  const useCustomColor = Boolean(backgroundColor && isValidBackgroundColor);
+
+  const customStyle: React.CSSProperties | undefined = useCustomColor
     ? ({
-        "--btn-custom-bg": color,
-        "--btn-custom-border": darkenHex(color),
+        "--btn-custom-bg": backgroundColor!,
+        "--btn-custom-border": darkenHex(backgroundColor!),
+      } as React.CSSProperties)
+    : undefined;
+
+  const textStyle: React.CSSProperties | undefined = textColor
+    ? ({
+        "--btn-custom-text": textColor,
       } as React.CSSProperties)
     : undefined;
 
@@ -69,7 +108,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       className={[
         styles.btn,
-        color ? styles.customColor : styles[variant],
+        useCustomColor ? styles.customColor : styles[variant],
         styles[size],
         styles[shape],
         shadow ? styles.withShadow : "",
@@ -77,7 +116,9 @@ const Button: React.FC<ButtonProps> = ({
       ].join(" ")}
       style={{
         ...(radius !== undefined ? { borderRadius: `${radius}px` } : {}),
+        ...(textColor ? { color: textColor } : {}),
         ...customStyle,
+        ...textStyle,
         ...style,
       }}
       aria-busy={loading}
@@ -85,11 +126,7 @@ const Button: React.FC<ButtonProps> = ({
       {...nativeProps}
     >
       {loading ? (
-        <span
-          className={styles.spinner}
-          aria-hidden="true"
-          role="status"
-        />
+        <span className={styles.spinner} aria-hidden="true" role="status" />
       ) : (
         children
       )}
