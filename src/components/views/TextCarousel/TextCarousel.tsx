@@ -1,5 +1,4 @@
-import { useState, type ReactElement } from "react";
-import type { CarouselSlide } from "../../../types/carouselSlide.types";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import styles from "./textCarousel.module.css";
 
 interface TextCarouselProps {
@@ -7,10 +6,11 @@ interface TextCarouselProps {
   onClose: () => void;
 }
 
-const infoSlides: readonly CarouselSlide[] = [
+// TODO: replace temporary text with actual, well written text
+const infoSlides = [
   {
-    accName: "Item 1",
-    title: "How to play",
+    accName: "How to play",
+    title: "How-to-play",
     content: [
       { tag: "h4", text: "How do you play?" },
       {
@@ -25,7 +25,7 @@ const infoSlides: readonly CarouselSlide[] = [
     ],
   },
   {
-    accName: "Item 2",
+    accName: "Levels",
     title: "Levels",
     content: [
       { tag: "h4", text: "How do you level up?" },
@@ -36,12 +36,12 @@ const infoSlides: readonly CarouselSlide[] = [
     ],
   },
   {
-    accName: "Item 3",
+    accName: "Properties",
     title: "Properties",
     content: [],
   },
   {
-    accName: "Item 4",
+    accName: "Types",
     title: "Types",
     content: [
       { tag: "h4", text: "Effects" },
@@ -52,7 +52,7 @@ const infoSlides: readonly CarouselSlide[] = [
     ],
   },
   {
-    accName: "Item 5",
+    accName: "Store",
     title: "Store",
     content: [{ tag: "h4", text: "Choose what game mode to play!" }],
   },
@@ -63,6 +63,65 @@ export default function TextCarousel({
   onClose,
 }: TextCarouselProps): ReactElement | null {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const dialogElement = dialogRef.current;
+      if (!dialogElement) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        dialogElement.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogElement.focus();
+        return;
+      }
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -85,13 +144,19 @@ export default function TextCarousel({
       role="presentation"
     >
       <section
+        ref={dialogRef}
         className={styles.textCarouselPanel}
         onClick={(event) => event.stopPropagation()}
         role="dialog"
-        aria-modal
+        aria-modal="true"
         aria-label="How to play"
+        tabIndex={-1}
       >
-        <button className={styles.textCarouselClose} onClick={onClose}>
+        <button
+          ref={closeButtonRef}
+          className={styles.textCarouselClose}
+          onClick={onClose}
+        >
           Close
         </button>
 
@@ -108,17 +173,22 @@ export default function TextCarousel({
               >
                 <h2>{slide.title}</h2>
                 {slide.content.map((entry, index) => {
-                  if (entry.tag === "h4") {
-                    return (
-                      <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
-                    );
+                  switch (entry.tag) {
+                    case "h4":
+                      return (
+                        <h4 key={`${slide.accName}-${index}`}>
+                          {entry.text}
+                        </h4>
+                      );
+                    case "p":
+                      return (
+                        <p key={`${slide.accName}-${index}`}>{entry.text}</p>
+                      );
+                    default: {
+                      const exhaustiveCheck: never = entry;
+                      return exhaustiveCheck;
+                    }
                   }
-                  if (entry.tag === "p") {
-                    return (
-                      <p key={`${slide.accName}-${index}`}>{entry.text}</p>
-                    );
-                  }
-                  return null;
                 })}
               </article>
             ))}

@@ -16,7 +16,7 @@ export default function StorePage() {
   // Read userId passed from LobbyPage via navigation state
   const userId: number | undefined = location.state?.userId;
 
-  // Disable body scroll when inventory is open
+  // Disable body scroll when inventory or store is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -46,10 +46,10 @@ export default function StorePage() {
         userId={userId}
       />
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
+      <section id="top" className={styles.storePage}>
       <nav>
         <Button onClick={openInfo}>Info</Button>
       </nav>
-      <section id="top" className={styles.storePage}>
         <div className={styles.userShopInfo}>
           <h1>Marketplace</h1>
           <div>

@@ -17,7 +17,7 @@ export default function LobbyPage() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
-  // Disable body scroll when inventory is open
+  // Disable body scroll when inventory or store is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
