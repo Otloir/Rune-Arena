@@ -11,6 +11,7 @@ interface UseBattleProps {
   playerCreature: Creature | null;
   opponentCreature: Creature | null;
   opponentCreatureId: number;
+  opponentLevel?: number;
   mode: BattleMode;
 }
 
@@ -18,14 +19,24 @@ interface UseBattleProps {
 // HELPERS
 // =========================
 
-async function fetchCreatureMoveIds(creatureId: number): Promise<number[]> {
-  const { data, error } = await supabase
+async function fetchCreatureMoveIds(
+  creatureId: number,
+  creatureLevel?: number
+): Promise<number[]> {
+  let query = supabase
     .from("Creature_Moves")
     .select("move_id, level_id")
     .eq("creature_id", creatureId)
     .order("level_id", { ascending: true });
 
+  if (creatureLevel !== undefined) {
+    query = query.lte("level_id", creatureLevel);
+  }
+
+  const { data, error } = await query;
+
   if (error || !data) return [];
+
   return data.map((e) => e.move_id).slice(0, 4);
 }
 
@@ -140,6 +151,7 @@ export function useBattle({
   playerCreature,
   opponentCreature,
   opponentCreatureId,
+  opponentLevel,
   mode,
 }: UseBattleProps) {
   const [playerHp, setPlayerHp] = useState<number | null>(null);
@@ -256,8 +268,8 @@ export function useBattle({
   useEffect(() => {
     if (mode !== "pve" || !opponentCreatureId) return;
 
-    fetchCreatureMoveIds(opponentCreatureId).then(setOpponentMoveIds);
-  }, [opponentCreatureId, mode]);
+    fetchCreatureMoveIds(opponentCreatureId, opponentLevel).then(setOpponentMoveIds);
+  }, [opponentCreatureId, opponentLevel, mode]);
 
   // =========================
   // PLAYER DAMAGE

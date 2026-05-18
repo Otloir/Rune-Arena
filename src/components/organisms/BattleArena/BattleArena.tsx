@@ -39,6 +39,7 @@ export default function BattleArena({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
     opponentCreatureId: playerTwoCreatureId,
+    opponentLevel: playerTwoLevel,
     mode,
   });
 
