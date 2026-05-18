@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Item from "../../atoms/Item/Item";
-import { getItems, getUserItems, buyItem } from "../../../api/item.database";
+import { getItems, getUserItems, buyItem } from "../../../database/item.database";
 import type { Item as ItemType } from "../../../types/item.types";
 import styles from "./ItemList.module.css";
 import PurchaseModal from "../PurchaseModal/PurchaseModal";
