@@ -5,6 +5,8 @@ import MovesPanel from "../../molecules/MovesPanel/MovesPanel";
 import styles from "./BattleArena.module.css";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"
 
 interface BattleArenaProps {
   playerOneId: number;
@@ -42,6 +44,27 @@ export default function BattleArena({
     opponentLevel: playerTwoLevel,
     mode,
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+  if (!playerOneCreature || !playerTwoCreature) return;
+  if (playerHp <= 0 || opponentHp <= 0) {
+    const winner: "player" | "opponent" = opponentHp <= 0 ? "player" : "opponent";
+
+    const timer = setTimeout(() => {
+      navigate("/result", {
+        state: {
+          winner,
+          playerCreatureName: playerOneCreature.name,
+          opponentCreatureName: playerTwoCreature.name,
+        },
+      });
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }
+}, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (

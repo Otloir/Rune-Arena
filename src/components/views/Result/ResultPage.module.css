@@ -1,0 +1,79 @@
+.resultPage {
+  padding: 3rem 1rem 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+  padding: 0.2rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badgeVictory {
+  background-color: rgb(254, 230, 143);
+  color: rgb(144, 125, 58);
+}
+
+.badgeDefeat {
+  background-color: #fde8e8;
+  color: #a33030;
+}
+
+.title {
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 500;
+  margin: 0;
+}
+
+.titleVictory {
+  color: rgb(144, 125, 58);
+}
+
+.titleDefeat {
+  color: #a33030;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #d1d5db;
+  background: transparent;
+  color: #111827;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #f0f0f0;
+}
