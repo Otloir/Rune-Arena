@@ -7,7 +7,7 @@ interface ResultState {
   opponentCreatureName?: string;
 }
 
-export default function ResultPage() {
+export default function ResultPage(): React.ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as ResultState | null;
@@ -34,6 +34,9 @@ export default function ResultPage() {
         <button className={styles.button} onClick={() => navigate("/")}>
           Return home
         </button>
+        <p className={styles.helpText}>
+          You will be taken back to the home screen.
+        </p>
       </div>
     </main>
   );
