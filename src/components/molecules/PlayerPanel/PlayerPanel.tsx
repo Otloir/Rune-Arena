@@ -71,30 +71,26 @@ export default function PlayerPanel({
           <Button
             variant="action"
             color="#a855f7"
-            onClick={() => console.log("Use item — placeholder")}
-            disabled={disabled}
+            disabled
             className={styles.actionBtn}
             aria-label="Use item (not yet available)"
+            title="Items are not yet available."
           >
             Use Item
           </Button>
           <Button
             variant="neutral"
-            onClick={() => {
-              if (!playerCreature) return;
-              console.log( //PLACEHOLDER CONSOLE LOG, WILL BE REMOVED WHEN VIEW STATS IS IMPLEMENTED
-                `${playerCreature.name}\n` +
-                `HP: ${playerCreature.hp}\n` +
-                `Defense: ${playerCreature.defense}\n` +
-                `Speed: ${playerCreature.speed}\n` +
-                `Evade: ${playerCreature.evade}`
-              );
-            }}
+            disabled
             className={styles.actionBtn}
             aria-label={
               playerCreature
-                ? `View stats for ${playerCreature.name}`
-                : "View creature stats"
+                ? `View stats for ${playerCreature.name} (not yet available)`
+                : "View creature stats (not yet available)"
+            }
+            title={
+              playerCreature
+                ? `Viewing stats for ${playerCreature.name} is not yet available.`
+                : "Viewing creature stats is not yet available."
             }
           >
             View Stats
