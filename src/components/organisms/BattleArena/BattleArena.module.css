@@ -10,15 +10,10 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  /*safeguard for flex issues, kept as backup for now*/
-  /*min-height: 0;*/
-
-  /*  prevents full-page reflow compression */
   height: 100%;
 }
 
-/* ── KEEP EXISTING LAYOUT (important) ── */
+/* ── KEEP EXISTING LAYOUT ── */
 .player {
   display: flex;
   flex-direction: row-reverse;
@@ -28,20 +23,18 @@
   display: flex;
 }
 
-/* ── FIX: prevent vertical stretching ── */
 .playerContainer,
 .opponentContainer {
   flex: 1 1 auto;
-  min-height: 0; /* critical fix */
+  min-height: 0;
   display: flex;
   
 }
 
-/* preserve your alignment exactly */
 .opponentContainer {
   flex-direction: row-reverse;
   align-items: flex-end;
-  padding-top: 2rem; /* breathing room above the opponent's sprite/status panel */
+  padding-top: 2rem;
 }
 
 .playerContainer {
@@ -51,14 +44,6 @@
 
 /* ── controls safe zone ── */
 .controlsWrapper {
-  /*
-   * 40vh — takes up 40% of the viewport height so the battle field above
-   *         gets the remaining 60%; feels balanced on most phone screens.
-   * 18rem — floor: prevents the panel from collapsing too small on short
-   *         viewports (e.g. landscape phones) where 40vh would be tiny.
-   * 26rem — ceiling: stops the panel from dominating on tall viewports
-   *         (e.g. large tablets in portrait) where 40vh would be too large.
-   */
   flex: 0 0 40vh;
   height: 40vh;
   min-height: 18rem;

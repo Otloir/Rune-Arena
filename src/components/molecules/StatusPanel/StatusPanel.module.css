@@ -3,13 +3,6 @@
   flex-direction: column;
   background-color: white;
 
-  /*
-   * Width ladder — each breakpoint gives the panel more room as the
-   * viewport grows, keeping it proportional to the creature sprites:
-   *   6.5rem — mobile base: compact enough to sit beside a small sprite
-   *   8rem   — tablet: slightly more room for longer creature names
-   *   10rem  — desktop: comfortable reading width at full scale
-   */
   width: 6.5rem;
   padding: 5px;
   gap: 4px;
@@ -27,20 +20,14 @@
 
   font-variant: small-caps;
 
-  /* fluid base sizing */
   font-size: clamp(0.65rem, 2.2vw, 0.85rem);
   line-height: 1;
 }
-
-/* ensure long names don't break layout */
 .statusBarInfo span {
-  /*min-width: 0; -- This line can seemingly be ignored, reenable if layout breaks*/
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* level text slightly smaller */
 .statusBarInfo span:last-child {
   font-size: clamp(0.6rem, 2vw, 0.8rem);
 }
@@ -53,7 +40,7 @@
 /* ── Tablet ── */
 @media (min-width: 768px) {
   .statusBarContainer {
-    width: 8rem; /* see width ladder comment above */
+    width: 8rem;
   }
 
   .statusBarInfo {
@@ -64,7 +51,7 @@
 /* ── Desktop ── */
 @media (min-width: 1024px) {
   .statusBarContainer {
-    width: 10rem; /* see width ladder comment above */
+    width: 10rem;
   }
 
   .statusBarInfo {

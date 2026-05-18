@@ -7,7 +7,6 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  /* Fixed height keeps all buttons uniform regardless of name length */
   height: 3.625rem;
   transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
 }
@@ -31,7 +30,6 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
-  /* Truncate names that are too long rather than stretching the button */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -68,14 +66,3 @@
   pointer-events: none;
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
-
-@media (max-width: 80rem) {
-  .moveBtn {
-    padding: 0.5rem 0.75rem;
-    height: 3.25rem;
-  }
-
-  .moveName { font-size: 0.85rem; }
-  .typeTag  { font-size: 0.6rem; padding: 0.0625rem 0.3125rem; }
-  .moveStat { font-size: 0.72rem; }
-}

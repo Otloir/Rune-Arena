@@ -1,4 +1,4 @@
-import React from "react";
+import type { ButtonHTMLAttributes, CSSProperties, FC, ReactNode } from "react";
 import styles from "./Button.module.css";
 
 /*
@@ -27,21 +27,18 @@ Button options:
 */
 
 type NativeButtonProps = Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  ButtonHTMLAttributes<HTMLButtonElement>,
   "onClick" | "disabled" | "type" | "children"
 >;
 
 export interface ButtonProps extends NativeButtonProps {
   onClick?: () => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
   disabled?: boolean;
-  variant?: "action" | "neutral" | "destructive" | "outline" | "invisible";
+  variant?: "action" | "neutral" | "invisible";
   size?: "sm" | "md" | "lg";
   shape?: "rounded" | "circle" | "pill";
   shadow?: boolean;
-  /**
-   * Optional text color override. Accepts any valid CSS color string.
-   */
   textColor?: string;
   backgroundColor?: `#${string}`;
   className?: string;
@@ -60,7 +57,7 @@ function darkenHex(hex: string, amount = 40): string {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
-const Button: React.FC<ButtonProps> = ({
+const Button: FC<ButtonProps> = ({
   onClick,
   children,
   disabled = false,
@@ -88,14 +85,14 @@ const Button: React.FC<ButtonProps> = ({
 
   const useCustomColor = Boolean(backgroundColor && isValidBackgroundColor);
 
-  const customStyle: React.CSSProperties | undefined = useCustomColor
+  const customStyle: CSSProperties | undefined = useCustomColor
     ? ({
         "--btn-custom-bg": backgroundColor!,
         "--btn-custom-border": darkenHex(backgroundColor!),
       } as React.CSSProperties)
     : undefined;
 
-  const textStyle: React.CSSProperties | undefined = textColor
+  const textStyle: CSSProperties | undefined = textColor
     ? ({
         "--btn-custom-text": textColor,
       } as React.CSSProperties)

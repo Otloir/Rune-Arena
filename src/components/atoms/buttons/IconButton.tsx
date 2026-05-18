@@ -1,10 +1,10 @@
-import React from "react";
+import type { FC, ReactNode } from "react";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
 
 interface IconButtonProps
   extends Omit<ButtonProps, "children" | "shape"> {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   shape?: "circle" | "square" | "pill";
   iconSize?: string;
@@ -16,7 +16,7 @@ const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
   lg: "1.75rem",
 };
 
-const IconButton: React.FC<IconButtonProps> = ({
+const IconButton: FC<IconButtonProps> = ({
   onClick,
   icon,
   label,
