@@ -50,10 +50,12 @@ export default function ResultPage(): React.ReactElement {
             : `${playerName} was defeated by ${opponentName}...`}
         </p>
 
-        {/* Always rendered reward block (key fix) */}
-        <section className={styles.rewardSection} aria-label="Reward information">
+        <section
+          className={styles.rewardSection}
+          aria-label="Reward information"
+        >
           <p className={styles.rewardLabel}>
-            {playerWon ? "You gained:" : "Better luck next time"}
+            {"You earned:"}
           </p>
 
           <article
@@ -61,33 +63,25 @@ export default function ResultPage(): React.ReactElement {
             aria-label="Item reward details"
           >
             <div className={styles.rewardImageContainer}>
-              {playerWon ? (
-                rewardImage ? (
-                  <img
-                    src={rewardImage}
-                    alt={rewardName}
-                    className={styles.rewardImage}
-                  />
-                ) : (
-                  <span className={styles.rewardFallback}>🪲</span>
-                )
+              {rewardImage ? (
+                <img
+                  src={rewardImage}
+                  alt={rewardName}
+                  className={styles.rewardImage}
+                />
               ) : (
-                <span className={styles.noReward}>❌</span>
+                <span className={styles.rewardFallback}>🪲</span>
               )}
 
-              {playerWon && (
-                <span
-                  className={styles.rewardCount}
-                  aria-label={`Item quantity: ${rewardQuantity}`}
-                >
-                  {rewardQuantity}
-                </span>
-              )}
+              <span
+                className={styles.rewardCount}
+                aria-label={`Item quantity: ${rewardQuantity}`}
+              >
+                {rewardQuantity}
+              </span>
             </div>
 
-            <p className={styles.rewardName}>
-              {playerWon ? rewardName : "No reward earned"}
-            </p>
+            <p className={styles.rewardName}>{rewardName}</p>
           </article>
         </section>
 

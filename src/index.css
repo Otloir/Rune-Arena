@@ -21,7 +21,6 @@
   --jersy: "Jersey 25", sans-serif;
   --jacquard: "Jacquard 12", system-ui;
   --press: "Press Start 2P", system-ui;
-  
 
   font: 1.125rem/145% var(--sans);
   letter-spacing: 0.18px;
@@ -32,8 +31,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  @media (max-width: 64rem) {
+@media (max-width: 64rem) {
+  :root {
     font-size: 1rem;
   }
 }
@@ -59,10 +60,6 @@
   }
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 #root {
   min-height: 100vh;
   display: flex;
@@ -86,17 +83,24 @@ h1 {
   font-size: 3.5rem;
   letter-spacing: -0.105rem;
   margin: 2rem 0;
-  @media (max-width: 64rem) {
+}
+
+@media (max-width: 64rem) {
+  h1 {
     font-size: 2.25rem;
     margin: 1.25rem 0;
   }
 }
+
 h2 {
   font-size: 1.5rem;
   line-height: 118%;
   letter-spacing: -0.015rem;
   margin: 0 0 0.5rem;
-  @media (max-width: 64rem) {
+}
+
+@media (max-width: 64rem) {
+  h2 {
     font-size: 1.25rem;
   }
 }
@@ -131,8 +135,13 @@ html {
   height: 100%;
 }
 
-html {
-  span, p, button{
+html span,
+html p,
+html button {
   font-family: var(--press);
-  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
 }
