@@ -164,18 +164,11 @@ export function useBattle({
   const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
   const [effectivenessMap, setEffectivenessMap] =
     useState<Map<number, Map<number, number>> | null>(null);
-  // null  = not yet loaded (or failed to load)
-  // Map   = successfully loaded (may be empty if the table has no rows)
   const [battleError, setBattleError] = useState<string | null>(null);
 
   // =========================
   // READY STATE
   // =========================
-
-  // NOTE: playerTypeIds/opponentTypeIds may be empty if a creature has no
-  // types in the database. We warn about this below when types are loaded,
-  // and treat a typeless creature as valid (battle can still proceed using
-  // a neutral ×1 multiplier for all damage calculations).
   const isReady =
     !!playerCreature &&
     !!opponentCreature &&
@@ -216,9 +209,6 @@ export function useBattle({
       const map = await fetchAllTypeEffectiveness();
 
       if (map === null) {
-        // fetchAllTypeEffectiveness returns null only on a Supabase error —
-        // type effectiveness data is unavailable. Surface an error instead of
-        // leaving isReady permanently false with no feedback to the player.
         console.error("[useBattle] Failed to load Type_Effectiveness table.");
         setBattleError(
           "Could not load battle data. Please check your connection and try again."

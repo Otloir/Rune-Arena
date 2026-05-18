@@ -12,7 +12,6 @@
   flex-shrink: 0;
 }
 
-/* ── Top row (name + level) ── */
 .statusBarInfo {
   display: flex;
   justify-content: space-between;
@@ -32,12 +31,10 @@
   font-size: clamp(0.6rem, 2vw, 0.8rem);
 }
 
-/* ── Bars spacing safety ── */
 .statusBarContainer > *:not(.statusBarInfo) {
   width: 100%;
 }
 
-/* ── Tablet ── */
 @media (min-width: 768px) {
   .statusBarContainer {
     width: 8rem;
@@ -48,7 +45,6 @@
   }
 }
 
-/* ── Desktop ── */
 @media (min-width: 1024px) {
   .statusBarContainer {
     width: 10rem;

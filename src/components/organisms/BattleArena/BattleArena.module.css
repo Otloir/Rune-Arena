@@ -13,7 +13,6 @@
   height: 100%;
 }
 
-/* ── KEEP EXISTING LAYOUT ── */
 .player {
   display: flex;
   flex-direction: row-reverse;
@@ -42,7 +41,6 @@
   align-items: center;
 }
 
-/* ── controls safe zone ── */
 .controlsWrapper {
   flex: 0 0 40vh;
   height: 40vh;
@@ -53,7 +51,6 @@
   overflow: hidden;
 }
 
-/* ── PVP opponent controls panel ── */
 .opponentControlsContainer {
   flex: 0 0 auto;
   padding: 0 1rem 1rem;
@@ -72,7 +69,6 @@
   color: #1a1a2e;
 }
 
-/* ── desktop only adjustments ── */
 @media (min-width: 1024px) {
   .arena {
     height: 100vh;

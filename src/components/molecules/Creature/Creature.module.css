@@ -17,14 +17,12 @@
   padding-bottom: 5rem;
 }
 
-/* platform stays unchanged */
 .platform {
   width: 10rem;
   height: 3rem;
   position: relative;
 }
 
-/* desktop enhancements only */
 @media (min-width: 1024px) {
   .creatureContainer {
     width: 20rem;
