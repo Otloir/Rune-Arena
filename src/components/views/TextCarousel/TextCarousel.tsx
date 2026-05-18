@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import styles from "./textCarousel.module.css";
+import styles from "./TextCarousel.module.css";
 
 interface TextCarouselProps {
   isOpen: boolean;
