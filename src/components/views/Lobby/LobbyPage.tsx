@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
+import TextCarousel from "../turtorial/textCarousel";
 import styles from "./LobbyPage.module.css";
 
 export default function LobbyPage() {
@@ -14,16 +15,17 @@ export default function LobbyPage() {
     null,
   );
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Disable body scroll when inventory is open
   useEffect(() => {
-    if (!isInventoryOpen) return;
+    if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isInventoryOpen]);
+  }, [isInventoryOpen, isInfoOpen]);
 
   const handleCreatureSelect = (creatureId: string) => {
     setSelectedCreatureId(creatureId);
@@ -45,9 +47,12 @@ export default function LobbyPage() {
 
   const openInventory = () => setIsInventoryOpen(true);
   const closeInventory = () => setIsInventoryOpen(false);
+  const openInfo = () => setIsInfoOpen(true);
+  const closeInfo = () => setIsInfoOpen(false);
 
   return (
     <>
+      <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <InventoryPage
         isOpen={isInventoryOpen}
         onClose={closeInventory}
@@ -56,7 +61,7 @@ export default function LobbyPage() {
       <section className={styles.lobbyPage}>
         <section>
           <nav>
-            <Button>Info</Button>
+            <Button onClick={openInfo}>Info</Button>
           </nav>
           <div>
             <h1>RuneArena</h1>
