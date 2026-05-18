@@ -1,12 +1,12 @@
 .movesPanel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
 
   width: 100%;
   min-width: 0;
 
-  align-items: stretch;
+  align-content: start;
 }
 
 .emptyMoveSlot {

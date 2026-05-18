@@ -6,8 +6,6 @@ Button options:
 - variant: visual style of the button.
   - action: primary green.
   - neutral: default button.
-  - destructive: red button.
-  - outline: bordered button with transparent fill.
   - invisible: button with no background or shadow.
 - size: controls the button's scale and padding.
 - shape: controls the button's outline shape.
@@ -89,13 +87,13 @@ const Button: FC<ButtonProps> = ({
     ? ({
         "--btn-custom-bg": backgroundColor!,
         "--btn-custom-border": darkenHex(backgroundColor!),
-      } as React.CSSProperties)
+      } as CSSProperties)
     : undefined;
 
   const textStyle: CSSProperties | undefined = textColor
     ? ({
         "--btn-custom-text": textColor,
-      } as React.CSSProperties)
+      } as CSSProperties)
     : undefined;
 
   return (

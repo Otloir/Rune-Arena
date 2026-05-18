@@ -4,10 +4,8 @@
   gap: 1rem;
   width: 100%;
   flex-shrink: 0;
-
   min-height: 16rem;
   max-height: 22rem;
-
   padding: 1.25rem;
   box-sizing: border-box;
   background: #fff;
@@ -22,12 +20,11 @@
   flex-direction: column;
   gap: 0.5rem;
   min-width: 0;
-
   background: #f5f6fa;
   border-radius: 0.875rem;
   padding: 0.75rem 0.875rem;
   overflow: hidden;
-
+  /* Mobile default: hard-lock log height to avoid pushing move controls offscreen */
   flex: 0 0 6.5rem;
   min-height: 6.5rem;
   max-height: 6.5rem;
@@ -70,7 +67,11 @@
   gap: 0.5rem;
   min-width: 0;
   flex: 1 1 auto;
-
+  /*
+   * 8rem — floor for the action panel: guarantees there's always enough
+   *        room to render the move grid and action buttons without clipping,
+   *        even when the log panel is at its locked 6.5rem height above.
+   */
   min-height: 8rem;
   overflow: visible;
 }
@@ -84,14 +85,10 @@
 }
 
 .movesWrapper {
-  display: flex;
-  flex-direction: column;
-
-  flex: 1 1 auto;
+  flex: 1;
   min-height: 0;
-
-  overflow-y: auto;
-  padding-bottom: 0.75rem;
+  overflow: visible;
+  padding-bottom: 1rem; /* gap between move grid and the action buttons row */
 }
 
 .actionButtons {
@@ -99,10 +96,7 @@
   flex-direction: row;
   gap: 0.625rem;
   flex-shrink: 0;
-  margin-top: 0.75rem;
-
-
-  min-height: 2.75rem;
+  min-height: 2.75rem; /* tall enough for comfortable tap targets on mobile (≥44px) */
 }
 
 .actionBtn {
@@ -110,17 +104,25 @@
   min-width: 0;
 }
 
+/* Mobile-first: base rules already set above. Tablet/desktop handled via min-width queries. */
+
 /* ── TABLET + DESKTOP ── */
 @media (min-width: 641px) {
   .controlsPanel {
     flex-direction: row;
     border-radius: 1.25rem 1.25rem 0 0;
 
+    /*
+     * min(40vh, 22rem) — matches the 40vh basis set on .controlsWrapper in
+     * BattleArena, but clamps to 22rem so the panel never exceeds the mobile
+     * max-height on very tall desktop windows.
+     */
     height: min(40vh, 22rem);
     max-height: min(40vh, 22rem);
   }
 
   .logPanel {
+    /* On desktop the log expands freely to fill its flex column */
     height: 100%;
     max-height: unset;
     flex: 1;
@@ -134,6 +136,6 @@
   }
 
   .actionPanel {
-    flex: 1.2;
+    flex: 1.2; /* action side gets slightly more width than the log side */
   }
 }
