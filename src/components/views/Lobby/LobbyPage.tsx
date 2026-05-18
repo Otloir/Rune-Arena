@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
-import TextCarousel from "../turtorial/textCarousel";
+import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
 
 export default function LobbyPage() {

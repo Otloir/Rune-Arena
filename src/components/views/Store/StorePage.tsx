@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
-import TextCarousel from "../turtorial/textCarousel";
+import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
 
 export default function StorePage() {
