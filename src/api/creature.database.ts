@@ -1,7 +1,16 @@
 import { supabase } from "../lib/supabase";
+import type { Creature, Level, Type, Move } from "../types/creature.types";
+
+export type JoinedCreatureLevel = Pick<Level, "level" | "xp_required">;
+
+export type UserCreatureRow = {
+  current_xp: number;
+  creature: Creature | Creature[];
+  level: JoinedCreatureLevel | JoinedCreatureLevel[];
+};
 
 // Get all creatures
-export async function getCreatures() {
+export async function getCreatures(): Promise<Creature[] | null> {
   const { data, error } = await supabase
     .from("Creatures")
     .select("id, name, front_img, back_img, evade, speed, defense, hp");
@@ -13,7 +22,7 @@ export async function getCreatures() {
 }
 
 // Get a single creature by its ID
-export async function getCreatureById(creatureId: string) {
+export async function getCreatureById(creatureId: string): Promise<Creature | null> {
   const { data, error } = await supabase
     .from("Creatures")
     .select("id, name, front_img, back_img, evade, speed, defense, hp")
@@ -28,7 +37,7 @@ export async function getCreatureById(creatureId: string) {
 
 // Get a user's creature + level info in one query
 // Joins: User_Creature_Levels → Creatures + Levels
-export async function getUserCreature(userId: string) {
+export async function getUserCreature(userId: string): Promise<UserCreatureRow | null> {
   const { data, error } = await supabase
     .from("User_Creature_Levels")
     .select(
@@ -49,7 +58,10 @@ export async function getUserCreature(userId: string) {
 
 // Get a specific user's creature by creatureId + level info
 // Joins: User_Creature_Levels → Creatures + Levels filtered by creature_id
-export async function getUserCreatureById(userId: string, creatureId: string) {
+export async function getUserCreatureById(
+  userId: string,
+  creatureId: string,
+): Promise<UserCreatureRow | null> {
   const { data, error } = await supabase
     .from("User_Creature_Levels")
     .select(
@@ -70,7 +82,7 @@ export async function getUserCreatureById(userId: string, creatureId: string) {
 }
 
 // Get all types
-export async function getTypes() {
+export async function getTypes(): Promise<Type[] | null> {
   const { data, error } = await supabase.from("Types").select("id, name");
   if (error) {
     console.error("Supabase error:", error.message);
@@ -80,7 +92,7 @@ export async function getTypes() {
 }
 
 // Get all moves
-export async function getMoves() {
+export async function getMoves(): Promise<Move[] | null> {
   const { data, error } = await supabase
     .from("Moves")
     .select("id, name, damage, chance, move_type_id");

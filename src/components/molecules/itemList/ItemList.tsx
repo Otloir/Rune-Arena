@@ -20,7 +20,7 @@ export default function ItemList({ type, variant, userId }: ListProps) {
     status: "success" | "failure";
   } | null>(null);
 
-  const handleBuy = async (item: ItemType) => {
+  const handleBuy = async (item: ItemType): Promise<void> => {
     // userId is required to buy — if missing, do nothing
     if (userId == null) {
       console.error("Cannot buy item: no userId provided");
@@ -39,7 +39,7 @@ export default function ItemList({ type, variant, userId }: ListProps) {
   };
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       setLoading(true);
       setError(null);
       const data =

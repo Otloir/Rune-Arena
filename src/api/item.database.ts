@@ -6,7 +6,7 @@ interface UserItemsRow {
 }
 
 // Get all items from the database
-export async function getItems() {
+export async function getItems(): Promise<ItemType[] | null> {
   const { data, error } = await supabase
     .from("Items")
     .select("id, name, property, propvalue, description, price, img");
@@ -18,7 +18,7 @@ export async function getItems() {
 }
 
 // Get items a specific user has, grouped by item so duplicates show as quantity
-export async function getUserItems(userId: number) {
+export async function getUserItems(userId: number): Promise<ItemType[]> {
   const { data, error } = await supabase
     .from("User_Items")
     .select(
@@ -27,7 +27,7 @@ export async function getUserItems(userId: number) {
     .eq("user_id", userId);
   if (error) {
     console.error("Supabase error:", error.message);
-    return null;
+    return [];
   }
   if (!data) return [];
 
@@ -56,7 +56,10 @@ export async function getUserItems(userId: number) {
 }
 
 // Add an item to a user's inventory
-export async function buyItem(userId: number, itemId: number) {
+export async function buyItem(
+  userId: number,
+  itemId: number,
+): Promise<boolean> {
   const { error } = await supabase
     .from("User_Items")
     .insert({ user_id: userId, item_id: itemId });

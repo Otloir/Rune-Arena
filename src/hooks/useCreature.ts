@@ -13,7 +13,11 @@ import {
 export function useAsyncData<FetchedData>(
   fetcher: () => Promise<FetchedData | null>,
   enabled: boolean,
-) {
+): {
+  data: FetchedData | null;
+  loading: boolean;
+  error: string | null;
+} {
   const [data, setData] = useState<FetchedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,7 @@ export function useAsyncData<FetchedData>(
       return;
     }
 
-    async function load() {
+    async function load(): Promise<void> {
       setLoading(true);
       setError(null);
       setData(null);
@@ -51,11 +55,11 @@ export function useAsyncData<FetchedData>(
   return { data, loading, error };
 }
 
-export function useCreature() {
+export function useCreature(): { creatures: Creature[] } {
   const [creatures, setCreatures] = useState<Creature[]>([]);
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       const data = await getCreatures();
       if (data) setCreatures(data);
     }
@@ -65,7 +69,14 @@ export function useCreature() {
   return { creatures };
 }
 
-export function useUserCreature(userId: number) {
+export function useUserCreature(userId: number): {
+  creature: Creature | null;
+  level: number;
+  currentXp: number;
+  xpRequired: number;
+  loading: boolean;
+  error: string | null;
+} {
   const { data, loading, error } = useAsyncData(
     () => getUserCreature(userId.toString()),
     userId > 0,
@@ -93,7 +104,14 @@ export function useUserCreature(userId: number) {
   };
 }
 
-export function useCreatureById(userId: number, creatureId: number) {
+export function useCreatureById(userId: number, creatureId: number): {
+  creature: Creature | null;
+  level: number;
+  currentXp: number;
+  xpRequired: number;
+  loading: boolean;
+  error: string | null;
+} {
   const { data, loading, error } = useAsyncData(
     () => getUserCreatureById(userId.toString(), creatureId.toString()),
     userId > 0 && creatureId > 0,
@@ -121,11 +139,11 @@ export function useCreatureById(userId: number, creatureId: number) {
   };
 }
 
-export function useType() {
+export function useType(): { types: Type[] } {
   const [types, setTypes] = useState<Type[]>([]);
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       const data = await getTypes();
       if (data) setTypes(data);
     }
@@ -135,11 +153,11 @@ export function useType() {
   return { types };
 }
 
-export function useMoves() {
+export function useMoves(): { moves: Move[] } {
   const [moves, setMoves] = useState<Move[]>([]);
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       const data = await getMoves();
       if (data) setMoves(data);
     }

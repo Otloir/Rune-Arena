@@ -50,7 +50,7 @@ async function fetchCreatureTypeIds(creatureId: number): Promise<number[]> {
   return data.map((e) => e.type_id);
 }
 
-async function fetchAllTypeEffectiveness() {
+async function fetchAllTypeEffectiveness(): Promise<Map<number, Map<number, number>> | null> {
   const { data, error } = await supabase
     .from("Type_Effectiveness")
     .select("attacker_id, defender_id, effectiveness");
@@ -153,7 +153,16 @@ export function useBattle({
   opponentCreatureId,
   opponentLevel,
   mode,
-}: UseBattleProps) {
+}: UseBattleProps): {
+  playerHp: number;
+  opponentHp: number;
+  turnOwner: TurnOwner | null;
+  isProcessing: boolean;
+  battleLog: string[];
+  battleError: string | null;
+  handlePlayerMove: (move: MoveWithType) => Promise<void>;
+  handleOpponentMove: (move: MoveWithType) => Promise<void>;
+} {
   const [playerHp, setPlayerHp] = useState<number | null>(null);
   const [opponentHp, setOpponentHp] = useState<number | null>(null);
   const [turnOwner, setTurnOwner] = useState<TurnOwner | null>(null);
@@ -205,7 +214,7 @@ export function useBattle({
   // =========================
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       const map = await fetchAllTypeEffectiveness();
 
       if (map === null) {
@@ -266,7 +275,7 @@ export function useBattle({
   // =========================
 
   const damageOpponent = useCallback(
-    async (move: MoveWithType) => {
+    async (move: MoveWithType): Promise<void> => {
       if (!isReady || !opponentCreature || !effectivenessMap) return;
 
       const attackerName = playerCreature?.name ?? "Your creature";
@@ -302,7 +311,7 @@ export function useBattle({
   // =========================
 
   const damagePlayer = useCallback(
-    async (move: MoveWithType) => {
+    async (move: MoveWithType): Promise<void> => {
       if (!isReady || !playerCreature || !effectivenessMap) return;
 
       const attackerName = opponentCreature?.name ?? "The opponent";
@@ -338,7 +347,7 @@ export function useBattle({
   // =========================
 
   const executeOpponentTurn = useCallback(
-    async (ids: number[]) => {
+    async (ids: number[]): Promise<void> => {
       if (!ids.length) {
         log(`${opponentCreature?.name ?? "The opponent"} has no moves!`);
         setTurnOwner("player");
@@ -374,7 +383,7 @@ export function useBattle({
       !isReady
     ) return;
 
-    const run = async () => {
+    const run = async (): Promise<void> => {
       setIsProcessing(true);
       await new Promise((r) => setTimeout(r, 800));
       await executeOpponentTurn(opponentMoveIds);
@@ -396,7 +405,7 @@ export function useBattle({
   // =========================
 
   const handlePlayerMove = useCallback(
-    async (move: MoveWithType) => {
+    async (move: MoveWithType): Promise<void> => {
       if (turnOwner !== "player" || isProcessing) return;
 
       setIsProcessing(true);
@@ -412,7 +421,7 @@ export function useBattle({
   // =========================
 
   const handleOpponentMove = useCallback(
-    async (move: MoveWithType) => {
+    async (move: MoveWithType): Promise<void> => {
       if (turnOwner !== "opponent" || isProcessing) return;
 
       setIsProcessing(true);
