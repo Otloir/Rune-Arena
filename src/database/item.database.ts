@@ -57,7 +57,7 @@ export async function getUserItems(userId: string): Promise<ItemType[] | null> {
 
 // Add an item to a user's inventory
 export async function buyItem(
-  userId: number,
+  userId: string,
   itemId: number,
 ): Promise<boolean> {
   const { error } = await supabase
