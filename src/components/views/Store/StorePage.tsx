@@ -5,6 +5,8 @@ import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
+import informationIcon from "../../../assets/icons/information_icon.svg";
 
 export default function StorePage() {
   const navigate = useNavigate();
@@ -44,25 +46,30 @@ export default function StorePage() {
       />
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
-      <nav>
-        <Button onClick={openInfo}>Info</Button>
-      </nav>
+        <div className={styles.fixedInformationBar}>
+          {/* TODO: make dynamic based on the user's actual balance */}
+          <div className={styles.userMoneyDisplay}>
+            <span>X€</span>
+          </div>
+          <Button
+            onClick={openInventory}
+            backgroundColor="#DBEAFE"
+            textColor="black"
+            size="sm"
+          >
+            Bag
+          </Button>
+          <IconButton
+            hoverEffect={false}
+            iconSrc={informationIcon}
+            iconAlt="Information"
+            onClick={openInfo}
+            label="Open information"
+            className={styles.iconButton}
+          />
+        </div>
         <div className={styles.userShopInfo}>
           <h1>Marketplace</h1>
-          <div>
-            {/* TODO: make dynamic based on the user's actual balance */}
-            <div className={styles.userMoneyDisplay}>
-              <span>X€</span>
-            </div>
-            <Button
-              onClick={openInventory}
-              backgroundColor="#DBEAFE"
-              textColor="black"
-              size="sm"
-            >
-              Bag
-            </Button>
-          </div>
         </div>
 
         <Button onClick={navigateLobby}>Back to select</Button>

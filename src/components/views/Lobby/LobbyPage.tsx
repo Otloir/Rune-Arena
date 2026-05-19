@@ -5,6 +5,8 @@ import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
+import informationIcon from "../../../assets/icons/information_icon.svg";
 
 //TODO: make userid not hardcoded.
 export default function LobbyPage() {
@@ -45,6 +47,7 @@ export default function LobbyPage() {
   };
 
   const openInventory = () => setIsInventoryOpen(true);
+  const closeInventory = () => setIsInventoryOpen(false);
   const openInfo = () => setIsInfoOpen(true);
   const closeInfo = () => setIsInfoOpen(false);
 
@@ -53,29 +56,36 @@ export default function LobbyPage() {
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
+        onClose={closeInventory}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
         <section>
-          <Button onClick={openInfo} aria-label="open information button">
-            Info
-          </Button>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
           </div>
-          <nav>
-            <Button
-              onClick={navigateStore}
-              aria-label="navigate to shop button"
-            >
-              Store
+          <IconButton
+            hoverEffect={false}
+            iconSrc={informationIcon}
+            iconAlt="Information"
+            onClick={openInfo}
+            label="Open information"
+            className={styles.iconButton}
+          />
+          <div className={styles.inventoryShopComtainer}>
+            <nav>
+              <Button
+                onClick={navigateStore}
+                aria-label="navigate to shop button"
+              >
+                Store
+              </Button>
+            </nav>
+            <Button onClick={openInventory} aria-label="open inventory button">
+              Bag
             </Button>
-          </nav>
-          <Button onClick={openInventory} aria-label="open inventory button">
-            Bag
-          </Button>
+          </div>
         </section>
 
         <section>

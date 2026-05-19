@@ -1,28 +1,48 @@
-.lobbyPage{
-    padding-top: 3rem;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-}
- 
-.lobbyPage section{
-    gap: 1rem;
+.lobbyPage {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
+  padding: 2rem;
 }
 
-.creatureSelectContainer, .creatureSelectButtons {
-    display: flex;
-    gap: 1rem;
-    flex-direction: column;
-    align-items: center;
+.lobbyPage section {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
 }
 
-.creatureSelectContainer form{
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+.creatureSelectContainer,
+.creatureSelectButtons {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creatureSelectContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inventoryShopComtainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10%;
+}
+
+.iconButton {
+  float: right;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+  position:fixed;
+}
 
 /* tablet */
 @media (min-width: 768px) {
@@ -32,23 +52,28 @@
     flex-direction: row;
     gap: 2rem;
   }
-  .creatureSelectContainer form{
+  .creatureSelectContainer form {
     gap: 2rem;
   }
 }
 
 /* desktop */
 @media (min-width: 1024px) {
-    .lobbyPage{
-        padding-top: 1rem;
-    }
-    .creatureSelectButtons {
-        align-items: center;
-        justify-content: center;
-        flex-direction: row;
-        gap: 2rem;
-      }
-      .creatureSelectContainer form{
-        gap: 2rem;
-      }
+  .lobbyPage {
+    padding-top: 1rem;
+    padding: 2rem;
+  }
+  .creatureSelectButtons {
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .creatureSelectContainer form {
+    gap: 2rem;
+  }
+  .iconButton {
+    top: 2rem;
+    right: 2rem;
+  }
 }

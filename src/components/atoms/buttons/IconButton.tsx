@@ -1,10 +1,14 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
 
-interface IconButtonProps
-  extends Omit<ButtonProps, "children" | "shape"> {
-  icon: ReactNode;
+interface IconButtonProps extends Omit<ButtonProps, "children" | "shape"> {
+  /** optional React node icon */
+  icon?: string;
+  /** optional image source path for an icon */
+  iconSrc?: string;
+  /** alt text for the image icon (required for accessibility when using iconSrc) */
+  iconAlt?: string;
   label: string;
   shape?: "circle" | "square" | "pill";
   iconSize?: string;
@@ -19,6 +23,8 @@ const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
 const IconButton: FC<IconButtonProps> = ({
   onClick,
   icon,
+  iconSrc,
+  iconAlt,
   label,
   disabled = false,
   color,
@@ -53,7 +59,7 @@ const IconButton: FC<IconButtonProps> = ({
       {...nativeProps}
     >
       <span
-        aria-hidden="true"
+        aria-hidden={iconSrc ? "false" : "true"}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -62,7 +68,20 @@ const IconButton: FC<IconButtonProps> = ({
           height: resolvedIconSize,
         }}
       >
-        {icon}
+        {iconSrc ? (
+          <img
+            src={iconSrc}
+            alt={iconAlt ?? label}
+            style={{
+              width: resolvedIconSize,
+              height: resolvedIconSize,
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
+        ) : (
+          icon
+        )}
       </span>
     </Button>
   );
