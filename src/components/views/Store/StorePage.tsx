@@ -72,7 +72,9 @@ export default function StorePage() {
           <h1>Marketplace</h1>
         </div>
 
-        <Button onClick={navigateLobby}>Back to select</Button>
+        <Button onClick={navigateLobby} className={styles.backButton}>
+          Back to select
+        </Button>
         <ItemList type="store" variant="card" userId={userId} />
         <Button
           onClick={() =>
@@ -80,6 +82,7 @@ export default function StorePage() {
               .getElementById("top")
               ?.scrollIntoView({ behavior: "smooth" })
           }
+          className={styles.backButton}
         >
           Back to top
         </Button>

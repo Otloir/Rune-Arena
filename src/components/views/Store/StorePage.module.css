@@ -1,5 +1,8 @@
 .storePage {
-  padding: 3rem 1rem 1rem 1rem;
+  padding: 5rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .userShopInfo {
@@ -41,5 +44,11 @@
     justify-content: center;
     flex-direction: row;
     gap: 2rem;
+  }
+  .storePage {
+    padding: 2rem;
+  }
+  .backButton{
+    width: 30%;
   }
 }
