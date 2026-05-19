@@ -3,25 +3,27 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
+import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
 
 export default function StorePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Read userId passed from LobbyPage via navigation state
   const userId: string | undefined = location.state?.userId;
 
-  // Disable body scroll when inventory is open
+  // Disable body scroll when inventory or store is open
   useEffect(() => {
-    if (!isInventoryOpen) return;
+    if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isInventoryOpen]);
+  }, [isInventoryOpen, isInfoOpen]);
 
   if (userId == null) {
     return <Navigate to="/" replace />;
@@ -30,6 +32,8 @@ export default function StorePage() {
   const navigateLobby = () => navigate("/");
   const openInventory = () => setIsInventoryOpen(true);
   const closeInventory = () => setIsInventoryOpen(false);
+  const openInfo = () => setIsInfoOpen(true);
+  const closeInfo = () => setIsInfoOpen(false);
 
   return (
     <>
@@ -38,7 +42,11 @@ export default function StorePage() {
         onClose={closeInventory}
         userId={userId}
       />
+      <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
+      <nav>
+        <Button onClick={openInfo}>Info</Button>
+      </nav>
         <div className={styles.userShopInfo}>
           <h1>Marketplace</h1>
           <div>
