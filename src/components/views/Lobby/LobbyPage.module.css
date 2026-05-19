@@ -29,6 +29,11 @@
   gap: 1rem;
 }
 
+.startButton{
+  width: 40%;
+  align-self: center;
+}
+
 .inventoryShopComtainer {
   display: flex;
   flex-direction: row;

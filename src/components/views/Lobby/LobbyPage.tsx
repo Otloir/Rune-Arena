@@ -114,7 +114,11 @@ export default function LobbyPage() {
                   selected={selectedCreatureId === "3"}
                 />
               </div>
-              <Button type="submit" disabled={!selectedCreatureId}>
+              <Button
+                className={styles.startButton}
+                type="submit"
+                disabled={!selectedCreatureId}
+              >
                 Start
               </Button>
             </form>
