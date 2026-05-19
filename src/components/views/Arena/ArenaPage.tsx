@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import BattleArena from "./../../organisms/BattleArena/BattleArena";
 
 export default function ArenaPage() {
@@ -6,16 +6,20 @@ export default function ArenaPage() {
   const playerOneUserId = location.state?.playerOneUserId;
   const playerOneCreatureId = location.state?.playerOneCreatureId;
 
-  // TODO: make more dynamic later with multiplayer and bot/singleplayer version
+  if (!playerOneUserId || !playerOneCreatureId) {
+    return <Navigate to="/" replace />;
+  }
+
+  // TODO: make more dynamic later
   // player 1 = the user
   // player 2 = opponent
   return (
     <>
       <BattleArena
         playerOne={playerOneUserId}
-        playerTwo={2}
-        playerOneCreatureId={parseInt(playerOneCreatureId)}
-        playerTwoCreatureId={3}
+        playerTwo="2"
+        playerOneCreatureId={playerOneCreatureId}
+        playerTwoCreatureId="3"
       />
     </>
   );

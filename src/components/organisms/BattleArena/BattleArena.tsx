@@ -3,10 +3,10 @@ import Creature from "../../molecules/Creature/Creature";
 import styles from "./BattleArena.module.css";
 
 interface BattleArenaProps {
-  playerOne: number;
-  playerTwo: number;
-  playerOneCreatureId: number;
-  playerTwoCreatureId: number;
+  playerOne: string;
+  playerTwo: string;
+  playerOneCreatureId: string;
+  playerTwoCreatureId: string;
 }
 
 export default function BattleArena({

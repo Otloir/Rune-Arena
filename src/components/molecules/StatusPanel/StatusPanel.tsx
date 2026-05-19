@@ -3,8 +3,8 @@ import Bars from "../../atoms/Bars/Bars";
 import { useCreatureById } from "../../../hooks/useCreature";
 
 interface StatusPanelProps {
-  userId: number;
-  creatureId: number;
+  userId: string;
+  creatureId: string;
   currentHp?: number;
 }
 

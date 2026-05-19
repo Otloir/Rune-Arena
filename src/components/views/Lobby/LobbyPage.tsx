@@ -5,17 +5,15 @@ import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
 import styles from "./LobbyPage.module.css";
 
+//TODO: make userid not hardcoded.
 export default function LobbyPage() {
-  // TODO: make userId dynamic when auth is in place
-  const userId: number = 1;
-
+  const userId = "1";
   const navigate = useNavigate();
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
   );
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
 
-  // Disable body scroll when inventory is open
   useEffect(() => {
     if (!isInventoryOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -25,11 +23,11 @@ export default function LobbyPage() {
     };
   }, [isInventoryOpen]);
 
-  const handleCreatureSelect = (creatureId: string) => {
+  const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
   };
 
-  const handleStartArena = () => {
+  const handleStartArena = (): void => {
     if (!selectedCreatureId) return;
     navigate("/arena", {
       state: {
@@ -39,18 +37,15 @@ export default function LobbyPage() {
     });
   };
 
-  const navigateStore = () => {
+  const navigateStore = (): void => {
     navigate("/store", { state: { userId } });
   };
-
-  const openInventory = () => setIsInventoryOpen(true);
-  const closeInventory = () => setIsInventoryOpen(false);
 
   return (
     <>
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={closeInventory}
+        onClose={() => setIsInventoryOpen(false)}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
@@ -64,7 +59,7 @@ export default function LobbyPage() {
           </div>
           <nav>
             <Button onClick={navigateStore}>Store</Button>
-            <Button onClick={openInventory}>Bag</Button>
+            <Button onClick={() => setIsInventoryOpen(true)}>Bag</Button>
           </nav>
         </section>
 

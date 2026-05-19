@@ -1,61 +1,62 @@
-// ----------------------------------------------------------------------------------
-// Users
-// ----------------------------------------------------------------------------------
-
-export type User = {
-  uuid: string;
-  firstname: string;
-  lastname: string;
-  saldo: number;
-  github: string;
-  url: string;
-  stamps: Stamp[];
-};
-
-// ----------------------------------------------------------------------------------
-// Stamps
-// ----------------------------------------------------------------------------------
-
-// Animals available as stamps
-export type StampAnimal = "lion" | "dolphin" | "tucan" | "beetlebug" | "snake";
-
-// Metal prefixes
+export type StampAnimal = "lion" | "dolphin" | "toucan" | "beetlebug" | "snake";
+ 
 export type StampMetal = "silver" | "gold" | "platinum";
-
-export type Stamp = string;
-
-// ----------------------------------------------------------------------------------
-// Transactions
-// ----------------------------------------------------------------------------------
-
-export type Transaction = {
-  seller: string;
-  buyer: string;
-  amount: number;
-  stamp: Stamp; 
+ 
+export type SetType = "metal" | "animal" | "non_metal";
+ 
+export type TransactionType = "fee" | "payout";
+ 
+export type Stamptype = {
+  id: number;
+  animal: StampAnimal;
+  metal: StampMetal | null;
+  image_url: string | null;
 };
-
-// Body sent when creating a transaction
-export type CreateTransactionBody = {
-  seller: string;
-  buyer: string;
-  amount: number;
+ 
+export type Stamp = {
+  id: number;
+  user_id: number;
+  stamptype_id: number;
+  stamptype: Stamptype;
+  image_url: string | null;
+  exchanged_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
-
-// What comes back after a transaction is created
-export type TransactionReceipt = {
-  uuid: string;
-  seller: string;
-  buyer: string;
-  amount: number;
-  stamp: Stamp; 
+ 
+export type User = {
+  id: number;
+  name: string;
+  is_active: boolean;
+  group_id: number | null;
+  balance: number;
+  created_at: string;
+  updated_at: string;
 };
-
-// ----------------------------------------------------------------------------------
-// API Response helpers
-// ----------------------------------------------------------------------------------
-
-// Wrapper for API that can succeed or fail
-export type ApiResult<SuccessType> =
-  | { success: true; data: SuccessType }
-  | { success: false; error: string };
+ 
+export type TransactionResponse = {
+  id: number;
+  stamp: Stamp;
+};
+ 
+export type PayoutResponse = {
+  id: number;
+  original_transaction_id: number;
+};
+ 
+export type IdentityTokenInfo = {
+  user: { id: number; name: string };
+  expires_at: string;
+};
+ 
+export type ExchangeResponse = {
+  amount: number;
+  set_type: SetType;
+  stamps_consumed: number;
+};
+ 
+// Generic result wrapper — every API call returns one of these
+export type ApiResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string; status?: number };
+ 
