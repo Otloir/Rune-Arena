@@ -78,11 +78,7 @@ html,
 body {
   height: 100%;
   margin: 0;
-  padding: 0;
-}
-
-body {
-  min-height: 100dvh;
+  height: -webkit-fill-available;
   color: var(--text);
   background: var(--bg);
   font-family: inherit;
@@ -135,18 +131,26 @@ p {
   margin: 0;
 }
 
-/* Code / counters */
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 0.25rem;
-  color: var(--text-h);
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;  
+  padding: 0;
 }
 
-code {
-  font-size: 0.9375rem;
-  line-height: 135%;
-  padding: 0.25rem 0.5rem;
-  background: var(--code-bg);
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh; /* modern fix for mobile browsers */
+}
+
+html {
+  height: -webkit-fill-available;
+  span, p, button{
+  font-family: var(--press);
+  }
 }
