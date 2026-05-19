@@ -13,8 +13,8 @@ interface UseBattleProps {
   opponentCreature: Creature | null;
   opponentCreatureId: number | string;
   opponentLevel?: number;
-  playerUserId: number | string;       // ← new
-  playerCreatureId: number | string;   // ← new
+  playerUserId: number | string;      
+  playerCreatureId: number | string;   
 }
 
 // =========================

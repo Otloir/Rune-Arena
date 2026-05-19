@@ -35,8 +35,6 @@ export async function getCreatureById(creatureId: string | number ): Promise<Cre
   return data;
 }
 
-// Get a user's creature + level info in one query
-// Joins: User_Creature_Levels → Creatures + Levels
 export async function getUserCreature(userId: string | number): Promise<UserCreatureRow | null> {
   const { data, error } = await supabase
     .from("User_Creature_Levels")
@@ -56,8 +54,6 @@ export async function getUserCreature(userId: string | number): Promise<UserCrea
   return data;
 }
 
-// Get a specific user's creature by creatureId + level info
-// Joins: User_Creature_Levels → Creatures + Levels filtered by creature_id
 export async function getUserCreatureById(
   userId: string,
   creatureId: string,
@@ -81,7 +77,6 @@ export async function getUserCreatureById(
   return data;
 }
 
-// Get all types
 export async function getTypes(): Promise<Type[] | null> {
   const { data, error } = await supabase.from("Types").select("id, name");
   if (error) {
@@ -91,7 +86,6 @@ export async function getTypes(): Promise<Type[] | null> {
   return data;
 }
 
-// Get all moves
 export async function getMoves(): Promise<Move[] | null> {
   const { data, error } = await supabase
     .from("Moves")
@@ -103,7 +97,6 @@ export async function getMoves(): Promise<Move[] | null> {
   return data;
 }
 
-// Award XP to a player's creature, levelling up if threshold is crossed
 export async function awardXpToCreature(
   userId: string | number,
   creatureId: string | number,
@@ -149,7 +142,6 @@ export async function awardXpToCreature(
   let newXp = tentativeXp;
   let newLevelId = row.level_id;
 
-  // Compare against CURRENT level's requirement
   if (nextLevel && tentativeXp >= currentLevel.xp_required) {
     newLevelId = nextLevel.id;
     newXp = tentativeXp - currentLevel.xp_required;
