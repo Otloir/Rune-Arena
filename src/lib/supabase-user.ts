@@ -3,7 +3,6 @@ import { supabase } from "./supabase";
 export type LocalUser = {
   centralbank_id: number;
   name: string;
-  last_seen: string;
 };
 
 export async function upsertCentralbankUser(
@@ -12,15 +11,8 @@ export async function upsertCentralbankUser(
 ): Promise<LocalUser | null> {
   const { data, error } = await supabase
     .from("Users")
-    .upsert(
-      {
-        centralbank_id: id,
-        name,
-        last_seen: new Date().toISOString(),
-      },
-      { onConflict: "centralbank_id" },
-    )
-    .select("centralbank_id, name, last_seen")
+    .upsert({ centralbank_id: id, name }, { onConflict: "centralbank_id" })
+    .select("centralbank_id, name")
     .single();
 
   if (error) {
