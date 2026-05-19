@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
@@ -7,14 +7,13 @@ import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
 
 export default function StorePage() {
-  // All hooks at the top
   const navigate = useNavigate();
   const location = useLocation();
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Read userId passed from LobbyPage via navigation state
-  const userId: number | undefined = location.state?.userId;
+  const userId: string | undefined = location.state?.userId;
 
   // Disable body scroll when inventory or store is open
   useEffect(() => {
@@ -26,10 +25,8 @@ export default function StorePage() {
     };
   }, [isInventoryOpen, isInfoOpen]);
 
-  // Redirect to lobby if userId is missing (e.g. navigated here directly)
-  if (!userId) {
-    navigate("/");
-    return null;
+  if (userId == null) {
+    return <Navigate to="/" replace />;
   }
 
   const navigateLobby = () => navigate("/");

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import Item from "../../atoms/Item/Item";
-import { getItems, getUserItems, buyItem } from "../../../api/item.database";
+import {
+  getItems,
+  getUserItems,
+  buyItem,
+} from "../../../database/item.database";
 import type { Item as ItemType } from "../../../types/item.types";
 import styles from "./ItemList.module.css";
 import PurchaseModal from "../PurchaseModal/PurchaseModal";
@@ -8,7 +12,7 @@ import PurchaseModal from "../PurchaseModal/PurchaseModal";
 interface ListProps {
   type?: "store" | "inventory";
   variant: "card" | "row";
-  userId?: number;
+  userId?: string;
 }
 
 export default function ItemList({ type, variant, userId }: ListProps) {
@@ -22,7 +26,7 @@ export default function ItemList({ type, variant, userId }: ListProps) {
 
   const handleBuy = async (item: ItemType) => {
     // userId is required to buy — if missing, do nothing
-    if (userId == null) {
+    if (!userId) {
       console.error("Cannot buy item: no userId provided");
       return;
     }

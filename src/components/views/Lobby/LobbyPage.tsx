@@ -6,10 +6,9 @@ import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
 
+//TODO: make userid not hardcoded.
 export default function LobbyPage() {
-  // TODO: make userId dynamic when auth is in place
-  const userId: number = 1;
-
+  const userId = "1";
   const navigate = useNavigate();
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
@@ -27,11 +26,11 @@ export default function LobbyPage() {
     };
   }, [isInventoryOpen, isInfoOpen]);
 
-  const handleCreatureSelect = (creatureId: string) => {
+  const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
   };
 
-  const handleStartArena = () => {
+  const handleStartArena = (): void => {
     if (!selectedCreatureId) return;
     navigate("/arena", {
       state: {
@@ -41,7 +40,7 @@ export default function LobbyPage() {
     });
   };
 
-  const navigateStore = () => {
+  const navigateStore = (): void => {
     navigate("/store", { state: { userId } });
   };
 
@@ -55,7 +54,7 @@ export default function LobbyPage() {
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={closeInventory}
+        onClose={() => setIsInventoryOpen(false)}
         userId={userId}
       />
       <section className={styles.lobbyPage}>

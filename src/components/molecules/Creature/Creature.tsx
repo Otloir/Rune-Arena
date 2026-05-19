@@ -3,8 +3,8 @@ import platformImage from "../../../assets/images/platform.png";
 import styles from "./Creature.module.css";
 
 interface CreatureProps {
-  userId: number;
-  creatureId: number;
+  userId: string | number;
+  creatureId: string | number;
   role: "player" | "opponent";
 }
 
