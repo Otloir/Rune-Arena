@@ -6,7 +6,7 @@ import {
   getMoves,
   getUserCreature,
   getUserCreatureById,
-} from "../api/creature.database";
+} from "../database/creature.database";
 
 // Hook that handles loading/error state for any async fetch.
 // FetchedData is a placeholder for the data type gets passed in
@@ -65,10 +65,10 @@ export function useCreature() {
   return { creatures };
 }
 
-export function useUserCreature(userId: number) {
+export function useUserCreature(userId: string | null) {
   const { data, loading, error } = useAsyncData(
-    () => getUserCreature(userId.toString()),
-    userId > 0,
+    () => (userId ? getUserCreature(userId) : Promise.resolve(null)),
+    Boolean(userId),
   );
 
   const creatureData = data
@@ -93,10 +93,16 @@ export function useUserCreature(userId: number) {
   };
 }
 
-export function useCreatureById(userId: number, creatureId: number) {
+export function useCreatureById(
+  userId: string | number | null,
+  creatureId: string | number | null,
+) {
   const { data, loading, error } = useAsyncData(
-    () => getUserCreatureById(userId.toString(), creatureId.toString()),
-    userId > 0 && creatureId > 0,
+    () =>
+      userId && creatureId
+        ? getUserCreatureById(String(userId), String(creatureId))
+        : Promise.resolve(null),
+    Boolean(userId) && Boolean(creatureId),
   );
 
   const creatureData = data

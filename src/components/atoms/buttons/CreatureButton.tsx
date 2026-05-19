@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useAsyncData } from "../../../hooks/useCreature";
-import { getCreatureById } from "../../../api/creature.database";
+import { getCreatureById } from "../../../database/creature.database";
 import type { Creature } from "../../../types/creature.types";
 import styles from "./CreatureButton.module.css";
 

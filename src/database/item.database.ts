@@ -18,7 +18,7 @@ export async function getItems() {
 }
 
 // Get items a specific user has, grouped by item so duplicates show as quantity
-export async function getUserItems(userId: number) {
+export async function getUserItems(userId: string) {
   const { data, error } = await supabase
     .from("User_Items")
     .select(
@@ -56,7 +56,7 @@ export async function getUserItems(userId: number) {
 }
 
 // Add an item to a user's inventory
-export async function buyItem(userId: number, itemId: number) {
+export async function buyItem(userId: string, itemId: number) {
   const { error } = await supabase
     .from("User_Items")
     .insert({ user_id: userId, item_id: itemId });
