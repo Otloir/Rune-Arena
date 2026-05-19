@@ -176,9 +176,7 @@ export default function TextCarousel({
                   switch (entry.tag) {
                     case "h4":
                       return (
-                        <h4 key={`${slide.accName}-${index}`}>
-                          {entry.text}
-                        </h4>
+                        <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
                       );
                     case "p":
                       return (

@@ -12,7 +12,7 @@
 
 .textCarouselPanel {
   position: relative;
-  width: 100;
+  width: 100vw;
   height: 92vh;
   overflow: hidden;
   border-radius: 1.25rem;

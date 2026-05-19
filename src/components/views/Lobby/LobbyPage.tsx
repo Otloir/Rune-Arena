@@ -61,16 +61,25 @@ export default function LobbyPage() {
       <section className={styles.lobbyPage}>
         <section>
           <nav>
-            <Button onClick={openInfo}>Info</Button>
+            <Button onClick={openInfo} aria-label="open information button">
+              Info
+            </Button>
           </nav>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
           </div>
           <nav>
-            <Button onClick={navigateStore}>Store</Button>
-            <Button onClick={openInventory}>Bag</Button>
+            <Button
+              onClick={navigateStore}
+              aria-label="navigate to shop button"
+            >
+              Store
+            </Button>
           </nav>
+          <Button onClick={openInventory} aria-label="open inventory button">
+            Bag
+          </Button>
         </section>
 
         <section>
