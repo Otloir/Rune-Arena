@@ -1,11 +1,16 @@
 .arena {
   background-color: rgb(199, 238, 225);
-  padding: 1rem 2rem;
-  height: 60vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .arenaContainer {
-  margin: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .player {
@@ -17,20 +22,56 @@
   display: flex;
 }
 
+.playerContainer,
 .opponentContainer {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
+  
+}
+
+.opponentContainer {
   flex-direction: row-reverse;
+  align-items: flex-end;
+  padding-top: 2rem;
 }
 
 .playerContainer {
-  display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.controlsWrapper {
+  flex: 0 0 40vh;
+  height: 40vh;
+  min-height: 18rem;
+  max-height: 26rem;
+
+  padding: 0 1rem;
+  overflow: hidden;
+}
+
+.opponentControlsContainer {
+  flex: 0 0 auto;
+  padding: 0 1rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingState {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
 @media (min-width: 1024px) {
   .arena {
-    padding: 5rem 3rem; 
-    overflow: hidden;
     height: 100vh;
+    overflow: hidden;
   }
 }

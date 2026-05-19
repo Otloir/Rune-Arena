@@ -91,26 +91,6 @@
   transform: translateY(-1px);
 }
 
-.destructive {
-  background: #e84040;
-  color: #fff;
-  box-shadow: 0 3px 0 #b52e2e;
-}
-.destructive:hover:not(:disabled) {
-  background: #d43535;
-  transform: translateY(-1px);
-}
-
-.outline {
-  background: transparent;
-  color: #6b7399;
-  border: 1.5px solid #d0d4e8;
-}
-.outline:hover:not(:disabled) {
-  background: #f0f2f8;
-  color: #3a3f5c;
-}
-
 /* ── Custom color ── */
 .customColor {
   background: var(--btn-custom-bg);

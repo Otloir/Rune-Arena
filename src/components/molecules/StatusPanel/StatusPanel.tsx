@@ -6,22 +6,21 @@ interface StatusPanelProps {
   userId: string;
   creatureId: string;
   currentHp?: number;
+  side: "player" | "opponent";
 }
 
 export default function StatusPanel({
   userId,
   creatureId,
   currentHp,
+  side,
 }: StatusPanelProps) {
-  // Get the specific creature for this user
   const { creature, level, currentXp, xpRequired, loading, error } =
     useCreatureById(userId, creatureId);
 
-  // Show loading state
   if (loading)
     return <section className={styles.statusBarContainer}>Loading...</section>;
 
-  // Show error if something went wrong
   if (error || !creature)
     return (
       <section className={styles.statusBarContainer}>
@@ -29,14 +28,16 @@ export default function StatusPanel({
       </section>
     );
 
-  // Make sure HP doesn't go below 0 or above max HP
   const displayHp = Math.min(
     Math.max(0, currentHp ?? creature.hp),
     creature.hp,
   );
 
   return (
-    <section className={styles.statusBarContainer}>
+    <section
+      className={styles.statusBarContainer}
+      aria-label={`${side === "player" ? "Player creature status" : "Opponent creature status"}`}
+    >
       <div className={styles.statusBarInfo}>
         <span>{creature.name}</span>
         <span>Lv. {level}</span>
