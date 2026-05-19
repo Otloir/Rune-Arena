@@ -77,7 +77,7 @@ export default function BattleArena({
             winner,
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
-            xpGained,          // ← new
+            xpGained,
           },
         });
       }, 1200);
