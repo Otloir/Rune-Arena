@@ -9,20 +9,20 @@
 }
 
 .bar:has(.hp) {
-  background-color: #a42121;
+  background-color: var(--hp-bar-damage);
 }
 
 .bar:has(.xp) {
-  background-color: #d9d9d9;
+  background-color: var(--xp-bar-empty);
 }
 
 .hp {
-  background-color: #04aa6d;
+  background-color: var(--hp-bar);
   height: 10px;
 }
 
 .xp {
-  background-color: #0483aa;
+  background-color: var(--xp-bar);
   height: 5px;
 }
 

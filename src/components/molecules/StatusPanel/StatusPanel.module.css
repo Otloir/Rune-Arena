@@ -1,7 +1,7 @@
 .statusBarContainer {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--status-panel-bg);
 
   width: 6.5rem;
   padding: 5px;
