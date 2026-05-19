@@ -58,11 +58,9 @@ export default function LobbyPage() {
       />
       <section className={styles.lobbyPage}>
         <section>
-          <nav>
-            <Button onClick={openInfo} aria-label="open information button">
-              Info
-            </Button>
-          </nav>
+          <Button onClick={openInfo} aria-label="open information button">
+            Info
+          </Button>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
