@@ -1,5 +1,5 @@
 import { useAsyncData } from "./useCreature";
-import { getMoveById } from "../api/move.database";
+import { getMoveById } from "../database/move.database";
 import type { MoveWithType } from "../types/move.types";
 
 export function useMove(moveId: number): {

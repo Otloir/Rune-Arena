@@ -6,7 +6,7 @@ import {
   getMoves,
   getUserCreature,
   getUserCreatureById,
-} from "../api/creature.database";
+} from "../database/creature.database";
 
 // Hook that handles loading/error state for any async fetch.
 // FetchedData is a placeholder for the data type gets passed in
