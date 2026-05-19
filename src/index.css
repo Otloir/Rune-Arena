@@ -91,10 +91,6 @@ h2 {
 }
 p {
   margin: 0;
-  font-size: 12px;
-  @media (max-width: 64rem) {
-    font-size: 14px;
-  }
 }
 
 html,
