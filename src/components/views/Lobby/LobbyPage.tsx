@@ -45,7 +45,6 @@ export default function LobbyPage() {
   };
 
   const openInventory = () => setIsInventoryOpen(true);
-  const closeInventory = () => setIsInventoryOpen(false);
   const openInfo = () => setIsInfoOpen(true);
   const closeInfo = () => setIsInfoOpen(false);
 
