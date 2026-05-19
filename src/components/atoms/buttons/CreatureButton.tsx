@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { useAsyncData } from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import type { Creature } from "../../../types/creature.types";
@@ -13,7 +13,7 @@ interface CreatureButtonProps {
   shadow?: boolean;
 }
 
-const CreatureButton: React.FC<CreatureButtonProps> = ({
+const CreatureButton: FC<CreatureButtonProps> = ({
   creatureId,
   onSelect,
   selected = false,

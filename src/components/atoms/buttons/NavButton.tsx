@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
@@ -16,7 +16,7 @@ type ExternalNav = {
 type NavTarget = InternalNav | ExternalNav;
 
 type NavButtonProps = Omit<ButtonProps, "onClick"> & NavTarget & {
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   label?: string;
 };
 
@@ -31,7 +31,7 @@ const defaultLabels: Record<"menu" | "start" | "external", string> = {
   external: "Back to Site",
 };
 
-const NavButton: React.FC<NavButtonProps> = ({
+const NavButton: FC<NavButtonProps> = ({
   to,
   externalUrl,
   children,
