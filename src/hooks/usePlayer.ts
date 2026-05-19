@@ -16,11 +16,14 @@ export type PlayerState =
   | { status: "ready"; player: Player }
   | { status: "error"; message: string };
 
-
-// Uses a negative number to avoid colliding with real IDs.
+// Uses a negative number to avoid colliding with real centralbank IDs.
 function getOrCreateGuestId(): number {
   const stored = localStorage.getItem("guest_id");
-  if (stored) return Number(stored);
+  const parsed = Number(stored);
+
+  if (Number.isFinite(parsed) && parsed !== 0) {
+    return parsed;
+  }
 
   const newId = -(Math.floor(Math.random() * 1_000_000) + 1);
   localStorage.setItem("guest_id", String(newId));

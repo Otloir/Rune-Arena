@@ -34,7 +34,7 @@ export default function LobbyPage() {
     return <p>Something went wrong: {playerState.message}</p>;
   }
 
-  const userId = String(playerState.player.id);;
+  const userId = String(playerState.player.id);
   const isGuest = playerState.player.isGuest;
 
   const handleCreatureSelect = (creatureId: string): void => {
