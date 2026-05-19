@@ -16,8 +16,8 @@ export default function ArenaPage() {
   return (
     <>
       <BattleArena
-        playerOne={playerOneUserId}
-        playerTwo="2"
+        playerOneId={playerOneUserId}
+        playerTwoId="2"
         playerOneCreatureId={playerOneCreatureId}
         playerTwoCreatureId="3"
       />

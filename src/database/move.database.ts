@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabase";
 import type { MoveWithType } from "../types/move.types";
 
-export async function getMoveById(moveId: number): Promise<MoveWithType | null> {
+export async function getMoveById(moveId: number | string ): Promise<MoveWithType | null> {
   const { data, error } = await supabase
     .from("Moves")
     .select(`

@@ -22,7 +22,7 @@ export async function getCreatures(): Promise<Creature[] | null> {
 }
 
 // Get a single creature by its ID
-export async function getCreatureById(creatureId: string): Promise<Creature | null> {
+export async function getCreatureById(creatureId: string | number ): Promise<Creature | null> {
   const { data, error } = await supabase
     .from("Creatures")
     .select("id, name, front_img, back_img, evade, speed, defense, hp")
@@ -37,7 +37,7 @@ export async function getCreatureById(creatureId: string): Promise<Creature | nu
 
 // Get a user's creature + level info in one query
 // Joins: User_Creature_Levels → Creatures + Levels
-export async function getUserCreature(userId: string): Promise<UserCreatureRow | null> {
+export async function getUserCreature(userId: string | number): Promise<UserCreatureRow | null> {
   const { data, error } = await supabase
     .from("User_Creature_Levels")
     .select(

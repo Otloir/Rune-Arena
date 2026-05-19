@@ -1,21 +1,22 @@
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
 import styles from "./BattleArena.module.css";
+import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 interface BattleArenaProps {
-  playerOne: string | number;
-  playerTwo: string | number;
+  playerOneId: string | number;
+  playerTwoId: string | number;
   playerOneCreatureId: string | number;
   playerTwoCreatureId: string | number;
 }
 
 export default function BattleArena({
-  playerOne,
-  playerTwo,
+  playerOneId,
+  playerTwoId,
   playerOneCreatureId,
   playerTwoCreatureId,
 }: BattleArenaProps) {
@@ -32,13 +33,11 @@ export default function BattleArena({
     isProcessing,
     battleLog,
     handlePlayerMove,
-    handleOpponentMove,
   } = useBattle({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
     opponentCreatureId: playerTwoCreatureId,
     opponentLevel: playerTwoLevel,
-    mode,
   });
 
   const navigate = useNavigate();
@@ -63,18 +62,19 @@ export default function BattleArena({
 
       return () => clearTimeout(timer);
     }
-  }, [
-    playerHp,
-    opponentHp,
-    playerOneCreature,
-    playerTwoCreature,
-    navigate,
-  ]);
+  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (
       <section className={styles.arena}>
-        <div className={styles.loadingState} role="status" aria-live="polite" aria-label="Loading battle...">Loading battle...</div>
+        <div
+          className={styles.loadingState}
+          role="status"
+          aria-live="polite"
+          aria-label="Loading battle..."
+        >
+          Loading battle...
+        </div>
       </section>
     );
   }
@@ -82,38 +82,50 @@ export default function BattleArena({
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
-        {/* opponent */}
+        {/* Opponent */}
         <div className={styles.opponentContainer}>
           <div className={styles.opponent}>
             <StatusPanel
-              userId={playerTwo}
+              userId={playerTwoId}
               creatureId={playerTwoCreatureId}
-              currentHp={50}
+              currentHp={opponentHp}
               side="opponent"
             />
             <Creature
-              userId={playerTwo}
+              userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               role="opponent"
             />
           </div>
         </div>
 
-        {/* player/user */}
+        {/* Player */}
         <div className={styles.playerContainer}>
           <div className={styles.player}>
             <StatusPanel
-              userId={playerOne}
+              userId={playerOneId}
               creatureId={playerOneCreatureId}
+              currentHp={playerHp}
               side="player"
-              currentHp={100}
             />
             <Creature
-              userId={playerOne}
+              userId={playerOneId}
               creatureId={playerOneCreatureId}
               role="player"
             />
           </div>
+        </div>
+
+        {/* Bottom controls panel */}
+        <div className={styles.controlsWrapper}>
+          <PlayerPanel
+            creatureId={Number(playerOneCreatureId)}
+            creatureLevel={playerOneLevel}
+            onMoveSelect={handlePlayerMove}
+            disabled={turnOwner !== "player" || isProcessing}
+            battleLog={battleLog}
+            playerCreature={playerOneCreature}
+          />
         </div>
       </div>
     </section>

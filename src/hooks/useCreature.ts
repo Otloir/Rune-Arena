@@ -69,7 +69,7 @@ export function useCreature(): { creatures: Creature[] } {
   return { creatures };
 }
 
-export function useUserCreature(userId: number): {
+export function useUserCreature(userId: number | string): {
   creature: Creature | null;
   level: number;
   currentXp: number;
@@ -104,7 +104,7 @@ export function useUserCreature(userId: number): {
   };
 }
 
-export function useCreatureById(userId: string, creatureId: number): {
+export function useCreatureById(userId: string | number, creatureId: number | string): {
   creature: Creature | null;
   level: number;
   currentXp: number;
