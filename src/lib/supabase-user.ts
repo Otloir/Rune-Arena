@@ -20,7 +20,7 @@ export async function upsertCentralbankUser(
       },
       { onConflict: "centralbank_id" },
     )
-    .select()
+    .select("centralbank_id, name, last_seen")
     .single();
 
   if (error) {
@@ -28,5 +28,5 @@ export async function upsertCentralbankUser(
     return null;
   }
 
-  return data as LocalUser;
+  return data;
 }

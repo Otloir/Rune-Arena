@@ -32,7 +32,14 @@ export function usePlayer(): PlayerState {
 
       if (result.success) {
         const { id, name } = result.data.user;
-        await upsertCentralbankUser(id, name);
+        const upsertedUser = await upsertCentralbankUser(id, name);
+        if (upsertedUser === null) {
+          setState({
+            status: "error",
+            message: "Failed to persist player locally.",
+          });
+          return;
+        }
         setState({ status: "ready", player: { id, name } });
       } else {
         setState({ status: "error", message: result.error });
