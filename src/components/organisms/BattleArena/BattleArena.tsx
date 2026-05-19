@@ -68,7 +68,7 @@ export default function BattleArena({
 
       return () => clearTimeout(timer);
     }
-  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate]);
+  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate, xpGained]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (

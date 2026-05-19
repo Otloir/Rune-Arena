@@ -131,22 +131,23 @@ export async function awardXpToCreature(
     return null;
   }
 
-  // Find current level entry
+  // Find current level entry — compare as numbers to avoid string/number mismatch
+    // Find current level entry
   const currentLevel = levels.find((l) => l.id === row.level_id);
-  const nextLevel = levels.find(
-    (l) => currentLevel && l.level === currentLevel.level + 1
-  );
+    const nextLevel = levels.find(
+      (l) => currentLevel && l.level === currentLevel.level + 1
+    );
 
-  const tentativeXp = row.current_xp + xpAmount;
-  let newXp = tentativeXp;
-  let newLevelId = row.level_id;
+    const tentativeXp = row.current_xp + xpAmount;
+    let newXp = tentativeXp;
+    let newLevelId = row.level_id;
 
-  // Level up if there's a next level and we've hit its xp_required threshold
-  if (nextLevel && tentativeXp >= nextLevel.xp_required) {
-    newLevelId = nextLevel.id;
-    newXp = 0; // Reset bar for the new level
+    // Level up if there's a next level and we've hit its xp_required threshold
+    if (nextLevel && tentativeXp >= nextLevel.xp_required) {
+      newLevelId = nextLevel.id;
+      newXp = 0; // Reset bar for the new level
   }
-
+  
   const { error: updateError } = await supabase
     .from("User_Creature_Levels")
     .update({ current_xp: newXp, level_id: newLevelId })
