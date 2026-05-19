@@ -42,6 +42,8 @@ export default function BattleArena({
 
   const navigate = useNavigate();
 
+  const battleOver = playerHp <= 0 || opponentHp <= 0;
+
   useEffect(() => {
     if (!playerOneCreature || !playerTwoCreature) return;
 
@@ -122,7 +124,7 @@ export default function BattleArena({
             creatureId={Number(playerOneCreatureId)}
             creatureLevel={playerOneLevel}
             onMoveSelect={handlePlayerMove}
-            disabled={turnOwner !== "player" || isProcessing}
+            disabled={turnOwner !== "player" || isProcessing || battleOver}
             battleLog={battleLog}
             playerCreature={playerOneCreature}
           />
