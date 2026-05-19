@@ -18,7 +18,7 @@ export async function getItems(): Promise<ItemType[] | null> {
 }
 
 // Get items a specific user has, grouped by item so duplicates show as quantity
-export async function getUserItems(userId: number): Promise<ItemType[] | null> {
+export async function getUserItems(userId: string): Promise<ItemType[] | null> {
   const { data, error } = await supabase
     .from("User_Items")
     .select(
