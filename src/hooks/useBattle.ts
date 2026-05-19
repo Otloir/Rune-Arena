@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { MoveWithType } from "../types/move.types";
 import type { Creature } from "../types/creature.types";
-import { getMoveById } from "../api/move.database";
+import { getMoveById } from "../database/move.database";
 import { supabase } from "../lib/supabase";
 
 export type BattleMode = "pve" | "pvp";
