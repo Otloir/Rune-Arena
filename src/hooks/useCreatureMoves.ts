@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-export function useCreatureMoves(creatureId: number, creatureLevel?: number) {
+export function useCreatureMoves(
+  creatureId: number,
+  creatureLevel?: number,
+): {
+  moveIds: number[] | undefined;
+  loading: boolean;
+  error: unknown;
+} {
   const [moveIds, setMoveIds] = useState<number[] | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(undefined);
@@ -19,7 +26,7 @@ export function useCreatureMoves(creatureId: number, creatureLevel?: number) {
       };
     }
 
-    const fetchMoves = async () => {
+    const fetchMoves = async (): Promise<void> => {
       setLoading(true);
       setError(undefined);
 

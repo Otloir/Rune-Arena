@@ -31,10 +31,8 @@ const IconButton: FC<IconButtonProps> = ({
   iconSize,
   ...nativeProps
 }) => {
-  // Resolve icon size inside component scope
   const resolvedIconSize = iconSize ?? iconSizeMap[size];
 
-  // Convert IconButton shape to Button-compatible shape
   const buttonShape: ButtonProps["shape"] =
     shape === "square" ? "rounded" : shape;
 
