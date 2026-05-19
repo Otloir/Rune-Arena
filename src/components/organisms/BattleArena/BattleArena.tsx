@@ -48,23 +48,32 @@ export default function BattleArena({
   const navigate = useNavigate();
 
   useEffect(() => {
-  if (!playerOneCreature || !playerTwoCreature) return;
-  if (playerHp <= 0 || opponentHp <= 0) {
-    const winner: "player" | "opponent" = opponentHp <= 0 ? "player" : "opponent";
+    if (!playerOneCreature || !playerTwoCreature) return;
 
-    const timer = setTimeout(() => {
-      navigate("/result", {
-        state: {
-          winner,
-          playerCreatureName: playerOneCreature.name,
-          opponentCreatureName: playerTwoCreature.name,
-        },
-      });
-    }, 1200);
+    if (playerHp <= 0 || opponentHp <= 0) {
+      const winner: "player" | "opponent" =
+        opponentHp <= 0 ? "player" : "opponent";
 
-    return () => clearTimeout(timer);
-  }
-}, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate]);
+      const timer = setTimeout(() => {
+        navigate("/result", {
+          replace: true,
+          state: {
+            winner,
+            playerCreatureName: playerOneCreature.name,
+            opponentCreatureName: playerTwoCreature.name,
+          },
+        });
+      }, 1200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    playerHp,
+    opponentHp,
+    playerOneCreature,
+    playerTwoCreature,
+    navigate,
+  ]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (

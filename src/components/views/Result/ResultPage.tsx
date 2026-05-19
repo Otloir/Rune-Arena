@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
+import type { ReactElement } from "react";
 
 interface ResultState {
   readonly winner: "player" | "opponent";
