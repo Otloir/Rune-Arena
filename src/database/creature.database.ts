@@ -152,7 +152,7 @@ export async function awardXpToCreature(
   // Compare against CURRENT level's requirement
   if (nextLevel && tentativeXp >= currentLevel.xp_required) {
     newLevelId = nextLevel.id;
-    newXp = 0;
+    newXp = tentativeXp - currentLevel.xp_required;
   }
   
   const { error: updateError } = await supabase
