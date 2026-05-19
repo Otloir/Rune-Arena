@@ -93,11 +93,14 @@ export function useUserCreature(userId: string | null) {
   };
 }
 
-export function useCreatureById(userId: string | null, creatureId: string) {
+export function useCreatureById(
+  userId: string | number | null,
+  creatureId: string | number | null,
+) {
   const { data, loading, error } = useAsyncData(
     () =>
       userId && creatureId
-        ? getUserCreatureById(userId, creatureId)
+        ? getUserCreatureById(String(userId), String(creatureId))
         : Promise.resolve(null),
     Boolean(userId) && Boolean(creatureId),
   );
