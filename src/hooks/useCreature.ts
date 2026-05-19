@@ -78,8 +78,8 @@ export function useUserCreature(userId: number): {
   error: string | null;
 } {
   const { data, loading, error } = useAsyncData(
-    () => getUserCreature(userId.toString()),
-    userId > 0,
+    () => (userId ? getUserCreature(userId) : Promise.resolve(null)),
+    Boolean(userId),
   );
 
   const creatureData = data
@@ -113,8 +113,11 @@ export function useCreatureById(userId: string, creatureId: number): {
   error: string | null;
 } {
   const { data, loading, error } = useAsyncData(
-    () => getUserCreatureById(userId.toString(), creatureId.toString()),
-    userId > 0 && creatureId > 0,
+    () =>
+      userId && creatureId
+        ? getUserCreatureById(String(userId), String(creatureId))
+        : Promise.resolve(null),
+    Boolean(userId) && Boolean(creatureId),
   );
 
   const creatureData = data
