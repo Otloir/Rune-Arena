@@ -266,15 +266,17 @@ export function useBattle({
   // =========================
 
   const damageOpponent = useCallback(
-    async (move: MoveWithType): Promise<void> => {
-        if (!isReady || !opponentCreature || !effectivenessMap) return;
+    async (move: MoveWithType): Promise<boolean> => {
+        if (!isReady || !opponentCreature || !effectivenessMap) {
+        return false;
+        }
 
         const attackerName = playerCreature?.name ?? "Your creature";
         const moveName = move.name;
 
         if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
-        return;
+        return true;
         }
 
         const result = await calculateDamage(
@@ -284,26 +286,46 @@ export function useBattle({
         effectivenessMap
         );
 
-        // Calculate new HP from the current state value directly
         const currentHp = opponentHp ?? opponentCreature.hp;
         const newHp = Math.max(0, currentHp - result.damage);
 
         setOpponentHp(newHp);
 
         log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
-        if (result.message) log(result.message);
 
-        // Only award XP on the killing blow — newHp is reliable here
-        if (newHp <= 0) {
-             const awarded = await awardXpToCreature(playerUserId, playerCreatureId, 100);
-            if (awarded) {
-              setXpGained(100);
-              log(`${attackerName} gained 100 XP!`);
-            }
+        if (result.message) {
+        log(result.message);
         }
+
+        // Enemy defeated
+        if (newHp <= 0) {
+        const awarded = await awardXpToCreature(
+            playerUserId,
+            playerCreatureId,
+            100
+        );
+
+        if (awarded) {
+            setXpGained(100);
+            log(`${attackerName} gained 100 XP!`);
+        }
+
+        return false;
+        }
+
+        return true;
     },
-    [isReady, playerCreature, opponentCreature, opponentHp, opponentTypeIds,
-    effectivenessMap, playerUserId, playerCreatureId, log]
+    [
+        isReady,
+        playerCreature,
+        opponentCreature,
+        opponentHp,
+        opponentTypeIds,
+        effectivenessMap,
+        playerUserId,
+        playerCreatureId,
+        log,
+    ]
     );
 
   // =========================
@@ -398,8 +420,11 @@ export function useBattle({
       if (turnOwner !== "player" || isProcessing) return;
 
       setIsProcessing(true);
-      await damageOpponent(move);
-      setTurnOwner("opponent");
+      const opponentAlive = await damageOpponent(move);
+
+        if (opponentAlive) {
+        setTurnOwner("opponent");
+        }
       setIsProcessing(false);
     },
     [turnOwner, isProcessing, damageOpponent]
