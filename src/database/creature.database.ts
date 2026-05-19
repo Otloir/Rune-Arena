@@ -102,3 +102,61 @@ export async function getMoves(): Promise<Move[] | null> {
   }
   return data;
 }
+
+// Award XP to a player's creature, levelling up if threshold is crossed
+export async function awardXpToCreature(
+  userId: string | number,
+  creatureId: string | number,
+  xpAmount: number
+): Promise<{ newXp: number; newLevelId: number } | null> {
+  const { data: row, error: fetchError } = await supabase
+    .from("User_Creature_Levels")
+    .select("current_xp, level_id")
+    .eq("user_id", userId)
+    .eq("creature_id", creatureId)
+    .single();
+
+  if (fetchError || !row) {
+    console.error("[awardXpToCreature] Failed to fetch creature row:", fetchError?.message);
+    return null;
+  }
+
+  const { data: levels, error: levelsError } = await supabase
+    .from("Levels")
+    .select("id, level, xp_required")
+    .order("level", { ascending: true });
+
+  if (levelsError || !levels) {
+    console.error("[awardXpToCreature] Failed to fetch levels:", levelsError?.message);
+    return null;
+  }
+
+  // Find current level entry
+  const currentLevel = levels.find((l) => l.id === row.level_id);
+  const nextLevel = levels.find(
+    (l) => currentLevel && l.level === currentLevel.level + 1
+  );
+
+  const tentativeXp = row.current_xp + xpAmount;
+  let newXp = tentativeXp;
+  let newLevelId = row.level_id;
+
+  // Level up if there's a next level and we've hit its xp_required threshold
+  if (nextLevel && tentativeXp >= nextLevel.xp_required) {
+    newLevelId = nextLevel.id;
+    newXp = 0; // Reset bar for the new level
+  }
+
+  const { error: updateError } = await supabase
+    .from("User_Creature_Levels")
+    .update({ current_xp: newXp, level_id: newLevelId })
+    .eq("user_id", userId)
+    .eq("creature_id", creatureId);
+
+  if (updateError) {
+    console.error("[awardXpToCreature] Failed to update XP:", updateError.message);
+    return null;
+  }
+
+  return { newXp, newLevelId };
+}

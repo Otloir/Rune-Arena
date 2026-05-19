@@ -3,14 +3,18 @@ import type { MoveWithType } from "../types/move.types";
 import type { Creature } from "../types/creature.types";
 import { getMoveById } from "../database/move.database";
 import { supabase } from "../lib/supabase";
+import { awardXpToCreature } from "../database/creature.database";
 
 export type TurnOwner = "player" | "opponent";
 
+// Add to UseBattleProps:
 interface UseBattleProps {
   playerCreature: Creature | null;
   opponentCreature: Creature | null;
   opponentCreatureId: number | string;
   opponentLevel?: number;
+  playerUserId: number | string;       // ← new
+  playerCreatureId: number | string;   // ← new
 }
 
 // =========================
@@ -139,6 +143,8 @@ export function useBattle({
   opponentCreature,
   opponentCreatureId,
   opponentLevel,
+  playerUserId,
+  playerCreatureId,
 }: UseBattleProps): {
   playerHp: number;
   opponentHp: number;
@@ -146,8 +152,10 @@ export function useBattle({
   isProcessing: boolean;
   battleLog: string[];
   battleError: string | null;
+  xpGained: number;
   handlePlayerMove: (move: MoveWithType) => Promise<void>;
 } {
+  const [xpGained, setXpGained] = useState(0);
   const [playerHp, setPlayerHp] = useState<number | null>(null);
   const [opponentHp, setOpponentHp] = useState<number | null>(null);
   const [turnOwner, setTurnOwner] = useState<TurnOwner | null>(null);
@@ -259,32 +267,44 @@ export function useBattle({
 
   const damageOpponent = useCallback(
     async (move: MoveWithType): Promise<void> => {
-      if (!isReady || !opponentCreature || !effectivenessMap) return;
+        if (!isReady || !opponentCreature || !effectivenessMap) return;
 
-      const attackerName = playerCreature?.name ?? "Your creature";
-      const moveName = move.name;
+        const attackerName = playerCreature?.name ?? "Your creature";
+        const moveName = move.name;
 
-      if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
+        if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
         return;
-      }
+        }
 
-      const result = await calculateDamage(
+        const result = await calculateDamage(
         move,
         opponentCreature,
         opponentTypeIds,
         effectivenessMap
-      );
+        );
 
-      setOpponentHp((p) =>
-        Math.max(0, (p ?? opponentCreature.hp) - result.damage)
-      );
+        // Calculate new HP from the current state value directly
+        const currentHp = opponentHp ?? opponentCreature.hp;
+        const newHp = Math.max(0, currentHp - result.damage);
 
-      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
-      if (result.message) log(result.message);
+        setOpponentHp(newHp);
+
+        log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
+        if (result.message) log(result.message);
+
+        // Only award XP on the killing blow — newHp is reliable here
+        if (newHp <= 0) {
+             const awarded = await awardXpToCreature(playerUserId, playerCreatureId, 100);
+            if (awarded) {
+              setXpGained(100);
+              log(`${attackerName} gained 100 XP!`);
+            }
+        }
     },
-    [isReady, playerCreature, opponentCreature, opponentTypeIds, effectivenessMap, log]
-  );
+    [isReady, playerCreature, opponentCreature, opponentHp, opponentTypeIds,
+    effectivenessMap, playerUserId, playerCreatureId, log]
+    );
 
   // =========================
   // OPPONENT DAMAGE
@@ -396,6 +416,7 @@ export function useBattle({
     isProcessing,
     battleLog,
     battleError,
+    xpGained,
     handlePlayerMove,
   };
 }

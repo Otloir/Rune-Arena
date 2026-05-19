@@ -27,18 +27,21 @@ export default function BattleArena({
     useCreatureById(playerTwoId, playerTwoCreatureId);
 
   const {
-    playerHp,
-    opponentHp,
-    turnOwner,
-    isProcessing,
-    battleLog,
-    handlePlayerMove,
-  } = useBattle({
-    playerCreature: playerOneCreature,
-    opponentCreature: playerTwoCreature,
-    opponentCreatureId: playerTwoCreatureId,
-    opponentLevel: playerTwoLevel,
-  });
+  playerHp,
+  opponentHp,
+  turnOwner,
+  isProcessing,
+  battleLog,
+  handlePlayerMove,
+  xpGained,   
+} = useBattle({
+  playerCreature: playerOneCreature,
+  opponentCreature: playerTwoCreature,
+  opponentCreatureId: playerTwoCreatureId,
+  opponentLevel: playerTwoLevel,
+  playerUserId: playerOneId,        // ← new
+  playerCreatureId: playerOneCreatureId, // ← new
+});
 
   const navigate = useNavigate();
 
@@ -58,6 +61,7 @@ export default function BattleArena({
             winner,
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
+            xpGained,          // ← new
           },
         });
       }, 1200);
