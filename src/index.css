@@ -151,6 +151,6 @@ body {
 html {
   height: -webkit-fill-available;
   span, p, button{
-  font-family: var(--press);
+  font-family: var(--sans);
   }
 }

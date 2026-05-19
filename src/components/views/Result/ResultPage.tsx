@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
-//import type { ReactElement } from "react";
+import type { ReactElement } from "react";
 
 interface ResultState {
   readonly winner: "player" | "opponent";
@@ -12,7 +12,7 @@ interface ResultState {
   readonly rewardQuantity?: number;
 }
 
-export default function ResultPage(): React.ReactElement {
+export default function ResultPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as ResultState | null;
