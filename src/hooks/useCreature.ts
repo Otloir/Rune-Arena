@@ -104,7 +104,7 @@ export function useUserCreature(userId: number): {
   };
 }
 
-export function useCreatureById(userId: number, creatureId: number): {
+export function useCreatureById(userId: string, creatureId: number): {
   creature: Creature | null;
   level: number;
   currentXp: number;
