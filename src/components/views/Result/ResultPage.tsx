@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
+import Button from "../../atoms/buttons/Button";
 //import type { ReactElement } from "react";
 
 interface ResultState {
@@ -86,14 +87,15 @@ export default function ResultPage(): React.ReactElement {
           </article>
         </section>
 
-        <button
+        <Button
           type="button"
-          className={styles.secondaryButton}
+          variant="neutral"
           onClick={handleReturnHome}
           aria-label="Return to main arena"
+          className={styles.secondaryButton}
         >
           Back to Arena
-        </button>
+        </Button>
       </section>
     </main>
   );

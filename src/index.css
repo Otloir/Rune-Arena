@@ -1,34 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Jacquard+12&family=Jersey+25&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap');
 
 :root {
+  /* Colors */
   --text: #000000;
   --text-h: #000000;
-  --bg: #fff;
+  --bg: #ffffff;
+
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
+
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 0.625rem 0.9375rem -0.1875rem, rgba(0, 0, 0, 0.05) 0 0.25rem 0.375rem -0.125rem;
 
-  --sans: "Google Sans Flex", 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --social-bg: rgba(244, 243, 236, 0.5);
+
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 0.625rem 0.9375rem -0.1875rem,
+    rgba(0, 0, 0, 0.05) 0 0.25rem 0.375rem -0.125rem;
+
+  /* Fonts */
+  --sans: "Press Start 2P", system-ui;
   --mono: ui-monospace, Consolas, monospace;
   --pixel: "Pixelify Sans", sans-serif;
-  --jersy: "Jersey 25", sans-serif;
+  --jersey: "Jersey 25", sans-serif;
   --jacquard: "Jacquard 12", system-ui;
-  --press: "Press Start 2P", system-ui;
 
+  /* Global typography */
   font: 1.125rem/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+
   color: var(--text);
   background: var(--bg);
+
+  color-scheme: light dark;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -44,20 +53,33 @@
     --text: #000000;
     --text-h: #f3f4f6;
     --bg: #faebd7;
-    ;
+
     --border: #2e303a;
     --code-bg: #1f2028;
+
     --accent: #c084fc;
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
+
     --social-bg: rgba(47, 48, 58, 0.5);
+
     --shadow:
-      rgba(0, 0, 0, 0.4) 0 0.625rem 0.9375rem -0.1875rem, rgba(0, 0, 0, 0.25) 0 0.25rem 0.375rem -0.125rem;
+      rgba(0, 0, 0, 0.4) 0 0.625rem 0.9375rem -0.1875rem,
+      rgba(0, 0, 0, 0.25) 0 0.25rem 0.375rem -0.125rem;
   }
 
   #social .button-icon {
     filter: invert(1) brightness(2);
   }
+}
+
+/* Layout reset */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #root {
@@ -67,15 +89,26 @@
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  min-height: 100dvh;
   color: var(--text);
+  background: var(--bg);
+  font-family: inherit;
 }
 
+/* Ensure form controls inherit typography */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+/* Typography */
 h1,
-h2, h3 {
-  font-family: var(--press);
+h2,
+h3 {
   font-weight: 400;
 }
 
@@ -104,10 +137,12 @@ h2 {
     font-size: 1.25rem;
   }
 }
+
 p {
   margin: 0;
 }
 
+/* Code / counters */
 code,
 .counter {
   font-family: var(--mono);
@@ -121,27 +156,4 @@ code {
   line-height: 135%;
   padding: 0.25rem 0.5rem;
   background: var(--code-bg);
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  height: 100%;
-}
-
-html span,
-html p,
-html button {
-  font-family: var(--press);
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
 }
