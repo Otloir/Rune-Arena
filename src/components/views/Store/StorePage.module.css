@@ -27,8 +27,8 @@
 }
 
 .fixedInformationBar{
-  top: 1rem;
-  right: 1rem;
+  top: 2rem;
+  right: 2rem;
   position:fixed;
   display: flex;
   justify-content: center;
