@@ -4,7 +4,7 @@ import styles from "./BattleArena.module.css";
 import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface BattleArenaProps {
@@ -23,22 +23,41 @@ export default function BattleArena({
   const { creature: playerOneCreature, level: playerOneLevel } =
     useCreatureById(playerOneId, playerOneCreatureId);
 
-  const { creature: playerTwoCreature, level: playerTwoLevel } =
+  const { creature: playerTwoCreature } =
     useCreatureById(playerTwoId, playerTwoCreatureId);
 
+    const randomizedOpponentLevel = useMemo(() => {
+  if (!playerOneLevel) return 1;
+
+  const roll = Math.floor(Math.random() * 3);
+
+  if (roll === 0) {
+    return Math.max(1, playerOneLevel - 1);
+  }
+
+  if (roll === 2) {
+    return playerOneLevel + 1;
+  }
+
+  return playerOneLevel;
+}, [playerOneLevel]);
+
   const {
-    playerHp,
-    opponentHp,
-    turnOwner,
-    isProcessing,
-    battleLog,
-    handlePlayerMove,
-  } = useBattle({
-    playerCreature: playerOneCreature,
-    opponentCreature: playerTwoCreature,
-    opponentCreatureId: playerTwoCreatureId,
-    opponentLevel: playerTwoLevel,
-  });
+  playerHp,
+  opponentHp,
+  turnOwner,
+  isProcessing,
+  battleLog,
+  handlePlayerMove,
+  xpGained,   
+} = useBattle({
+  playerCreature: playerOneCreature,
+  opponentCreature: playerTwoCreature,
+  opponentCreatureId: playerTwoCreatureId,
+  opponentLevel: randomizedOpponentLevel,
+  playerUserId: playerOneId,
+  playerCreatureId: playerOneCreatureId,
+});
 
   const navigate = useNavigate();
 
@@ -58,13 +77,14 @@ export default function BattleArena({
             winner,
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
+            xpGained,
           },
         });
       }, 1200);
 
       return () => clearTimeout(timer);
     }
-  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate]);
+  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate, xpGained]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (

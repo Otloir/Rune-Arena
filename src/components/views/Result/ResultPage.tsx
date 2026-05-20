@@ -10,6 +10,7 @@ interface ResultState {
   readonly rewardName?: string;
   readonly rewardImage?: string;
   readonly rewardQuantity?: number;
+  readonly xpGained?: number;   // ← new
 }
 
 export default function ResultPage(): ReactElement {
@@ -26,6 +27,7 @@ export default function ResultPage(): ReactElement {
   const rewardQuantity = state?.rewardQuantity ?? 1;
 
   const playerWon = winner === "player";
+  const xpGained = state?.xpGained ?? 0;
 
   function handleReturnHome(): void {
     navigate("/");
@@ -86,6 +88,10 @@ export default function ResultPage(): ReactElement {
             <p className={styles.rewardName}>{rewardName}</p>
           </article>
         </section>
+
+        <p className={styles.xpGained} aria-label={`XP gained: ${xpGained}`}>
+            +{xpGained} XP
+        </p>
 
         <Button
           type="button"
