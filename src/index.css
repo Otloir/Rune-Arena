@@ -127,7 +127,7 @@
 
   /* Global typography */
   font: 1.125rem/145% var(--sans);
-  letter-spacing: 0.18px;
+  letter-spacing: 0.01125rem;
 
   color: var(--text);
   background: var(--bg);

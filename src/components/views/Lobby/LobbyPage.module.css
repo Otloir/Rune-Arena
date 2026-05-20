@@ -54,8 +54,8 @@
 }
 
 .buttonIcon {
-  width: 44px;
-  height: 44px;
+  width: 2.75rem;
+  height: 2.75rem;
   display: block;
   flex: 0 0 auto;
   background-color: currentColor;

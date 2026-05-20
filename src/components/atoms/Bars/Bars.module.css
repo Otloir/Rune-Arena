@@ -4,7 +4,7 @@
 }
 
 .bar {
-  border-radius: 15px;
+  border-radius: 0.9375rem;
   overflow: hidden;
 }
 
@@ -18,20 +18,20 @@
 
 .hp {
   background-color: var(--hp-bar);
-  height: 10px;
+  height: 0.625rem;
 }
 
 .xp {
   background-color: var(--xp-bar);
-  height: 5px;
+  height: 0.3125rem;
 }
 
 @media (min-width: 1024px) {
   .hp {
-    height: 14px;
+    height: 0.875rem;
   }
   
   .xp {
-    height: 9px;
+    height: 0.5625rem;
   }
 }
