@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
@@ -35,10 +35,15 @@ export default function ResultPage(): ReactElement {
   const rewardImage: string | undefined = state?.rewardImage;
   const rewardQuantity: number = state?.rewardQuantity ?? 1;
   const playerWon: boolean = winner === "player";
+  const hasAwardedCoins = useRef(false);
 
   useEffect((): void => {
     // Guard: only award coins to a real logged-in user who won
     if (!playerWon) return;
+
+    // Prevent double execution in React StrictMode
+    if (hasAwardedCoins.current) return;
+    hasAwardedCoins.current = true;
 
     const userId: number | undefined = state?.userId;
     if (userId == null) {
@@ -57,7 +62,7 @@ export default function ResultPage(): ReactElement {
       }
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally runs once on mount
+  }, [playerWon, state]); // intentionally runs once on mount
 
   const handleReturnHome = (): void => {
     navigate("/");
