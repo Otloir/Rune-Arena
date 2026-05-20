@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
 import type { ReactElement } from "react";
@@ -27,6 +28,14 @@ export default function ResultPage(): ReactElement {
   const opponentName = state?.opponentCreatureName ?? "The opponent";
   const xpGained = state?.xpGained ?? 0;
   const stamp = state?.stamp ?? null;
+
+  //consol log to check if the stamp works
+  //todo: REMOVE AFTER 100% CERTAIN EVERYTHING WORKS
+  useEffect(() => {
+    if (stamp === null) {
+      console.log("ResultPage: no stamp awarded (guest)");
+    }
+  }, [stamp]);
 
   return (
     <main className={styles.resultPage} aria-label="Battle result">

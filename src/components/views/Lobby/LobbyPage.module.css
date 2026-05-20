@@ -90,6 +90,13 @@
   cursor: pointer;
 }
 
+.loadingState{
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ height: 100%;
+}
+
 /* tablet */
 
 @media (min-width: 641px) {

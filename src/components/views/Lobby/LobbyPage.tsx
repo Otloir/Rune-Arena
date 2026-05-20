@@ -35,7 +35,7 @@ export default function LobbyPage() {
   }, [isInventoryOpen, isInfoOpen]);
 
   if (playerState.status === "loading") {
-    return <p>Loading...</p>;
+    return <p className={styles.loadingState}>Loading...</p>;
   }
 
   if (playerState.status === "error") {
@@ -60,11 +60,15 @@ export default function LobbyPage() {
     });
   };
 
+  // todo: Remove console log checks
   const handleStartArena = async (): Promise<void> => {
     if (!selectedCreatureId) return;
 
-    // Guests play for free — skip payment
+    // Guests play for free
     if (player.isGuest || !identityToken) {
+      console.log(
+        "Lobby: guest play — skipping transaction and navigating to arena",
+      );
       goToArena(null);
       return;
     }
@@ -73,17 +77,21 @@ export default function LobbyPage() {
     setIsCharging(true);
     setChargeError(null);
 
+    console.log("Lobby: initiating transaction", { amount: ENTRY_FEE });
+
     const result = await startTransaction(identityToken, ENTRY_FEE);
 
     setIsCharging(false);
 
     if (!result.success) {
       // 401 = token expired, 402 = insufficient funds
+      console.log("Lobby: transaction failed", { error: result.error });
       setChargeError(result.error);
       return;
     }
 
     // Pass the full transaction payload so the arena can forward the stamp to the result page
+    console.log("Lobby: transaction succeeded", { transaction: result.data });
     goToArena(result.data);
   };
 
