@@ -7,6 +7,9 @@ import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
 import IconButton from "../../atoms/buttons/IconButton";
 import informationIcon from "../../../assets/icons/information_icon.svg";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
+import shopIcon from "../../../assets/icons/shop_icon.svg";
+import swordIcon from "../../../assets/icons/sword_icon.svg";
 
 //TODO: make userid not hardcoded.
 export default function LobbyPage() {
@@ -80,7 +83,17 @@ export default function LobbyPage() {
                 aria-label="navigate to shop button"
                 textColor="#155DFC"
               >
-                Store
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${shopIcon})`,
+                      maskImage: `url(${shopIcon})`,
+                    }}
+                  />
+                  <span>Store</span>
+                </span>
               </Button>
             </nav>
             <Button
@@ -89,7 +102,17 @@ export default function LobbyPage() {
               backgroundColor="#DCB8A0"
               textColor="#955D38"
             >
-              Bag
+              <span className={styles.buttonLabel}>
+                <span
+                  className={styles.buttonIcon}
+                  aria-hidden="true"
+                  style={{
+                    WebkitMaskImage: `url(${bagIcon})`,
+                    maskImage: `url(${bagIcon})`,
+                  }}
+                />
+                <span>Bag</span>
+              </span>
             </Button>
           </div>
         </section>
@@ -126,7 +149,17 @@ export default function LobbyPage() {
                 disabled={!selectedCreatureId}
                 backgroundColor="#b23131"
               >
-                Start
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${swordIcon})`,
+                      maskImage: `url(${swordIcon})`,
+                    }}
+                  />
+                  <span>Start</span>
+                </span>
               </Button>
             </form>
           </section>

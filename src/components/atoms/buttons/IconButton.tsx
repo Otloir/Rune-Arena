@@ -15,8 +15,8 @@ interface IconButtonProps extends Omit<ButtonProps, "children" | "shape"> {
 }
 
 const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
-  sm: "1rem",
-  md: "1.375rem",
+  sm: "22px",
+  md: "44px",
   lg: "1.75rem",
 };
 
@@ -59,7 +59,7 @@ const IconButton: FC<IconButtonProps> = ({
       {...nativeProps}
     >
       <span
-        aria-hidden={iconSrc ? "false" : "true"}
+        aria-hidden="true"
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -69,14 +69,21 @@ const IconButton: FC<IconButtonProps> = ({
         }}
       >
         {iconSrc ? (
-          <img
-            src={iconSrc}
-            alt={iconAlt ?? label}
+          <span
+            aria-hidden="true"
             style={{
               width: resolvedIconSize,
               height: resolvedIconSize,
-              objectFit: "contain",
               display: "block",
+              backgroundColor: "currentColor",
+              WebkitMaskImage: `url(${iconSrc})`,
+              maskImage: `url(${iconSrc})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
             }}
           />
         ) : (

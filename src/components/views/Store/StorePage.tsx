@@ -7,6 +7,8 @@ import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
 import IconButton from "../../atoms/buttons/IconButton";
 import informationIcon from "../../../assets/icons/information_icon.svg";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
+import arrowUp from "../../../assets/icons/arrow_up_icon.svg";
 
 export default function StorePage() {
   const navigate = useNavigate();
@@ -58,7 +60,17 @@ export default function StorePage() {
             size="sm"
             className={styles.noShadow}
           >
-            Bag
+            <span className={styles.buttonLabel}>
+              <span
+                className={styles.buttonIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${bagIcon})`,
+                  maskImage: `url(${bagIcon})`,
+                }}
+              />
+              <span>Bag</span>
+            </span>
           </Button>
           <IconButton
             hoverEffect={false}
@@ -85,7 +97,17 @@ export default function StorePage() {
           }
           className={styles.backButton}
         >
-          Back to top
+          <span className={styles.buttonLabel}>
+            <span
+              className={styles.buttonIcon}
+              aria-hidden="true"
+              style={{
+                WebkitMaskImage: `url(${arrowUp})`,
+                maskImage: `url(${arrowUp})`,
+              }}
+            />
+            <span>Back to top</span>
+          </span>
         </Button>
       </section>
     </>

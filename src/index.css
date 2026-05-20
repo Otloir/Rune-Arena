@@ -7,19 +7,19 @@
   --color-black: #000000;
 
   /* ─── Text Colors ─── */
-  --text: #FAFAFA;
+  --text: #fafafa;
   --bag-text-color: #955d38;
   --text-primary: #1a1a2e;
   --text-secondary: #6b7399;
   --text-tertiary: #4f5678;
   --text-light: #f3f4f6;
-  --coin-text: #D08700;
+  --coin-text: #d08700;
 
   /* ─── Background Colors ─── */
   --bg: #7d756b;
   --arena-bg: #d6b481;
-  --carousel-slide-bg: #d6b481;
-  --carousel-panel-bg: #b09060;
+  --carousel-slide-bg: #ead9bb;
+  --carousel-panel-bg: #a39482;
   --result-page-bg: #7d766d;
   --coin-container-bg: #fef9c2;
   --surface: var(--color-white);
@@ -36,12 +36,13 @@
   --btn-neutral-text: #3a3f5c;
   --btn-neutral-shadow: #d0d4e8;
   --btn-neutral-hover: #e4e7f5;
-  --btn-cta-bg: #2b7fff; 
-  --btn-cta-hover: #689cf1; 
-  --btn-fight-bg: #b23131; 
-  --btn-bag-bg: #dcb8a0; 
-  --btn-purchase-bg: #7CB767;
-  --btn-purchase-hover: #80cf64; 
+  --btn-cta-bg: #2b7fff;
+  --btn-cta-hover: #4a90fa;
+  --btn-cta-text: #ffffff;
+  --btn-fight-bg: #b23131;
+  --btn-bag-bg: #dcb8a0;
+  --btn-purchase-bg: #7cb767;
+  --btn-purchase-hover: #80cf64;
   --btn-failure-bg: var(--color-error);
 
   /* ─── Status Colors ─── */
