@@ -58,7 +58,7 @@
   --xp-bar: #0483aa;
   --xp-bar-empty: #d9d9d9;
   --hp-bar-fill: var(--color-success);
-  --heart-icon: #f87171;
+  --heart-icon: #fb2c36;
 
   /* ─── Creature Properties ─── */
   --evade: #fb7c20;
@@ -98,6 +98,7 @@
   --code-bg: #f4f3ec;
   --border-soft: var(--gray-light);
   --text-muted: var(--text-secondary);
+  --selected-green: #7cb767;
 
   /* ─── Overlay & Transparency ─── */
   --overlay-dark: rgba(0, 0, 0, 0.5);

@@ -96,7 +96,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
     >
       {selected && (
         <div className={styles.selectedBadge} aria-hidden="true">
-          Selected ✓
+          Selected
         </div>
       )}
       <img
