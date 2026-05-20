@@ -6,12 +6,15 @@ import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { formatStamp } from "../../../api/centralbank.api";
+import type { TransactionResponse } from "../../../types/api.types";
 
 interface BattleArenaProps {
   playerOneId: string | number;
   playerTwoId: string | number;
   playerOneCreatureId: string | number;
   playerTwoCreatureId: string | number;
+  transaction: TransactionResponse | null;
 }
 
 export default function BattleArena({
@@ -19,45 +22,48 @@ export default function BattleArena({
   playerTwoId,
   playerOneCreatureId,
   playerTwoCreatureId,
+  transaction,
 }: BattleArenaProps) {
   const { creature: playerOneCreature, level: playerOneLevel } =
     useCreatureById(playerOneId, playerOneCreatureId);
 
-  const { creature: playerTwoCreature } =
-    useCreatureById(playerTwoId, playerTwoCreatureId);
+  const { creature: playerTwoCreature } = useCreatureById(
+    playerTwoId,
+    playerTwoCreatureId,
+  );
 
-    const randomizedOpponentLevel = useMemo(() => {
-  if (!playerOneLevel) return 1;
+  const randomizedOpponentLevel = useMemo(() => {
+    if (!playerOneLevel) return 1;
 
-  const roll = Math.floor(Math.random() * 3);
+    const roll = Math.floor(Math.random() * 3);
 
-  if (roll === 0) {
-    return Math.max(1, playerOneLevel - 1);
-  }
+    if (roll === 0) {
+      return Math.max(1, playerOneLevel - 1);
+    }
 
-  if (roll === 2) {
-    return playerOneLevel + 1;
-  }
+    if (roll === 2) {
+      return playerOneLevel + 1;
+    }
 
-  return playerOneLevel;
-}, [playerOneLevel]);
+    return playerOneLevel;
+  }, [playerOneLevel]);
 
   const {
-  playerHp,
-  opponentHp,
-  turnOwner,
-  isProcessing,
-  battleLog,
-  handlePlayerMove,
-  xpGained,   
-} = useBattle({
-  playerCreature: playerOneCreature,
-  opponentCreature: playerTwoCreature,
-  opponentCreatureId: playerTwoCreatureId,
-  opponentLevel: randomizedOpponentLevel,
-  playerUserId: playerOneId,
-  playerCreatureId: playerOneCreatureId,
-});
+    playerHp,
+    opponentHp,
+    turnOwner,
+    isProcessing,
+    battleLog,
+    handlePlayerMove,
+    xpGained,
+  } = useBattle({
+    playerCreature: playerOneCreature,
+    opponentCreature: playerTwoCreature,
+    opponentCreatureId: playerTwoCreatureId,
+    opponentLevel: randomizedOpponentLevel,
+    playerUserId: playerOneId,
+    playerCreatureId: playerOneCreatureId,
+  });
 
   const navigate = useNavigate();
 
@@ -78,13 +84,27 @@ export default function BattleArena({
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
             xpGained,
+            stamp: transaction?.stamp
+              ? {
+                  name: formatStamp(transaction.stamp.stamp_type),
+                  imageUrl: transaction.stamp.stamp_type.image_url,
+                }
+              : null,
           },
         });
       }, 1200);
 
       return () => clearTimeout(timer);
     }
-  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, navigate, xpGained]);
+  }, [
+    playerHp,
+    opponentHp,
+    playerOneCreature,
+    playerTwoCreature,
+    navigate,
+    xpGained,
+    transaction,
+  ]);
 
   if (!playerOneCreature || !playerTwoCreature) {
     return (

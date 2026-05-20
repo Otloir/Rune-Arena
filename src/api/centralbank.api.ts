@@ -1,13 +1,7 @@
 import type {
-  StampAnimal,
-  SetType,
   StampType,
-  Stamp,
-  User,
   TransactionResponse,
-  PayoutResponse,
   IdentityTokenInfo,
-  ExchangeResponse,
   ApiResult,
 } from "./../types/api.types";
 
@@ -103,18 +97,6 @@ export async function getPlayerInfo(
 }
 
 // -----------------------------------------------------------------------------
-// Current user
-// -----------------------------------------------------------------------------
-
-/**
- * Get the current authenticated user's profile, including their balance.
- * Used in the lobby and shop to display the player's current balance.
- */
-export async function getCurrentUser(): Promise<ApiResult<User>> {
-  return apiFetch<User>("/user");
-}
-
-// -----------------------------------------------------------------------------
 // Transactions  (api_key is read from env — no need to pass it at call site)
 // -----------------------------------------------------------------------------
 
@@ -139,63 +121,8 @@ export async function startTransaction(
     }),
   });
 }
-
-/**
- * Pay out winnings to the player after they win.
- * Use the `id` returned by `startTransaction`.
- *
- * Error codes to handle:
- *   409 — transaction already paid out, or amusement is an attraction
- *   403 — api_key does not match the original transaction's amusement
- */
-export async function payoutWinnings(
-  transactionId: number,
-  amount: number,
-): Promise<ApiResult<PayoutResponse>> {
-  return apiFetch<PayoutResponse>(`/transactions/${transactionId}/payout`, {
-    method: "POST",
-    body: JSON.stringify({ amount, api_key: API_KEY }),
-  });
-}
-
 // -----------------------------------------------------------------------------
 // Stamps
-// -----------------------------------------------------------------------------
-
-/**
- * Get the current user's unexchanged stamps.
- * Used to populate the bag/inventory screen in the lobby.
- */
-export async function listStamps(): Promise<ApiResult<{ data: Stamp[] }>> {
-  return apiFetch("/stamps");
-}
-
-/**
- * Exchange a valid set of stamps for money (session required).
- * Used from the bag/inventory screen.
- *
- * set_type rules:
- *   "metal"     — exactly 3 stamps: one silver + one gold + one platinum → €10
- *   "animal"    — exactly 5 stamps: one of each animal                   → €7
- *   "non_metal" — exactly 3 stamps: 3 different plain (no metal) animals → €3
- */
-export async function exchangeStamps(
-  userId: number,
-  setType: SetType,
-  stampIds: number[],
-): Promise<ApiResult<ExchangeResponse>> {
-  return apiFetch<ExchangeResponse>("/exchanges", {
-    method: "POST",
-    body: JSON.stringify({
-      user_id: userId,
-      set_type: setType,
-      stamp_ids: stampIds,
-    }),
-  });
-}
-
-// -----------------------------------------------------------------------------
-// Client-side stamp utilities
 // -----------------------------------------------------------------------------
 
 /** Format a stamp's type into a readable string, e.g. "gold dolphin" or "lion". */
@@ -204,95 +131,4 @@ export function formatStamp(stampType: StampType): string {
     return `${stampType.metal} ${stampType.animal}`;
   }
   return stampType.animal;
-}
-
-/**
- * Find all complete metal sets in a stamp collection.
- * A metal set is one silver + one gold + one platinum stamp (any animals). Worth €10.
- */
-export function findMetalSets(stamps: Stamp[]): Stamp[][] {
-  const unexchanged = stamps.filter((s) => !s.exchanged_at);
-
-  const silvers = unexchanged.filter((s) => s.stamp_type.metal === "silver");
-  const golds = unexchanged.filter((s) => s.stamp_type.metal === "gold");
-  const platinums = unexchanged.filter(
-    (s) => s.stamp_type.metal === "platinum",
-  );
-
-  const setCount = Math.min(silvers.length, golds.length, platinums.length);
-
-  const sets: Stamp[][] = [];
-  for (let i = 0; i < setCount; i++) {
-    sets.push([silvers[i], golds[i], platinums[i]]);
-  }
-  return sets;
-}
-
-/**
- * Find all complete animal sets in a stamp collection.
- * An animal set is one of each of the 5 animals (any metals). Worth €7.
- */
-export function findAnimalSets(stamps: Stamp[]): Stamp[][] {
-  const unexchanged = stamps.filter((s) => !s.exchanged_at);
-
-  const animals: StampAnimal[] = [
-    "lion",
-    "dolphin",
-    "toucan",
-    "beetlebug",
-    "snake",
-  ];
-
-  const stampsByAnimal: Record<StampAnimal, Stamp[]> = {
-    lion: unexchanged.filter((s) => s.stamp_type.animal === "lion"),
-    dolphin: unexchanged.filter((s) => s.stamp_type.animal === "dolphin"),
-    toucan: unexchanged.filter((s) => s.stamp_type.animal === "toucan"),
-    beetlebug: unexchanged.filter((s) => s.stamp_type.animal === "beetlebug"),
-    snake: unexchanged.filter((s) => s.stamp_type.animal === "snake"),
-  };
-
-  const setCount = Math.min(
-    ...animals.map((animal) => stampsByAnimal[animal].length),
-  );
-
-  const sets: Stamp[][] = [];
-  for (let i = 0; i < setCount; i++) {
-    sets.push(animals.map((animal) => stampsByAnimal[animal][i]));
-  }
-  return sets;
-}
-
-/**
- * Find all complete non-metal sets in a stamp collection.
- * A non-metal set is 3 plain (no metal) stamps from 3 different animals. Worth €3.
- */
-export function findNonMetalSets(stamps: Stamp[]): Stamp[][] {
-  const plainStamps = stamps.filter(
-    (s) => !s.exchanged_at && !s.stamp_type.metal,
-  );
-
-  // Group plain stamps by animal
-  const stampsByAnimal: Partial<Record<StampAnimal, Stamp[]>> = {};
-  for (const stamp of plainStamps) {
-    const animal = stamp.stamp_type.animal;
-    (stampsByAnimal[animal] ??= []).push(stamp);
-  }
-
-  // Each animal bucket we can draw from (we need at least 3 different animals)
-  const buckets = (Object.keys(stampsByAnimal) as StampAnimal[]).map(
-    (animal) => ({ animal, remaining: [...stampsByAnimal[animal]!] }),
-  );
-
-  const sets: Stamp[][] = [];
-
-  // Keep building sets as long as 3+ animals still have stamps left
-  while (true) {
-    const available = buckets.filter((b) => b.remaining.length > 0);
-    if (available.length < 3) break;
-
-    const picked = available.slice(0, 3);
-    sets.push(picked.map((b) => b.remaining.shift()!));
-  }
-
-  return sets;
 }

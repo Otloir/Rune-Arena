@@ -2,10 +2,6 @@ export type StampAnimal = "lion" | "dolphin" | "toucan" | "beetlebug" | "snake";
 
 export type StampMetal = "silver" | "gold" | "platinum";
 
-export type SetType = "metal" | "animal" | "non_metal";
-
-export type TransactionType = "fee" | "payout";
-
 export type StampType = {
   id: number;
   animal: StampAnimal;
@@ -39,20 +35,9 @@ export type TransactionResponse = {
   stamp: Stamp;
 };
 
-export type PayoutResponse = {
-  id: number;
-  original_transaction_id: number;
-};
-
 export type IdentityTokenInfo = {
   user: { id: number; name: string };
   expires_at: string;
-};
-
-export type ExchangeResponse = {
-  amount: number;
-  set_type: SetType;
-  stamps_consumed: number;
 };
 
 // Generic result wrapper — every API call returns one of these

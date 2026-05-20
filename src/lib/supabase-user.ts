@@ -6,7 +6,27 @@ export type LocalUser = {
   name: string;
 };
 
-// Real centralbank user — matches on centralbank_id
+// Returns a stable negative guest centralbank_id from localStorage.
+// Guests get -1, -2, -3... so they never collide with real positive centralbank IDs.
+function getOrCreateGuestCentralbankId(): number {
+  const stored = localStorage.getItem("guest_centralbank_id");
+  const parsed = Number(stored);
+
+  // Reuse the stored id if it's a valid negative number
+  if (Number.isFinite(parsed) && parsed < 0) {
+    return parsed;
+  }
+
+  // No valid id stored — generate the next one in the sequence
+  const existingCount = Number(localStorage.getItem("guest_count") ?? 0);
+  const nextId = -1 - existingCount;
+  localStorage.setItem("guest_centralbank_id", String(nextId));
+  localStorage.setItem("guest_count", String(existingCount + 1));
+  return nextId;
+}
+
+// Upsert a real centralbank user into Supabase.
+// If the user already exists (matched by centralbank_id), their name is updated.
 export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,
@@ -28,23 +48,8 @@ export async function upsertCentralbankUser(
   return data;
 }
 
-// Get or create a sequential negative centralbank_id for guests (-1, -2, -3...)
-function getOrCreateGuestCentralbankId(): number {
-  const stored = localStorage.getItem("guest_centralbank_id");
-  const parsed = Number(stored);
-
-  if (Number.isFinite(parsed) && parsed < 0) {
-    return parsed;
-  }
-
-  // Find the next available negative id by decrementing from -1
-  const nextId = -1 - Number(localStorage.getItem("guest_count") ?? 0);
-  localStorage.setItem("guest_centralbank_id", String(nextId));
-  localStorage.setItem("guest_count", String(Math.abs(nextId)));
-  return nextId;
-}
-
-// Upsert a guest user with a stable negative centralbank_id
+// Upsert a guest user into Supabase using a stable negative centralbank_id.
+// Returning guests reuse their existing row thanks to the onConflict clause.
 export async function upsertGuestUser(): Promise<LocalUser | null> {
   const guestCentralbankId = getOrCreateGuestCentralbankId();
 

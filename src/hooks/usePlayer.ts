@@ -14,13 +14,23 @@ export type Player = {
 
 export type PlayerState =
   | { status: "loading" }
-  | { status: "ready"; player: Player }
+  | { status: "ready"; player: Player; identityToken: string | null }
   | { status: "error"; message: string };
 
+// Creates or reuses a guest player in Supabase
 async function loadGuestPlayer(): Promise<Player | null> {
   const user = await upsertGuestUser();
   if (!user) return null;
   return { id: user.id, name: "Guest", isGuest: true };
+}
+
+// Sets state to a guest player and initialises their creatures
+async function setGuestState(
+  guest: Player,
+  setState: (state: PlayerState) => void,
+): Promise<void> {
+  await initUserCreatures(guest.id);
+  setState({ status: "ready", player: guest, identityToken: null });
 }
 
 export function usePlayer(): PlayerState {
@@ -30,7 +40,7 @@ export function usePlayer(): PlayerState {
     async function load(): Promise<void> {
       const token = readIdentityTokenFromUrl();
 
-      // No token — fall back to guest
+      // No token means the user came directly or the API is unavailable — use guest
       if (!token) {
         const guest = await loadGuestPlayer();
         if (!guest) {
@@ -40,14 +50,14 @@ export function usePlayer(): PlayerState {
           });
           return;
         }
-        await initUserCreatures(guest.id);
-        setState({ status: "ready", player: guest });
+        await setGuestState(guest, setState);
         return;
       }
 
+      // Try to resolve the token to a real user
       const result = await getPlayerInfo(token);
 
-      // API down or token invalid — fall back to guest
+      // If the API is down or the token is invalid, fall back to guest
       if (!result.success) {
         console.warn(
           "[usePlayer] API unavailable, falling back to guest:",
@@ -61,25 +71,28 @@ export function usePlayer(): PlayerState {
           });
           return;
         }
-        await initUserCreatures(guest.id);
-        setState({ status: "ready", player: guest });
+        await setGuestState(guest, setState);
         return;
       }
 
-      // Real user
-      const { id, name } = result.data.user;
-      const upsertedUser = await upsertCentralbankUser(id, name);
-      if (upsertedUser === null) {
+      // Token resolved — save the real user to Supabase
+      const { id: centralbankId, name } = result.data.user;
+      const savedUser = await upsertCentralbankUser(centralbankId, name);
+
+      if (!savedUser) {
         setState({
           status: "error",
           message: "Failed to persist player locally.",
         });
         return;
       }
-      await initUserCreatures(upsertedUser.id);
+
+      // Initialise creatures and store the token so LobbyPage can charge the user on Start
+      await initUserCreatures(savedUser.id);
       setState({
         status: "ready",
-        player: { id: upsertedUser.id, name, isGuest: false },
+        player: { id: savedUser.id, name, isGuest: false },
+        identityToken: token,
       });
     }
 

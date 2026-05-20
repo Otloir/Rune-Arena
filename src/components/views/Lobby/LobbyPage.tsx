@@ -1,27 +1,30 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePlayer } from "./../../../hooks/usePlayer";
+import { startTransaction } from "./../../../api/centralbank.api";
+import type { TransactionResponse } from "./../../../types/api.types";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
-import IconButton from "../../atoms/buttons/IconButton";
-import informationIcon from "../../../assets/icons/information_icon.svg";
-import bagIcon from "../../../assets/icons/bag_icon.svg";
-import shopIcon from "../../../assets/icons/shop_icon.svg";
-import swordIcon from "../../../assets/icons/sword_icon.svg";
+
+// The amount charged to real users when they start a game
+const ENTRY_FEE = 1.0;
 
 export default function LobbyPage() {
   const playerState = usePlayer();
   const navigate = useNavigate();
+
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
   );
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isCharging, setIsCharging] = useState(false);
+  const [chargeError, setChargeError] = useState<string | null>(null);
 
-  // Disable body scroll when inventory or info is open
+  // Disable body scroll when a modal is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -39,95 +42,94 @@ export default function LobbyPage() {
     return <p>Something went wrong: {playerState.message}</p>;
   }
 
-  const userId = String(playerState.player.id);
-  const isGuest = playerState.player.isGuest;
+  const { player, identityToken } = playerState;
+  const userId = String(player.id);
 
   const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
+    setChargeError(null);
   };
 
-  const handleStartArena = (): void => {
-    if (!selectedCreatureId) return;
+  const goToArena = (transaction: TransactionResponse | null): void => {
     navigate("/arena", {
       state: {
         playerOneUserId: userId,
         playerOneCreatureId: selectedCreatureId,
+        transaction,
       },
     });
   };
 
-  const navigateStore = (): void => {
-    navigate("/store", { state: { userId } });
+  const handleStartArena = async (): Promise<void> => {
+    if (!selectedCreatureId) return;
+
+    // Guests play for free — skip payment
+    if (player.isGuest || !identityToken) {
+      goToArena(null);
+      return;
+    }
+
+    // Charge the real user the entry fee before starting
+    setIsCharging(true);
+    setChargeError(null);
+
+    const result = await startTransaction(identityToken, ENTRY_FEE);
+
+    setIsCharging(false);
+
+    if (!result.success) {
+      // 401 = token expired, 402 = insufficient funds
+      setChargeError(result.error);
+      return;
+    }
+
+    // Pass the full transaction payload so the arena can forward the stamp to the result page
+    goToArena(result.data);
   };
 
-  const openInventory = () => setIsInventoryOpen(true);
-  const closeInventory = () => setIsInventoryOpen(false);
-  const openInfo = () => setIsInfoOpen(true);
-  const closeInfo = () => setIsInfoOpen(false);
+  const startButtonLabel = isCharging
+    ? "Processing payment..."
+    : player.isGuest
+      ? "Start"
+      : `Start (€${ENTRY_FEE.toFixed(2)})`;
+
   return (
     <>
-      <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
+      <TextCarousel isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={closeInventory}
+        onClose={() => setIsInventoryOpen(false)}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
         <section>
+          <Button
+            onClick={() => setIsInfoOpen(true)}
+            aria-label="open information button"
+          >
+            Info
+          </Button>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
-            {isGuest && (
+            {player.isGuest && (
               <p>Playing as guest — progress won't be saved to your account.</p>
             )}
           </div>
-          <IconButton
-            hoverEffect={false}
-            iconSrc={informationIcon}
-            iconAlt="Information"
-            onClick={openInfo}
-            label="Open information"
-            className={styles.iconButton}
-          />
-          <div className={styles.inventoryShopComtainer}>
-            <nav>
-              <Button
-                onClick={navigateStore}
-                aria-label="navigate to shop button"
-                textColor="#155DFC"
-              >
-                <span className={styles.buttonLabel}>
-                  <span
-                    className={styles.buttonIcon}
-                    aria-hidden="true"
-                    style={{
-                      WebkitMaskImage: `url(${shopIcon})`,
-                      maskImage: `url(${shopIcon})`,
-                    }}
-                  />
-                  <span>Store</span>
-                </span>
-              </Button>
-            </nav>
+          <nav>
             <Button
-              onClick={openInventory}
-              aria-label="open inventory button"
-              backgroundColor="#DCB8A0"
-              textColor="#955D38"
+              onClick={() => navigate("/store", { state: { userId } })}
+              aria-label="navigate to shop button"
             >
-              <span className={styles.buttonLabel}>
-                <span
-                  className={styles.buttonIcon}
-                  aria-hidden="true"
-                  style={{
-                    WebkitMaskImage: `url(${bagIcon})`,
-                    maskImage: `url(${bagIcon})`,
-                  }}
-                />
-                <span>Bag</span>
-              </span>
+              Store
             </Button>
-          </div>
+          </nav>
+          <Button
+            onClick={() => setIsInventoryOpen(true)}
+            aria-label="open inventory button"
+          >
+            Bag
+          </Button>
         </section>
 
         <section>
@@ -156,23 +158,12 @@ export default function LobbyPage() {
                   selected={selectedCreatureId === "3"}
                 />
               </div>
+              {chargeError && <p>Payment failed: {chargeError}</p>}
               <Button
-                className={styles.startButton}
                 type="submit"
-                disabled={!selectedCreatureId}
-                backgroundColor="#b23131"
+                disabled={!selectedCreatureId || isCharging}
               >
-                <span className={styles.buttonLabel}>
-                  <span
-                    className={styles.buttonIcon}
-                    aria-hidden="true"
-                    style={{
-                      WebkitMaskImage: `url(${swordIcon})`,
-                      maskImage: `url(${swordIcon})`,
-                    }}
-                  />
-                  <span>Start</span>
-                </span>
+                {startButtonLabel}
               </Button>
             </form>
           </section>
