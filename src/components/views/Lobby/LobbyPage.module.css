@@ -91,18 +91,10 @@
 }
 
 /* tablet */
-@media (min-width: 768px) {
-  .creatureSelectButtons {
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    gap: 2rem;
-  }
-  .creatureSelectContainer form {
-    gap: 2rem;
-  }
-  .creatureSelectContainer {
-    width: 95vw;
+
+@media (min-width: 641px) {
+  .lobbyPage {
+  padding: 1rem;
   }
 }
 

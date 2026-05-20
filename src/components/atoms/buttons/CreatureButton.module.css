@@ -9,6 +9,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  object-fit: contain;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
@@ -125,6 +126,7 @@
   border-top: 0.0625rem solid var(--off-white);
   padding-top: 0.75rem;
 }
+
 .stat {
   font-size: 0.85rem;
   font-weight: 700;
@@ -133,6 +135,7 @@
   align-items: center;
   gap: 0.25rem;
 }
+
 .statIcon {
   font-size: 0.8rem;
   display: inline-flex;
@@ -142,7 +145,10 @@
 /* desktop */
 @media (min-width: 1024px) {
   .propertieIcon {
-    width: 2.125rem;
-    height: 2.125rem;
+    max-width: 2.125rem;
+    min-height: 2.125rem;
+  }
+  .card {
+  width: 30vw;
   }
 }
