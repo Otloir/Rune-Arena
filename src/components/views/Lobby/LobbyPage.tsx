@@ -10,7 +10,7 @@ import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
 
 // The amount charged to real users when they start a game
-const ENTRY_FEE = 1.0;
+const ENTRY_FEE = 2;
 
 export default function LobbyPage() {
   const playerState = usePlayer();
