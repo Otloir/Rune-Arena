@@ -1,12 +1,15 @@
 import { supabase } from "./supabase";
 
-export type LocalUser = {
-  id: number;
-  centralbank_id: number;
-  name: string;
-};
+export interface LocalUser {
+  readonly id: number;
+  readonly centralbank_id: number;
+  readonly name: string;
+  readonly runecoins: number;
+}
 
-// Real centralbank user — matches on centralbank_id
+/**
+ * Real centralbank user — upserts on centralbank_id conflict.
+ */
 export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,
@@ -17,8 +20,8 @@ export async function upsertCentralbankUser(
       { centralbank_id: centralbankId, name },
       { onConflict: "centralbank_id" },
     )
-    .select("id, centralbank_id, name")
-    .single();
+    .select("id, centralbank_id, name, runecoins")
+    .single<LocalUser>();
 
   if (error) {
     console.error("[upsertCentralbankUser]", error.message);
@@ -28,7 +31,10 @@ export async function upsertCentralbankUser(
   return data;
 }
 
-// Get or create a sequential negative centralbank_id for guests (-1, -2, -3...)
+/**
+ * Get or create a stable negative centralbank_id for this guest session.
+ * Stored in localStorage so the same guest maps to the same DB row on reload.
+ */
 function getOrCreateGuestCentralbankId(): number {
   const stored = localStorage.getItem("guest_centralbank_id");
   const parsed = Number(stored);
@@ -37,14 +43,15 @@ function getOrCreateGuestCentralbankId(): number {
     return parsed;
   }
 
-  // Find the next available negative id by decrementing from -1
   const nextId = -1 - Number(localStorage.getItem("guest_count") ?? 0);
   localStorage.setItem("guest_centralbank_id", String(nextId));
   localStorage.setItem("guest_count", String(Math.abs(nextId)));
   return nextId;
 }
 
-// Upsert a guest user with a stable negative centralbank_id
+/**
+ * Upsert a guest user with a stable negative centralbank_id.
+ */
 export async function upsertGuestUser(): Promise<LocalUser | null> {
   const guestCentralbankId = getOrCreateGuestCentralbankId();
 
@@ -54,8 +61,8 @@ export async function upsertGuestUser(): Promise<LocalUser | null> {
       { centralbank_id: guestCentralbankId, name: "Guest" },
       { onConflict: "centralbank_id" },
     )
-    .select("id, centralbank_id, name")
-    .single();
+    .select("id, centralbank_id, name, runecoins")
+    .single<LocalUser>();
 
   if (error) {
     console.error("[upsertGuestUser]", error.message);

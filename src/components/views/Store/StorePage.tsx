@@ -1,26 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import type { ReactElement } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
+import { getUserBalance } from "../../../database/user.database";
 import styles from "./StorePage.module.css";
 
-export default function StorePage() {
+interface StoreLocationState {
+  readonly userId?: string;
+}
+
+export default function StorePage(): ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
+  const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
+  const [balance, setBalance] = useState<number | null>(null);
 
-  // Read userId passed from LobbyPage via navigation state
-  const userId: string | undefined = location.state?.userId;
+  const { userId } = (location.state ?? {}) as StoreLocationState;
 
-  // Disable body scroll when inventory or store is open
-  useEffect(() => {
+  const refreshBalance = useCallback(async (): Promise<void> => {
+    if (!userId) return;
+    const b = await getUserBalance(Number(userId));
+    setBalance(b);
+  }, [userId]);
+
+  useEffect((): void => {
+    refreshBalance();
+  }, [refreshBalance]);
+
+  // Disable body scroll when a modal overlay is open
+  useEffect((): (() => void) | void => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
+    return (): void => {
       document.body.style.overflow = previousOverflow;
     };
   }, [isInventoryOpen, isInfoOpen]);
@@ -29,11 +45,11 @@ export default function StorePage() {
     return <Navigate to="/" replace />;
   }
 
-  const navigateLobby = () => navigate("/");
-  const openInventory = () => setIsInventoryOpen(true);
-  const closeInventory = () => setIsInventoryOpen(false);
-  const openInfo = () => setIsInfoOpen(true);
-  const closeInfo = () => setIsInfoOpen(false);
+  const navigateLobby = (): void => void navigate("/");
+  const openInventory = (): void => setIsInventoryOpen(true);
+  const closeInventory = (): void => setIsInventoryOpen(false);
+  const openInfo = (): void => setIsInfoOpen(true);
+  const closeInfo = (): void => setIsInfoOpen(false);
 
   return (
     <>
@@ -44,15 +60,14 @@ export default function StorePage() {
       />
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
-      <nav>
-        <Button onClick={openInfo}>Info</Button>
-      </nav>
+        <nav>
+          <Button onClick={openInfo}>Info</Button>
+        </nav>
         <div className={styles.userShopInfo}>
           <h1>Marketplace</h1>
           <div>
-            {/* TODO: make dynamic based on the user's actual balance */}
             <div className={styles.userMoneyDisplay}>
-              <span>X€</span>
+              <span>{balance === null ? "…" : `${balance} RC`}</span>
             </div>
             <Button
               onClick={openInventory}
@@ -66,9 +81,15 @@ export default function StorePage() {
         </div>
 
         <Button onClick={navigateLobby}>Back to select</Button>
-        <ItemList type="store" variant="card" userId={userId} />
+        <ItemList
+          type="store"
+          variant="card"
+          userId={userId}
+          balance={balance ?? undefined}
+          onBalanceChange={refreshBalance}
+        />
         <Button
-          onClick={() =>
+          onClick={(): void =>
             document
               .getElementById("top")
               ?.scrollIntoView({ behavior: "smooth" })

@@ -6,84 +6,146 @@ import {
 import { upsertCentralbankUser, upsertGuestUser } from "../lib/supabase-user";
 import { initUserCreatures } from "../database/creature.database";
 
-export type Player = {
-  id: number;
-  name: string;
-  isGuest: boolean;
-};
+export interface Player {
+  readonly id: number;
+  readonly name: string;
+  readonly isGuest: boolean;
+}
 
 export type PlayerState =
-  | { status: "loading" }
-  | { status: "ready"; player: Player }
-  | { status: "error"; message: string };
+  | { readonly status: "loading" }
+  | { readonly status: "ready"; readonly player: Player }
+  | { readonly status: "error"; readonly message: string };
 
 async function loadGuestPlayer(): Promise<Player | null> {
   const user = await upsertGuestUser();
-  if (!user) return null;
-  return { id: user.id, name: "Guest", isGuest: true };
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: "Guest",
+    isGuest: true,
+  };
 }
 
 export function usePlayer(): PlayerState {
-  const [state, setState] = useState<PlayerState>({ status: "loading" });
+  const [state, setState] = useState<PlayerState>({
+    status: "loading",
+  });
 
-  useEffect(() => {
+  useEffect((): void => {
     async function load(): Promise<void> {
-      const token = readIdentityTokenFromUrl();
+      try {
+        const token = readIdentityTokenFromUrl();
 
-      // No token — fall back to guest
-      if (!token) {
-        const guest = await loadGuestPlayer();
-        if (!guest) {
+        // -------------------------------------------------------------------
+        // No token → guest mode
+        // -------------------------------------------------------------------
+
+        if (!token) {
+          const guest = await loadGuestPlayer();
+
+          if (!guest) {
+            setState({
+              status: "error",
+              message: "Failed to create guest player.",
+            });
+
+            return;
+          }
+
+          await initUserCreatures(guest.id);
+
           setState({
-            status: "error",
-            message: "Failed to create guest player.",
+            status: "ready",
+            player: guest,
           });
+
           return;
         }
-        await initUserCreatures(guest.id);
-        setState({ status: "ready", player: guest });
-        return;
-      }
 
-      const result = await getPlayerInfo(token);
+        // -------------------------------------------------------------------
+        // Attempt authenticated player lookup
+        // -------------------------------------------------------------------
 
-      // API down or token invalid — fall back to guest
-      if (!result.success) {
-        console.warn(
-          "[usePlayer] API unavailable, falling back to guest:",
-          result.error,
-        );
-        const guest = await loadGuestPlayer();
-        if (!guest) {
+        const result = await getPlayerInfo(token);
+
+        // IMPORTANT:
+        // This only works correctly if getPlayerInfo is typed as:
+        //
+        // Promise<ApiResult<IdentityTokenInfo>>
+        //
+        // in centralbank.api.ts
+        // -------------------------------------------------------------------
+
+        if (result.success === false) {
+          console.warn(
+            "[usePlayer] API unavailable, falling back to guest:",
+            result.error
+          );
+
+          const guest = await loadGuestPlayer();
+
+          if (!guest) {
+            setState({
+              status: "error",
+              message: "Failed to create guest player.",
+            });
+
+            return;
+          }
+
+          await initUserCreatures(guest.id);
+
           setState({
-            status: "error",
-            message: "Failed to create guest player.",
+            status: "ready",
+            player: guest,
           });
+
           return;
         }
-        await initUserCreatures(guest.id);
-        setState({ status: "ready", player: guest });
-        return;
-      }
 
-      // Real user
-      const { id, name } = result.data.user;
-      const upsertedUser = await upsertCentralbankUser(id, name);
-      if (upsertedUser === null) {
+        // -------------------------------------------------------------------
+        // Authenticated player success
+        // -------------------------------------------------------------------
+
+        const { id, name } = result.data.user;
+
+        const upsertedUser = await upsertCentralbankUser(id, name);
+
+        if (upsertedUser === null) {
+          setState({
+            status: "error",
+            message: "Failed to persist player locally.",
+          });
+
+          return;
+        }
+
+        await initUserCreatures(upsertedUser.id);
+
+        setState({
+          status: "ready",
+          player: {
+            id: upsertedUser.id,
+            name,
+            isGuest: false,
+          },
+        });
+      } catch (error) {
+        console.error("[usePlayer] Unexpected error:", error);
+
         setState({
           status: "error",
-          message: "Failed to persist player locally.",
+          message: "Unexpected error while loading player.",
         });
-        return;
       }
-      await initUserCreatures(upsertedUser.id);
-      setState({
-        status: "ready",
-        player: { id: upsertedUser.id, name, isGuest: false },
-      });
     }
 
-    load();
+    void load();
   }, []);
 
   return state;

@@ -7,7 +7,17 @@ interface TextCarouselProps {
 }
 
 // TODO: replace temporary text with actual, well written text
-const infoSlides = [
+type SlideContentEntry =
+  | { tag: "h4"; text: string }
+  | { tag: "p"; text: string };
+
+interface InfoSlide {
+  accName: string;
+  title: string;
+  content: SlideContentEntry[];
+}
+
+const infoSlides: readonly InfoSlide[] = [
   {
     accName: "How to play",
     title: "How-to-play",

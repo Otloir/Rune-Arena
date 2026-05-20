@@ -1,29 +1,32 @@
+import type { ReactElement } from "react";
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
 import styles from "./Item.module.css";
 
 interface ItemProps {
-  item?: ItemType;
-  itemId?: number;
-  variant?: "row" | "card";
-  type?: "store" | "inventory";
-  onBuy?: () => void;
+  readonly item?: ItemType;
+  readonly itemId?: number;
+  readonly variant?: "row" | "card";
+  readonly type?: "store" | "inventory";
+  readonly onBuy?: () => void;
+  readonly canAfford?: boolean;
 }
 
-const Item: React.FC<ItemProps> = ({
+export default function Item({
   item,
   itemId,
   variant = "row",
   type,
   onBuy,
-}) => {
+  canAfford = true,
+}: ItemProps): ReactElement {
   const {
     item: fetchedItem,
     loading,
     error,
   } = useItem(itemId && !item ? itemId : undefined);
 
-  const displayItem = item || fetchedItem;
+  const displayItem: ItemType | undefined = item ?? fetchedItem;
 
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
@@ -57,18 +60,23 @@ const Item: React.FC<ItemProps> = ({
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
-              €
+              RC
             </span>
             {displayItem.price}
           </span>
 
           {type === "store" && onBuy && (
             <button
-              className={styles.buyBtn}
-              onClick={onBuy}
-              aria-label={`Buy ${displayItem.name} for ${displayItem.price} euros`}
+              className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
+              onClick={canAfford ? onBuy : undefined}
+              disabled={!canAfford}
+              aria-label={
+                canAfford
+                  ? `Buy ${displayItem.name} for ${displayItem.price} RC`
+                  : `Cannot afford ${displayItem.name} (costs ${displayItem.price} RC)`
+              }
             >
-              Buy
+              {canAfford ? "Buy" : "Can't afford"}
             </button>
           )}
         </div>
@@ -92,7 +100,6 @@ const Item: React.FC<ItemProps> = ({
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
-          {/* Show quantity if available, otherwise default to 1 */}
           <span className={styles.rowQuantity} aria-label="Quantity owned">
             × {displayItem.quantity ?? 1}
           </span>
@@ -104,6 +111,4 @@ const Item: React.FC<ItemProps> = ({
       </div>
     </article>
   );
-};
-
-export default Item;
+}

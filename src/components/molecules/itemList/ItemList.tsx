@@ -1,55 +1,67 @@
 import { useEffect, useState } from "react";
+import type { ReactElement } from "react";
 import Item from "../../atoms/Item/Item";
 import {
   getItems,
   getUserItems,
   buyItem,
 } from "../../../database/item.database";
+import type { BuyResult } from "../../../database/item.database";
 import type { Item as ItemType } from "../../../types/item.types";
 import styles from "./ItemList.module.css";
 import PurchaseModal from "../PurchaseModal/PurchaseModal";
 
 interface ListProps {
-  type?: "store" | "inventory";
-  variant: "card" | "row";
-  userId?: string;
+  readonly type?: "store" | "inventory";
+  readonly variant: "card" | "row";
+  readonly userId?: string;
+  readonly balance?: number;
+  readonly onBalanceChange?: () => void;
 }
 
-export default function ItemList({ type, variant, userId }: ListProps) {
+interface ActivePurchase {
+  readonly itemName: string;
+  readonly status: BuyResult;
+}
+
+export default function ItemList({
+  type,
+  variant,
+  userId,
+  balance,
+  onBalanceChange,
+}: ListProps): ReactElement {
   const [items, setItems] = useState<ItemType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [purchaseStatus, setPurchaseStatus] = useState<{
-    itemName: string;
-    status: "success" | "failure";
-  } | null>(null);
+  const [purchaseStatus, setPurchaseStatus] = useState<ActivePurchase | null>(null);
 
   const handleBuy = async (item: ItemType): Promise<void> => {
-    // userId is required to buy — if missing, do nothing
     if (!userId) {
-      console.error("Cannot buy item: no userId provided");
+      console.error("[ItemList] Cannot buy item: no userId provided");
       return;
     }
-    const success = await buyItem(userId, item.id);
-    if (success) {
-      setPurchaseStatus({ itemName: item.name, status: "success" });
-    } else {
-      setPurchaseStatus({ itemName: item.name, status: "failure" });
+    const result: BuyResult = await buyItem(userId, item.id);
+    setPurchaseStatus({ itemName: item.name, status: result });
+    if (result === "success") {
+      onBalanceChange?.();
     }
   };
 
-  const closePurchaseModal = () => {
+  const closePurchaseModal = (): void => {
     setPurchaseStatus(null);
   };
 
-  useEffect(() => {
+  useEffect((): void => {
     async function load(): Promise<void> {
       setLoading(true);
       setError(null);
-      const data =
+
+      const data: ItemType[] | null =
         type === "inventory" && userId != null
           ? await getUserItems(userId)
           : await getItems();
+
       if (data) {
         setItems(Array.isArray(data) ? data : []);
       } else {
@@ -87,18 +99,19 @@ export default function ItemList({ type, variant, userId }: ListProps) {
       }
     >
       <PurchaseModal
-        itemName={purchaseStatus?.itemName || ""}
-        status={purchaseStatus?.status || null}
+        itemName={purchaseStatus?.itemName ?? ""}
+        status={purchaseStatus?.status ?? null}
         isOpen={purchaseStatus !== null}
         onClose={closePurchaseModal}
       />
-      {items.map((item) => (
+      {items.map((item: ItemType) => (
         <Item
           key={item.id}
           item={item}
           variant={variant}
           type={type}
-          onBuy={type === "store" ? () => handleBuy(item) : undefined}
+          onBuy={type === "store" ? (): Promise<void> => handleBuy(item) : undefined}
+          canAfford={balance == null || item.price <= balance}
         />
       ))}
     </div>
