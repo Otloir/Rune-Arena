@@ -3,7 +3,8 @@ import {
   readIdentityTokenFromUrl,
   getPlayerInfo,
 } from "../api/centralbank.api";
-import { upsertCentralbankUser } from "../lib/supabase-user";
+import { upsertCentralbankUser, upsertGuestUser } from "../lib/supabase-user";
+import { initUserCreatures } from "../database/creature.database";
 
 export type Player = {
   id: number;
@@ -16,25 +17,11 @@ export type PlayerState =
   | { status: "ready"; player: Player }
   | { status: "error"; message: string };
 
-// Uses a negative number to avoid colliding with real centralbank IDs.
-function getOrCreateGuestId(): number {
-  const stored = localStorage.getItem("guest_id");
-  const parsed = Number(stored);
-
-  if (Number.isFinite(parsed) && parsed !== 0) {
-    return parsed;
-  }
-
-  const newId = -(Math.floor(Math.random() * 1_000_000) + 1);
-  localStorage.setItem("guest_id", String(newId));
-  return newId;
+async function loadGuestPlayer(): Promise<Player | null> {
+  const user = await upsertGuestUser();
+  if (!user) return null;
+  return { id: user.id, name: "Guest", isGuest: true };
 }
-
-const GUEST_PLAYER: Player = {
-  id: getOrCreateGuestId(),
-  name: "Guest",
-  isGuest: true,
-};
 
 export function usePlayer(): PlayerState {
   const [state, setState] = useState<PlayerState>({ status: "loading" });
@@ -43,10 +30,18 @@ export function usePlayer(): PlayerState {
     async function load(): Promise<void> {
       const token = readIdentityTokenFromUrl();
 
-      // No token — API unavailable or user came directly, fall back to guest
+      // No token — fall back to guest
       if (!token) {
-        await upsertCentralbankUser(GUEST_PLAYER.id, GUEST_PLAYER.name);
-        setState({ status: "ready", player: GUEST_PLAYER });
+        const guest = await loadGuestPlayer();
+        if (!guest) {
+          setState({
+            status: "error",
+            message: "Failed to create guest player.",
+          });
+          return;
+        }
+        await initUserCreatures(guest.id);
+        setState({ status: "ready", player: guest });
         return;
       }
 
@@ -58,14 +53,22 @@ export function usePlayer(): PlayerState {
           "[usePlayer] API unavailable, falling back to guest:",
           result.error,
         );
-        await upsertCentralbankUser(GUEST_PLAYER.id, GUEST_PLAYER.name);
-        setState({ status: "ready", player: GUEST_PLAYER });
+        const guest = await loadGuestPlayer();
+        if (!guest) {
+          setState({
+            status: "error",
+            message: "Failed to create guest player.",
+          });
+          return;
+        }
+        await initUserCreatures(guest.id);
+        setState({ status: "ready", player: guest });
         return;
       }
 
+      // Real user
       const { id, name } = result.data.user;
       const upsertedUser = await upsertCentralbankUser(id, name);
-
       if (upsertedUser === null) {
         setState({
           status: "error",
@@ -73,8 +76,11 @@ export function usePlayer(): PlayerState {
         });
         return;
       }
-
-      setState({ status: "ready", player: { id, name, isGuest: false } });
+      await initUserCreatures(upsertedUser.id);
+      setState({
+        status: "ready",
+        player: { id: upsertedUser.id, name, isGuest: false },
+      });
     }
 
     load();
