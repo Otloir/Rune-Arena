@@ -5,6 +5,7 @@
   text-align: center;
   gap: 2rem;
   padding: 2rem;
+  color: var(--light-fon-color);
 }
 
 .lobbyPage section {
@@ -15,7 +16,7 @@
   gap: 2rem;
 }
 
-.creatureSelectContainer{
+.creatureSelectContainer {
   width: 80vw;
 }
 
@@ -34,7 +35,7 @@
   width: 100%;
 }
 
-.startButton{
+.startButton {
   width: 40%;
   align-self: center;
 }
@@ -51,7 +52,16 @@
   top: 1rem;
   right: 1rem;
   z-index: 20;
-  position:fixed;
+  position: fixed;
+  background-color: var(--btn-cta-bg);
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  background-color: var(--btn-cta-hover) !important;
+  cursor: pointer;
 }
 
 /* tablet */
@@ -65,7 +75,7 @@
   .creatureSelectContainer form {
     gap: 2rem;
   }
-  .creatureSelectContainer{
+  .creatureSelectContainer {
     width: 95vw;
   }
 }

@@ -78,11 +78,17 @@ export default function LobbyPage() {
               <Button
                 onClick={navigateStore}
                 aria-label="navigate to shop button"
+                textColor="#155DFC"
               >
                 Store
               </Button>
             </nav>
-            <Button onClick={openInventory} aria-label="open inventory button">
+            <Button
+              onClick={openInventory}
+              aria-label="open inventory button"
+              backgroundColor="#DCB8A0"
+              textColor="#955D38"
+            >
               Bag
             </Button>
           </div>
@@ -118,6 +124,7 @@ export default function LobbyPage() {
                 className={styles.startButton}
                 type="submit"
                 disabled={!selectedCreatureId}
+                backgroundColor="#b23131"
               >
                 Start
               </Button>

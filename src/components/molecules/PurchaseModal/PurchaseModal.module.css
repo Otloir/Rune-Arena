@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,21 +19,21 @@
 }
 
 .modal {
-  background: #ffffff;
+  background: var(--modal-bg);
   border-radius: 20px;
   padding: 40px;
   width: 90%;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 30px var(--shadow-black-22);
   animation: slideUp 0.3s ease-out;
-  --purchase-modal-button-bg: #2db34a;
-  --purchase-modal-button-hover-bg: #269f42;
+  --purchase-modal-button-bg: var(--btn-purchase-bg);
+  --purchase-modal-button-hover-bg: var(--btn-purchase-hover);
 }
 
 .failure {
-  --purchase-modal-button-bg: #e84040;
-  --purchase-modal-button-hover-bg: #d43535;
+  --purchase-modal-button-bg: var(--btn-failure-bg);
+  --purchase-modal-button-hover-bg: var(--color-error);
 }
 
 @keyframes slideUp {
@@ -54,24 +54,23 @@
   gap: 16px;
 }
 
-
 .title {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 
 .message {
   margin: 0;
   font-size: 0.95rem;
-  color: #6b7399;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .button {
   background: var(--purchase-modal-button-bg);
-  color: #fff;
+  color: var(--color-white);
   font-size: 0.95rem;
   font-weight: 700;
   border: none;

@@ -24,7 +24,7 @@
   cursor: not-allowed;
 }
 
-.btn img{
+.btn img {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,37 +70,37 @@
 
 /* ── Shadow ── */
 .withShadow {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 14px var(--shadow-black-18);
 }
 .withShadow:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 6px 20px var(--shadow-black-22);
 }
 
 /* ── Variants ── */
 .action {
-  background: #2db34a;
-  color: #fff;
-  box-shadow: 0 3px 0 #1e8a36;
+  background: var(--btn-action-bg);
+  color: var(--color-white);
+  box-shadow: 0 3px 0 var(--btn-action-shadow);
 }
-.hoverable.action:hover:not(:disabled) {
-  background: #29a644;
+.action:hover:not(:disabled) {
+  background: var(--btn-action-hover);
   transform: translateY(-1px);
 }
 
 .neutral {
-  background: #f0f2f8;
-  color: #3a3f5c;
-  box-shadow: 0 3px 0 #d0d4e8;
+  background: var(--btn-neutral-bg);
+  color: var(--btn-neutral-text);
+  box-shadow: 0 3px 0 var(--btn-neutral-shadow);
 }
-.hoverable.neutral:hover:not(:disabled) {
-  background: #e4e7f5;
+.neutral:hover:not(:disabled) {
+  background: var(--btn-neutral-hover);
   transform: translateY(-1px);
 }
 
 /* ── Custom color ── */
 .customColor {
   background: var(--btn-custom-bg);
-  color: var(--btn-custom-text, #fff);
+  color: var(--btn-custom-text, var(--color-white));
   box-shadow: 0 3px 0 var(--btn-custom-border);
 }
 .hoverable.customColor:hover:not(:disabled) {
@@ -113,8 +113,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #fff;
+  border: 2px solid var(--shadow-white-35);
+  border-top-color: var(--color-white);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

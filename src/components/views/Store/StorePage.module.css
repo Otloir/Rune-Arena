@@ -10,6 +10,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .userShopInfo div {
   display: flex;
   align-items: center;
@@ -20,21 +21,40 @@
   padding: 0 1rem;
   height: 100%;
   border-radius: 1rem;
-  background-color: rgb(254, 230, 143);
-  color: rgb(144, 125, 58);
+  background-color: var(--coin-container-bg);
+  color: var(--coin-text);
   display: flex;
   align-items: center;
 }
 
-.fixedInformationBar{
+.fixedInformationBar {
   top: 2rem;
   right: 2rem;
-  position:fixed;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 2.3rem;
   gap: 1rem;
+  color: var(--text);
+  z-index: 20;
+}
+
+.iconButton {
+  background-color: var(--btn-cta-bg);
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  background-color: var(--btn-cta-hover) !important;
+  cursor: pointer;
+}
+
+/* utility to remove box-shadow on buttons */
+.noShadow {
+  box-shadow: none !important;
 }
 
 /* desktop */
@@ -48,7 +68,7 @@
   .storePage {
     padding: 2rem;
   }
-  .backButton{
+  .backButton {
     width: 30%;
   }
 }

@@ -1,6 +1,6 @@
 .overlay {
   position: fixed;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,14 +20,14 @@
 }
 
 .modal {
-  background: #ffffff;
+  background: var(--modal-bg);
   border-radius: 20px 20px;
   padding: 24px;
   width: 80%;
   height: 80%;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -4px 20px var(--shadow-black-15);
 }
 
 .closeButton {
@@ -38,7 +38,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: var(--text-primary);
   padding: 8px;
   display: flex;
   align-items: center;
@@ -50,7 +50,7 @@
 }
 
 .closeButton:hover {
-  background-color: #f0f0f0;
+  background-color: var(--gray-lightest);
 }
 
 .content {
@@ -60,7 +60,7 @@
 .modal h2 {
   margin: 0 0 20px 0;
   font-size: 24px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* tablet */

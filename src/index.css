@@ -1,43 +1,127 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Jacquard+12&family=Jersey+25&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Jacquard+12&family=Jersey+25&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap");
 
 :root {
-  /* Colors */
-  --light-text: #D5CAC8;
-  --dark-text: #000000;
-  --bag-text-color: #955D38;
+  /* ─── Primary Colors ─── */
+  --color-white: #ffffff;
+  --color-off-white: #f0f2f8;
+  --color-black: #000000;
 
-  /* background-color */
-  --bg: #7D756B;
-  --arena-bg: #D6B481;
-  --coin-container-bg: #FEF9C2;
-  --cta: #2B7FFF;
+  /* ─── Text Colors ─── */
+  --text: #FAFAFA;
+  --bag-text-color: #955d38;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7399;
+  --text-tertiary: #4f5678;
+  --text-light: #f3f4f6;
+  --coin-text: #D08700;
 
-  /* buttons */
-  --creature-info-button: #C9853D;
-  --fight-button: #B23131;
-  --secondary-button: #90C6EF;
-  --buy-and-stats: #7CB767;
+  /* ─── Background Colors ─── */
+  --bg: #7d756b;
+  --arena-bg: #d6b481;
+  --carousel-slide-bg: #d6b481;
+  --carousel-panel-bg: #b09060;
+  --result-page-bg: #7d766d;
+  --coin-container-bg: #fef9c2;
+  --surface: var(--color-white);
+  --surface-muted: var(--color-off-white);
+  --shop-container: var(--surface);
+  --status-panel-bg: var(--surface);
+  --modal-bg: var(--surface);
 
+  /* ─── Button Colors (unified) ─── */
+  --btn-action-bg: #90c6ef;
+  --btn-action-shadow: #66a3d1;
+  --btn-action-hover: #b0cfe7;
+  --btn-neutral-bg: var(--surface-muted);
+  --btn-neutral-text: #3a3f5c;
+  --btn-neutral-shadow: #d0d4e8;
+  --btn-neutral-hover: #e4e7f5;
+  --btn-cta-bg: #2b7fff; 
+  --btn-cta-hover: #689cf1; 
+  --btn-fight-bg: #b23131; 
+  --btn-bag-bg: #dcb8a0; 
+  --btn-purchase-bg: #7CB767;
+  --btn-purchase-hover: #80cf64; 
+  --btn-failure-bg: var(--color-error);
 
-  /* creature properties */
-  --evade: #FB7C20;
-  --defense: #2B7FFF;
-  --speed: #F1BE35;
-  --health: #FB2C36;
+  /* ─── Status Colors ─── */
+  --color-success: #22c55e;
+  --color-victory: #49b84d;
+  --color-error: #e84040;
+  --color-error-bg: #ffe5e5;
+  --color-error-text: #b42323;
 
-  /* creature status bar */
+  /* ─── Health/Status Bar ─── */
   --hp-bar-damage: #a42121;
+  --hp-bar: #04aa6d;
   --xp-bar: #0483aa;
   --xp-bar-empty: #d9d9d9;
-  --hp-bar: #04aa6d;
-  --status-panel-bg: white;
+  --hp-bar-fill: var(--color-success);
+  --heart-icon: #f87171;
+
+  /* ─── Creature Properties ─── */
+  --evade: #fb7c20;
+  --defense: #2b7fff;
+  --speed: #f1be35;
+  --health: #fb2c36;
+
+  /* ─── Move Type Colors ─── */
+  --type-fire-1: #f97316;
+  --type-fire-2: #ef4444;
+  --type-fire-shadow: #b91c1c;
+  --type-water-1: #38bdf8;
+  --type-water-2: #3b82f6;
+  --type-water-shadow: #1d4ed8;
+  --type-grass-1: #4ade80;
+  --type-grass-2: #16a34a;
+  --type-grass-shadow: #14532d;
+  --type-ice-1: #a5f3fc;
+  --type-ice-2: #0891b2;
+  --type-ice-shadow: #0e7490;
+  --type-rock-1: #a8a29e;
+  --type-rock-2: #57534e;
+  --type-rock-shadow: #292524;
+  --type-electric-1: #fde047;
+  --type-electric-2: #ca8a04;
+  --type-electric-shadow: #92400e;
+  --type-normal-1: #a8a29e;
+  --type-normal-2: #78716c;
+  --type-normal-shadow: #44403c;
+
+  /* ─── Grayscale & Borders ─── */
+  --border: #e5e4e7;
+  --border-dark: #2e303a;
+  --gray-light: #e5e7eb;
+  --gray-lighter: #dfe4f0;
+  --gray-lightest: #eef2f8;
+  --code-bg: #f4f3ec;
+  --border-soft: var(--gray-light);
+  --text-muted: var(--text-secondary);
+
+  /* ─── Overlay & Transparency ─── */
+  --overlay-dark: rgba(0, 0, 0, 0.5);
+  --overlay-dark-heavy: rgba(15, 23, 42, 0.72);
+  --overlay-dark-light: rgba(15, 23, 42, 0.35);
+  --shadow-black-15: rgba(0, 0, 0, 0.15);
+  --shadow-black-18: rgba(0, 0, 0, 0.18);
+  --shadow-black-22: rgba(0, 0, 0, 0.22);
+  --shadow-black-08: rgba(0, 0, 0, 0.08);
+  --shadow-white-25: rgba(255, 255, 255, 0.25);
+  --shadow-white-35: rgba(255, 255, 255, 0.35);
+  --shadow-white-85: rgba(255, 255, 255, 0.85);
+  --shadow-white-15: rgba(255, 255, 255, 0.15);
+  --social-bg: rgba(244, 243, 236, 0.5);
+
+  /* ─── Loading Placeholders ─── */
+  --placeholder-1: #e2e5f0;
+  --placeholder-2: #eceff5;
+
+  /* ─── Additional Component Colors ─── */
+  --battle-arena-bg: #c7eee1;
+  --reward-bg: #d4b27b;
 
   /* Fonts */
   --sans: "Press Start 2P", system-ui;
-  --mono: ui-monospace, Consolas, monospace;
-  --pixel: "Pixelify Sans", sans-serif;
-  --jersey: "Jersey 25", sans-serif;
-  --jacquard: "Jacquard 12", system-ui;
 
   /* Global typography */
   font: 1.125rem/145% var(--sans);
@@ -60,31 +144,6 @@
     font-size: 1rem;
   }
 }
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --text: #000000;
-    --text-h: #f3f4f6;
-    --bg: #faebd7;
-
-    --border: #2e303a;
-    --code-bg: #1f2028;
-
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-
-    --social-bg: rgba(47, 48, 58, 0.5);
-
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 0.625rem 0.9375rem -0.1875rem,
-      rgba(0, 0, 0, 0.25) 0 0.25rem 0.375rem -0.125rem;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-} */
 
 /* Layout reset */
 html,
@@ -148,7 +207,7 @@ html,
 body,
 #root {
   height: 100%;
-  margin: 0;  
+  margin: 0;
   padding: 0;
 }
 
@@ -163,7 +222,9 @@ body {
 
 html {
   height: -webkit-fill-available;
-  span, p, button{
-  font-family: var(--sans);
+  span,
+  p,
+  button {
+    font-family: var(--sans);
   }
 }

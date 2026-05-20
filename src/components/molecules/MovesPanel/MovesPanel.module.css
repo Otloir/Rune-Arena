@@ -17,8 +17,12 @@
   padding: 8px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #dfe4f0, #eef2f8);
-  color: #6b7399;
+  background: linear-gradient(
+    135deg,
+    var(--gray-lighter),
+    var(--gray-lightest)
+  );
+  color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: not-allowed;
@@ -30,8 +34,8 @@
   text-align: center;
   padding: 10px;
   border-radius: 10px;
-  background: #ffe5e5;
-  color: #b42323;
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
   font-weight: 700;
   font-size: 0.88rem;
 }

@@ -7,7 +7,7 @@
   justify-content: center;
   align-items: stretch;
   padding: 2rem 1rem;
-  background-color: #7d766d;
+  background-color: var(--result-page-bg);
 }
 
 .content {
@@ -39,11 +39,11 @@
 }
 
 .victory {
-  color: #49b84d;
+  color: var(--color-victory);
 }
 
 .defeat {
-  color: #f52d2d;
+  color: var(--color-error);
   font-size: clamp(2.6rem, 10vw, 4.3rem);
 }
 
@@ -51,7 +51,7 @@
   margin-top: 1.5rem;
   font-size: 1.125rem;
   line-height: 1.5;
-  color: #ffffff;
+  color: var(--color-white);
   max-width: 22rem;
 }
 
@@ -66,7 +66,7 @@
 .rewardLabel {
   margin: 0 0 1rem;
   font-size: 1.75rem;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 /* optional subtle tone difference without layout change */
@@ -84,7 +84,7 @@
   position: relative;
   width: 7rem;
   height: 7rem;
-  background-color: #d4b27b;
+  background-color: var(--reward-bg);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -106,13 +106,13 @@
   right: 0.4rem;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .rewardName {
   margin-top: 0.5rem;
   font-size: 1.125rem;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .secondaryButton {
@@ -120,27 +120,30 @@
   padding: 0.85rem 2rem;
   border: none;
   border-radius: 1rem;
-  background-color: #8ec5f5;
-  color: #ffffff;
+  background-color: var(--btn-action-bg);
+  color: var(--color-white);
   font-size: 1.25rem;
   cursor: pointer;
   min-height: 3rem;
-  transition: transform 0.15s ease, opacity 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
 }
 
 .secondaryButton:hover,
 .secondaryButton:focus-visible {
+  background-color: var(--btn-action-hover);
   transform: scale(1.02);
   opacity: 0.95;
 }
 
 .primaryButton:focus-visible,
 .secondaryButton:focus-visible {
-  outline: 0.2rem solid #ffffff;
+  outline: 0.2rem solid var(--color-white);
   outline-offset: 0.2rem;
 }
 
 .noReward {
   font-size: 3rem;
-  color: #ffffff;
+  color: var(--color-white);
 }

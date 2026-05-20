@@ -53,9 +53,10 @@ export default function StorePage() {
           </div>
           <Button
             onClick={openInventory}
-            backgroundColor="#DBEAFE"
-            textColor="black"
+            backgroundColor="#DCB8A0"
+            textColor="#955D38"
             size="sm"
+            className={styles.noShadow}
           >
             Bag
           </Button>
