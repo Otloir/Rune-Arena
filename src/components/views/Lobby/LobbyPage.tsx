@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePlayer } from "./../../../hooks/usePlayer";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
@@ -11,9 +12,8 @@ import bagIcon from "../../../assets/icons/bag_icon.svg";
 import shopIcon from "../../../assets/icons/shop_icon.svg";
 import swordIcon from "../../../assets/icons/sword_icon.svg";
 
-//TODO: make userid not hardcoded.
 export default function LobbyPage() {
-  const userId = "1";
+  const playerState = usePlayer();
   const navigate = useNavigate();
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
@@ -21,7 +21,7 @@ export default function LobbyPage() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
-  // Disable body scroll when inventory or store is open
+  // Disable body scroll when inventory or info is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -30,6 +30,17 @@ export default function LobbyPage() {
       document.body.style.overflow = previousOverflow;
     };
   }, [isInventoryOpen, isInfoOpen]);
+
+  if (playerState.status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (playerState.status === "error") {
+    return <p>Something went wrong: {playerState.message}</p>;
+  }
+
+  const userId = String(playerState.player.id);
+  const isGuest = playerState.player.isGuest;
 
   const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
@@ -53,7 +64,6 @@ export default function LobbyPage() {
   const closeInventory = () => setIsInventoryOpen(false);
   const openInfo = () => setIsInfoOpen(true);
   const closeInfo = () => setIsInfoOpen(false);
-
   return (
     <>
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
@@ -67,6 +77,9 @@ export default function LobbyPage() {
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
+            {isGuest && (
+              <p>Playing as guest — progress won't be saved to your account.</p>
+            )}
           </div>
           <IconButton
             hoverEffect={false}
