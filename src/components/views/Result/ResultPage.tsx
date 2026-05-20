@@ -1,18 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import type { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
-import { updateUserBalance } from "../../../database/user.database";
-
-const RUNE_COIN_WIN_REWARD = 5 as const;
+import { getUserBalance } from "../../../database/user.database";
 
 interface ResultState {
   readonly winner: "player" | "opponent";
   /**
-   * The local DB user id (number). Must be included in navigation state
-   * when navigating to /result so RuneCoins can be awarded.
-   * Example: navigate("/result", { state: { winner: "player", userId: player.id, ... } })
+   * The local DB user id — passed from BattleArena via navigation state.
+   * Used here only to fetch the updated balance for display.
+   * The actual RC reward was already granted server-side by end_battle().
    */
   readonly userId?: number;
   readonly playerCreatureName?: string;
@@ -26,7 +24,6 @@ export default function ResultPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as ResultState | null;
-  const [coinsAwarded, setCoinsAwarded] = useState<number | null>(null);
 
   const winner: ResultState["winner"] | undefined = state?.winner;
   const playerName: string = state?.playerCreatureName ?? "Your creature";
@@ -35,34 +32,19 @@ export default function ResultPage(): ReactElement {
   const rewardImage: string | undefined = state?.rewardImage;
   const rewardQuantity: number = state?.rewardQuantity ?? 1;
   const playerWon: boolean = winner === "player";
-  const hasAwardedCoins = useRef(false);
+
+  // Display the fresh balance that was already updated by end_battle() server-side
+  const [newBalance, setNewBalance] = useState<number | null>(null);
 
   useEffect((): void => {
-    // Guard: only award coins to a real logged-in user who won
-    if (!playerWon) return;
-
-    // Prevent double execution in React StrictMode
-    if (hasAwardedCoins.current) return;
-    hasAwardedCoins.current = true;
-
     const userId: number | undefined = state?.userId;
-    if (userId == null) {
-      console.warn(
-        "[ResultPage] userId missing from navigation state — RuneCoins not awarded. " +
-        "Pass userId when navigating: navigate('/result', { state: { userId: player.id, ... } })"
-      );
-      return;
-    }
+    if (userId == null || !playerWon) return;
 
-    updateUserBalance(userId, RUNE_COIN_WIN_REWARD).then(
-      (newBalance: number | null): void => {
-        if (newBalance !== null) {
-          setCoinsAwarded(RUNE_COIN_WIN_REWARD);
-        }
-      }
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playerWon, state]); // intentionally runs once on mount
+    // The reward was granted server-side — just fetch the updated balance to show it
+    getUserBalance(userId).then((balance: number | null): void => {
+      if (balance !== null) setNewBalance(balance);
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReturnHome = (): void => {
     navigate("/");
@@ -87,12 +69,12 @@ export default function ResultPage(): ReactElement {
             : `${playerName} was defeated by ${opponentName}...`}
         </p>
 
-        {playerWon && coinsAwarded !== null && (
+        {playerWon && (
           <p
             className={styles.coinsAwarded}
-            aria-label={`Earned ${coinsAwarded} RuneCoins`}
+            aria-label="RuneCoins earned this battle"
           >
-            +{coinsAwarded} RC earned!
+            {newBalance !== null ? `+5 RC earned! (Balance: ${newBalance} RC)` : "+5 RC earned!"}
           </p>
         )}
 

@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
@@ -7,6 +7,7 @@ import styles from "./BattleArena.module.css";
 import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
+import { startBattle, endBattle } from "../../../database/battle.database";
 
 interface BattleArenaProps {
   readonly playerOneId: string | number;
@@ -43,8 +44,53 @@ export default function BattleArena({
 
   const navigate = useNavigate();
 
+  // Track the server-side battle id so we can close it on end or forfeit
+  const battleIdRef = useRef<number | null>(null);
+  // Prevent double-registration in React StrictMode
+  const battleStartedRef = useRef<boolean>(false);
+  // Track whether the battle concluded normally so the forfeit cleanup knows not to fire
+  const battleConcludedRef = useRef<boolean>(false);
+
   const battleOver: boolean = playerHp <= 0 || opponentHp <= 0;
 
+  // Register the battle server-side when both creatures are loaded
+  useEffect((): void => {
+    if (!playerOneCreature || !playerTwoCreature) return;
+    if (battleStartedRef.current) return;
+    battleStartedRef.current = true;
+
+    startBattle({
+      playerId: Number(playerOneId),
+      opponentId: Number(playerTwoId),
+      playerCreatureId: Number(playerOneCreatureId),
+      enemyCreatureId: Number(playerTwoCreatureId),
+    }).then((battleId: number | null): void => {
+      if (battleId === null) {
+        console.error("[BattleArena] Failed to register battle server-side.");
+        return;
+      }
+      battleIdRef.current = battleId;
+    });
+  }, [playerOneCreature, playerTwoCreature, playerOneId, playerTwoId, playerOneCreatureId, playerTwoCreatureId]);
+
+  // Forfeit on unmount if the battle hasn't concluded normally.
+  // This covers: back button, navigate away, accidental tab close.
+  // Uses a synchronous beacon-style fire-and-forget since cleanup
+  // functions cannot be async.
+  useEffect((): (() => void) => {
+    return (): void => {
+      if (battleConcludedRef.current) return;
+      const battleId = battleIdRef.current;
+      if (battleId === null) return;
+
+      // Fire-and-forget — we can't await in a cleanup function
+      endBattle(battleId, 0).catch((err: unknown): void => {
+        console.error("[BattleArena] Forfeit on unmount failed:", err);
+      });
+    };
+  }, []); // empty deps — this cleanup should only register once
+
+  // When the battle ends normally, close it server-side then navigate
   useEffect((): (() => void) | void => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (playerHp > 0 && opponentHp > 0) return;
@@ -52,7 +98,21 @@ export default function BattleArena({
     const winner: "player" | "opponent" =
       opponentHp <= 0 ? "player" : "opponent";
 
-    const timer = setTimeout((): void => {
+    const timer = setTimeout(async (): Promise<void> => {
+      const battleId = battleIdRef.current;
+
+      if (battleId !== null) {
+        const winnerUserId = winner === "player" ? Number(playerOneId) : 0;
+        // Mark as concluded before calling endBattle so the unmount
+        // cleanup doesn't also try to forfeit the same battle
+        battleConcludedRef.current = true;
+        await endBattle(battleId, winnerUserId);
+      } else {
+        console.warn(
+          "[BattleArena] Battle ended but no battleId recorded — reward not granted.",
+        );
+      }
+
       navigate("/result", {
         replace: true,
         state: {
