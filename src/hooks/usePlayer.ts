@@ -94,6 +94,9 @@ export function usePlayer(): PlayerState {
         return;
       }
 
+      // Clear the token from sessionStorage now that the user is identified
+      sessionStorage.removeItem("identity_token");
+
       // Initialise creatures and store the token so LobbyPage can charge the user on Start
       await initUserCreatures(savedUser.id);
       setState({
