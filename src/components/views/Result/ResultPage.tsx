@@ -14,6 +14,7 @@ interface ResultState {
   readonly rewardName?: string;
   readonly rewardImage?: string;
   readonly rewardQuantity?: number;
+  readonly xpGained?: number;
   /**
    * Set when the battle session was invalid (e.g. duplicate tab).
    * When present, winner/creature names are not shown.
@@ -45,6 +46,7 @@ export default function ResultPage(): ReactElement {
   const rewardName: string = state?.rewardName ?? "Mystery Stamp";
   const rewardImage: string | undefined = state?.rewardImage;
   const rewardQuantity: number = state?.rewardQuantity ?? 1;
+  const xpGained: number = state?.xpGained ?? 0;  
   const playerWon: boolean = winner === "player";
 
   const [newBalance, setNewBalance] = useState<number | null>(null);
@@ -119,6 +121,15 @@ export default function ResultPage(): ReactElement {
             {newBalance !== null
               ? `+5 RC earned! (Balance: ${newBalance} RC)`
               : "+5 RC earned!"}
+          </p>
+        )}
+
+        {playerWon && (
+          <p
+            className={styles.xpGained}
+            aria-label={`XP gained: ${xpGained}`}
+          >
+            +{xpGained} XP
           </p>
         )}
 

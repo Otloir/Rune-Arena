@@ -44,11 +44,14 @@ export default function BattleArena({
     isProcessing,
     battleLog,
     handlePlayerMove,
+    xpGained,
   } = useBattle({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
     opponentCreatureId: playerTwoCreatureId,
     opponentLevel: playerTwoLevel,
+    playerUserId: playerOneId,
+    playerCreatureId: playerOneCreatureId,
   });
 
   const navigate = useNavigate();
@@ -158,6 +161,7 @@ export default function BattleArena({
             userId: Number(playerOneId),
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
+            xpGained: winner === "player" ? 100 : 0,
           },
         });
       } catch (reason: unknown) {

@@ -152,3 +152,103 @@ export async function initUserCreatures(userId: number): Promise<void> {
     );
   }
 }
+
+export async function awardXpToCreature(
+  userId: string | number,
+  creatureId: string | number,
+  xpAmount: number,
+): Promise<{ newXp: number; newLevelId: number } | null> {
+  const { data, error: fetchError } = await supabase
+    .from("User_Creature_Levels")
+    .select("current_xp, level_id")
+    .eq("user_id", userId)
+    .eq("creature_id", creatureId)
+    .limit(1);
+
+  if (fetchError || !data || data.length === 0) {
+    console.error(
+      "[awardXpToCreature] Failed to fetch creature row:",
+      fetchError?.message,
+    );
+    return null;
+  }
+
+  const row = data[0];
+
+  const { data: levels, error: levelsError } = await supabase
+    .from("Levels")
+    .select("id, level, xp_required")
+    .order("level", { ascending: true });
+
+  if (levelsError || !levels) {
+    console.error(
+      "[awardXpToCreature] Failed to fetch levels:",
+      levelsError?.message,
+    );
+    return null;
+  }
+
+  const currentLevel = levels.find(
+    (l) => Number(l.id) === Number(row.level_id),
+  );
+
+  if (!currentLevel) {
+    console.error("[awardXpToCreature] Current level not found");
+    return null;
+  }
+
+  const nextLevel = levels.find(
+    (l) => l.level === currentLevel.level + 1,
+  );
+
+  const tentativeXp = Number(row.current_xp) + xpAmount;
+
+  let newXp = tentativeXp;
+  let newLevelId = row.level_id;
+
+  if (nextLevel && tentativeXp >= currentLevel.xp_required) {
+    newLevelId = nextLevel.id;
+    newXp = tentativeXp - currentLevel.xp_required;
+  }
+
+  const { data: updatedRows, error: updateError } = await supabase
+    .from("User_Creature_Levels")
+    .update({
+      current_xp: newXp,
+      level_id: newLevelId,
+    })
+    .eq("user_id", userId)
+    .eq("creature_id", creatureId)
+    .select();
+
+  if (updateError) {
+    console.error(
+      "[awardXpToCreature] Failed to update XP:",
+      updateError.message,
+    );
+    return null;
+  }
+
+  if (!updatedRows || updatedRows.length === 0) {
+    console.error(
+      "[awardXpToCreature] UPDATE matched 0 rows.",
+      {
+        userId,
+        creatureId,
+      },
+    );
+    return null;
+  }
+
+  console.log("[awardXpToCreature] XP updated successfully:", {
+    userId,
+    creatureId,
+    newXp,
+    newLevelId,
+  });
+
+  return {
+    newXp,
+    newLevelId,
+  };
+}
