@@ -12,7 +12,10 @@ export type ApiFailure = {
   readonly success: false;
   readonly error: string;
   readonly status?: number;
+}
+
 export type StampAnimal = "lion" | "dolphin" | "toucan" | "beetlebug" | "snake";
+
 
 export type StampMetal = "silver" | "gold" | "platinum";
 
@@ -33,8 +36,6 @@ export type Stamp = {
   created_at: string;
   updated_at: string;
 };
-
-export type ApiResult<T> = ApiSuccess<T> | ApiFailure;
 
 // -----------------------------------------------------------------------------
 // Domain types

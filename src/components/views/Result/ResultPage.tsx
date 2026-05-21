@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
 import { getUserBalance } from "../../../database/user.database";
@@ -102,10 +101,7 @@ export default function ResultPage(): ReactElement {
       </main>
     );
   }
-  const playerWon = state?.winner === "player";
-  const playerName = state?.playerCreatureName ?? "Your creature";
-  const opponentName = state?.opponentCreatureName ?? "The opponent";
-  const xpGained = state?.xpGained ?? 0;
+  
   
 
   //consol log to check if the stamp works
