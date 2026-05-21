@@ -1,10 +1,15 @@
+import type { ReactElement } from "react";
 import styles from "./PurchaseModal.module.css";
+import type { BuyResult } from "../../../database/item.database";
+
+// "null" means the modal is closed — no status to show
+export type PurchaseStatus = BuyResult | null;
 
 interface PurchaseModalProps {
-  itemName: string;
-  status: "success" | "failure" | null;
-  isOpen: boolean;
-  onClose: () => void;
+  readonly itemName: string;
+  readonly status: PurchaseStatus;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
 export default function PurchaseModal({
@@ -12,23 +17,39 @@ export default function PurchaseModal({
   status,
   isOpen,
   onClose,
-}: PurchaseModalProps) {
+}: PurchaseModalProps): ReactElement | null {
   if (!isOpen || !status) return null;
 
   const isSuccess = status === "success";
-  const modalClassName = `${styles.modal}${status === "failure" ? ` ${styles.failure}` : ""}`;
+  const isInsufficientFunds = status === "insufficient_funds";
+  const modalClassName = `${styles.modal}${!isSuccess ? ` ${styles.failure}` : ""}`;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={modalClassName} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={modalClassName}
+        onClick={(e: React.MouseEvent): void => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="purchase-modal-title"
+      >
         <div className={styles.content}>
-          <h2 className={styles.title}>
-            {isSuccess ? "Purchase Successful!" : "Purchase Failed"}
+          <h2 id="purchase-modal-title" className={styles.title}>
+            {isSuccess
+              ? "Purchase Successful!"
+              : isInsufficientFunds
+                ? "Not Enough RuneCoins"
+                : "Purchase Failed"}
           </h2>
           <p className={styles.message}>
             {isSuccess ? (
               <>
                 <strong>{itemName}</strong> has been added to your inventory.
+              </>
+            ) : isInsufficientFunds ? (
+              <>
+                You can&apos;t afford <strong>{itemName}</strong>. Earn more RC
+                by winning battles!
               </>
             ) : (
               <>
@@ -37,8 +58,12 @@ export default function PurchaseModal({
               </>
             )}
           </p>
-          <button className={styles.button} onClick={onClose}>
-            {isSuccess ? "Continue Shopping" : "Try Again"}
+          <button
+            className={styles.button}
+            onClick={onClose}
+            aria-label={isSuccess ? "Continue shopping" : "Dismiss error"}
+          >
+            {isSuccess ? "Continue Shopping" : "Got it"}
           </button>
         </div>
       </div>

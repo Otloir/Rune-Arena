@@ -1,5 +1,9 @@
 import { supabase } from "../lib/supabase";
 import type { Item as ItemType } from "../types/item.types";
+import { purchaseItem } from "./user.database";
+import type { PurchaseError } from "./user.database";
+
+export type BuyResult = "success" | "insufficient_funds" | "error";
 
 interface UserItemsRow {
   item: ItemType[] | ItemType | null;
@@ -51,23 +55,31 @@ export async function getUserItems(
     return acc;
   }, {});
 
-  // Convert the grouped object back into an array
   return Object.values(grouped);
 }
 
-// Add an item to a user's inventory
+/**
+ * Attempt to buy an item for a user.
+ * Delegates to purchaseItem() which calls the secure server-side Postgres function.
+ * The server resolves the price and deducts RC — the client sends no amounts.
+ *
+ * Returns:
+ *   "success"            — item purchased, coins deducted, inventory updated
+ *   "insufficient_funds" — user cannot afford the item
+ *   "error"              — unexpected failure
+ */
 export async function buyItem(
   userId: string,
   itemId: number,
-): Promise<boolean> {
-  const { error } = await supabase
-    .from("User_Items")
-    .insert({ user_id: userId, item_id: itemId });
-  if (error) {
-    console.error("Supabase error:", error.message);
-    return false;
+): Promise<BuyResult> {
+  try {
+    await purchaseItem(Number(userId), itemId);
+    return "success";
+  } catch (err) {
+    const reason = err as PurchaseError;
+    if (reason === "insufficient_funds") return "insufficient_funds";
+    return "error";
   }
-  return true;
 }
 
 // Remove one instance of an item from a user's inventory.
@@ -94,6 +106,7 @@ export async function consumeUserItem(
     return false;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rowId = Array.isArray(rows) ? (rows[0] as any).id : (rows as any).id;
 
   const { error: delError } = await supabase

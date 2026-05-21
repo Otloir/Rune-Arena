@@ -1,10 +1,11 @@
 import { supabase } from "./supabase";
 
-export type LocalUser = {
-  id: number;
-  centralbank_id: number;
-  name: string;
-};
+export interface LocalUser {
+  readonly id: number;
+  readonly centralbank_id: number;
+  readonly name: string;
+  readonly runecoins: number;
+}
 
 // Returns a stable negative guest centralbank_id from localStorage.
 // Guests get -1, -2, -3... so they never collide with real positive centralbank IDs.
@@ -37,8 +38,8 @@ export async function upsertCentralbankUser(
       { centralbank_id: centralbankId, name },
       { onConflict: "centralbank_id" },
     )
-    .select("id, centralbank_id, name")
-    .single();
+    .select("id, centralbank_id, name, runecoins")
+    .single<LocalUser>();
 
   if (error) {
     console.error("[upsertCentralbankUser]", error.message);
@@ -59,8 +60,8 @@ export async function upsertGuestUser(): Promise<LocalUser | null> {
       { centralbank_id: guestCentralbankId, name: "Guest" },
       { onConflict: "centralbank_id" },
     )
-    .select("id, centralbank_id, name")
-    .single();
+    .select("id, centralbank_id, name, runecoins")
+    .single<LocalUser>();
 
   if (error) {
     console.error("[upsertGuestUser]", error.message);

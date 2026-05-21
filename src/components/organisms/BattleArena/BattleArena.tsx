@@ -1,22 +1,25 @@
+import type { ReactElement } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
 import styles from "./BattleArena.module.css";
 import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
+import InventoryPage from "../../views/Inventory/InventoryPage";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
-import { useEffect, useMemo, useState } from "react";
-import InventoryPage from "../../views/Inventory/InventoryPage";
-import { useNavigate } from "react-router-dom";
+import { startBattle, endBattle } from "../../../database/battle.database";
+import type { BattleError } from "../../../database/battle.database";
 import { formatStamp } from "../../../api/centralbank.api";
 import type { TransactionResponse } from "../../../types/api.types";
 import { consumeUserItem } from "../../../database/item.database";
 
 interface BattleArenaProps {
-  playerOneId: string | number;
-  playerTwoId: string | number;
-  playerOneCreatureId: string | number;
-  playerTwoCreatureId: string | number;
-  transaction: TransactionResponse | null;
+  readonly playerOneId: string | number;
+  readonly playerTwoId: string | number;
+  readonly playerOneCreatureId: string | number;
+  readonly playerTwoCreatureId: string | number;
+  readonly transaction: TransactionResponse | null;
 }
 
 export default function BattleArena({
@@ -25,28 +28,27 @@ export default function BattleArena({
   playerOneCreatureId,
   playerTwoCreatureId,
   transaction,
-}: BattleArenaProps) {
-  const { creature: playerOneCreature, level: playerOneLevel } =
-    useCreatureById(playerOneId, playerOneCreatureId);
+}: BattleArenaProps): ReactElement {
+  const {
+    creature: playerOneCreature,
+    level: playerOneLevel,
+    loading: playerOneLoading,
+    error: playerOneError,
+  } = useCreatureById(playerOneId, playerOneCreatureId);
 
-  const { creature: playerTwoCreature } = useCreatureById(
-    playerTwoId,
-    playerTwoCreatureId,
-  );
+  const {
+    creature: playerTwoCreature,
+    loading: playerTwoLoading,
+    error: playerTwoError,
+  } = useCreatureById(playerTwoId, playerTwoCreatureId);
 
-  const randomizedOpponentLevel = useMemo(() => {
+  // Randomise the opponent's level relative to the player's — same level,
+  // one below, or one above with equal probability
+  const randomizedOpponentLevel = useMemo((): number => {
     if (!playerOneLevel) return 1;
-
     const roll = Math.floor(Math.random() * 3);
-
-    if (roll === 0) {
-      return Math.max(1, playerOneLevel - 1);
-    }
-
-    if (roll === 2) {
-      return playerOneLevel + 1;
-    }
-
+    if (roll === 0) return Math.max(1, playerOneLevel - 1);
+    if (roll === 2) return playerOneLevel + 1;
     return playerOneLevel;
   }, [playerOneLevel]);
 
@@ -70,41 +72,166 @@ export default function BattleArena({
 
   const navigate = useNavigate();
 
-  const battleOver = playerHp <= 0 || opponentHp <= 0;
+  // ── Battle session refs ──────────────────────────────────────────────────
+  const battleIdRef = useRef<number | null>(null);
+  const battleStartedRef = useRef<boolean>(false);
+  const battleConcludedRef = useRef<boolean>(false);
+  // Prevents the battle-end effect from calling endBattle when startBattle failed
+  const sessionInvalidRef = useRef<boolean>(false);
 
+  // ── Hit animation state ──────────────────────────────────────────────────
   const [prevPlayerHp, setPrevPlayerHp] = useState<number | null>(null);
   const [prevOpponentHp, setPrevOpponentHp] = useState<number | null>(null);
-  const [playerIsHit, setPlayerIsHit] = useState(false);
-  const [opponentIsHit, setOpponentIsHit] = useState(false);
+  const [playerIsHit, setPlayerIsHit] = useState<boolean>(false);
+  const [opponentIsHit, setOpponentIsHit] = useState<boolean>(false);
 
-  useEffect(() => {
+  // ── Inventory overlay ────────────────────────────────────────────────────
+  const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
+
+  const battleOver: boolean = playerHp <= 0 || opponentHp <= 0;
+
+  const creatureLoadFailed: boolean =
+    (!playerOneLoading && playerOneError !== null) ||
+    (!playerTwoLoading && playerTwoError !== null);
+
+  // ── Hit animations ───────────────────────────────────────────────────────
+
+  useEffect((): (() => void) | void => {
     if (prevPlayerHp !== null && playerHp < prevPlayerHp) {
       setPlayerIsHit(true);
-      const timer = setTimeout(() => setPlayerIsHit(false), 400);
-      return () => clearTimeout(timer);
+      const timer = setTimeout((): void => setPlayerIsHit(false), 400);
+      return (): void => clearTimeout(timer);
     }
     setPrevPlayerHp(playerHp);
   }, [playerHp, prevPlayerHp]);
 
-  useEffect(() => {
+  useEffect((): (() => void) | void => {
     if (prevOpponentHp !== null && opponentHp < prevOpponentHp) {
       setOpponentIsHit(true);
-      const timer = setTimeout(() => setOpponentIsHit(false), 400);
-      return () => clearTimeout(timer);
+      const timer = setTimeout((): void => setOpponentIsHit(false), 400);
+      return (): void => clearTimeout(timer);
     }
     setPrevOpponentHp(opponentHp);
   }, [opponentHp, prevOpponentHp]);
 
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  // ── Creature load failure → navigate away immediately ────────────────────
 
-  useEffect(() => {
+  useEffect((): void => {
+    if (!creatureLoadFailed) return;
+    sessionInvalidRef.current = true;
+    battleConcludedRef.current = true;
+    navigate("/result", {
+      replace: true,
+      state: {
+        sessionError: "unknown" as BattleError,
+        winner: undefined,
+        playerCreatureName: undefined,
+        opponentCreatureName: undefined,
+        xpGained: 0,
+        stamp: null,
+      },
+    });
+  }, [creatureLoadFailed, navigate]);
+
+  // ── Register battle server-side when both creatures load ─────────────────
+
+  useEffect((): void => {
     if (!playerOneCreature || !playerTwoCreature) return;
+    if (battleStartedRef.current) return;
+    battleStartedRef.current = true;
 
-    if (playerHp <= 0 || opponentHp <= 0) {
-      const winner: "player" | "opponent" =
-        opponentHp <= 0 ? "player" : "opponent";
+    startBattle({
+      playerId: Number(playerOneId),
+      opponentId: Number(playerTwoId),
+      playerCreatureId: Number(playerOneCreatureId),
+      enemyCreatureId: Number(playerTwoCreatureId),
+    })
+      .then((battleId: number): void => {
+        battleIdRef.current = battleId;
+      })
+      .catch((reason: BattleError): void => {
+        sessionInvalidRef.current = true;
+        battleConcludedRef.current = true;
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: reason,
+            winner: undefined,
+            playerCreatureName: undefined,
+            opponentCreatureName: undefined,
+            xpGained: 0,
+            stamp: null,
+          },
+        });
+      });
+  }, [
+    playerOneCreature,
+    playerTwoCreature,
+    playerOneId,
+    playerTwoId,
+    playerOneCreatureId,
+    playerTwoCreatureId,
+    navigate,
+  ]);
 
-      const timer = setTimeout(() => {
+  // ── Forfeit on unmount if battle hasn't concluded normally ───────────────
+
+  useEffect((): (() => void) => {
+    return (): void => {
+      if (battleConcludedRef.current) return;
+      const battleId = battleIdRef.current;
+      if (battleId === null) return;
+
+      endBattle(battleId, 0).catch((): void => {
+        // Swallow — forfeit errors are not actionable at unmount time
+      });
+    };
+  }, []);
+
+  // ── Battle end → close server-side → navigate to result ─────────────────
+
+  useEffect((): (() => void) | void => {
+    if (!playerOneCreature || !playerTwoCreature) return;
+    if (playerHp > 0 && opponentHp > 0) return;
+    if (sessionInvalidRef.current) return;
+
+    const winner: "player" | "opponent" =
+      opponentHp <= 0 ? "player" : "opponent";
+
+    const timer = setTimeout(async (): Promise<void> => {
+      battleConcludedRef.current = true;
+      const battleId = battleIdRef.current;
+
+      const stamp =
+        transaction?.stamp
+          ? {
+              name: formatStamp(transaction.stamp.stamptype),
+              imageUrl: transaction.stamp.stamptype.image_url,
+            }
+          : null;
+
+      if (battleId === null) {
+        console.warn(
+          "[BattleArena] Battle ended but no battleId recorded — reward not granted.",
+        );
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: "battle_not_found" as BattleError,
+            winner: undefined,
+            playerCreatureName: undefined,
+            opponentCreatureName: undefined,
+            xpGained,
+            stamp,
+          },
+        });
+        return;
+      }
+
+      const winnerUserId = winner === "player" ? Number(playerOneId) : 0;
+
+      try {
+        await endBattle(battleId, winnerUserId);
         navigate("/result", {
           replace: true,
           state: {
@@ -112,29 +239,40 @@ export default function BattleArena({
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
             xpGained,
-            stamp: transaction?.stamp
-              ? {
-                  name: formatStamp(transaction.stamp.stamptype),
-                  imageUrl: transaction.stamp.stamptype.image_url,
-                }
-              : null,
+            stamp,
           },
         });
-      }, 1200);
+      } catch (reason: unknown) {
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: reason as BattleError,
+            winner: undefined,
+            playerCreatureName: undefined,
+            opponentCreatureName: undefined,
+            xpGained,
+            stamp,
+          },
+        });
+      }
+    }, 1200);
 
-      return () => clearTimeout(timer);
-    }
+    return (): void => clearTimeout(timer);
   }, [
     playerHp,
     opponentHp,
     playerOneCreature,
     playerTwoCreature,
+    playerOneId,
     navigate,
     xpGained,
     transaction,
   ]);
 
-  if (!playerOneCreature || !playerTwoCreature) {
+  // ── Loading state ────────────────────────────────────────────────────────
+
+  if (playerOneLoading || playerTwoLoading || creatureLoadFailed ||
+      !playerOneCreature || !playerTwoCreature) {
     return (
       <section className={styles.arena}>
         <div
@@ -149,18 +287,19 @@ export default function BattleArena({
     );
   }
 
+  // ── Arena ────────────────────────────────────────────────────────────────
+
   return (
     <section className={styles.arena}>
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
+        onClose={(): void => setIsInventoryOpen(false)}
         userId={String(playerOneId)}
         isInBattle={true}
-        onUseItem={async (item) => {
+        onUseItem={async (item): Promise<boolean> => {
           try {
             setIsInventoryOpen(false);
             await handlePlayerUseItem(item);
-            // Remove one instance of the used item from the user's inventory
             const removed = await consumeUserItem(String(playerOneId), item.id);
             return removed;
           } catch (err) {
@@ -217,7 +356,7 @@ export default function BattleArena({
             disabled={turnOwner !== "player" || isProcessing || battleOver}
             battleLog={battleLog}
             playerCreature={playerOneCreature}
-            onOpenInventory={() => setIsInventoryOpen(true)}
+            onOpenInventory={(): void => setIsInventoryOpen(true)}
           />
         </div>
       </div>

@@ -1,14 +1,16 @@
+import type { ReactElement } from "react";
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
 import styles from "./Item.module.css";
 
 interface ItemProps {
-  item?: ItemType;
-  itemId?: number;
-  variant?: "row" | "card";
-  type?: "store" | "inventory";
-  onBuy?: () => void;
-  onUse?: () => void;
+  readonly item?: ItemType;
+  readonly itemId?: number;
+  readonly variant?: "row" | "card";
+  readonly type?: "store" | "inventory";
+  readonly onBuy?: () => void;
+  readonly onUse?: () => void;
+  readonly canAfford?: boolean;
 }
 
 const Item: React.FC<ItemProps> = ({
@@ -18,6 +20,7 @@ const Item: React.FC<ItemProps> = ({
   type,
   onBuy,
   onUse,
+  canAfford = true,
 }) => {
   const {
     item: fetchedItem,
@@ -25,7 +28,7 @@ const Item: React.FC<ItemProps> = ({
     error,
   } = useItem(itemId && !item ? itemId : undefined);
 
-  const displayItem = item || fetchedItem;
+  const displayItem: ItemType | undefined = item ?? fetchedItem;
 
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
@@ -47,30 +50,29 @@ const Item: React.FC<ItemProps> = ({
             className={styles.cardImg}
           />
         )}
-
         <h3 className={styles.cardName}>{displayItem.name}</h3>
-
         <p className={styles.cardProperty}>
           {displayItem.property} {displayItem.propvalue}
         </p>
-
         <p className={styles.cardDescription}>{displayItem.description}</p>
-
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
-              €
+              RC
             </span>
             {displayItem.price}
           </span>
-
           {type === "store" && onBuy && (
             <button
-              className={styles.buyBtn}
+              className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
-              aria-label={`Buy ${displayItem.name} for ${displayItem.price} euros`}
+              aria-label={
+                canAfford
+                  ? `Buy ${displayItem.name} for ${displayItem.price} RC`
+                  : `Cannot afford ${displayItem.name}, costs ${displayItem.price} RC`
+              }
             >
-              Buy
+              {canAfford ? "Buy" : "Can't afford"}
             </button>
           )}
         </div>
@@ -90,7 +92,6 @@ const Item: React.FC<ItemProps> = ({
           className={styles.rowImg}
         />
       )}
-
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>

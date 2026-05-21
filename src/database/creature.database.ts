@@ -60,6 +60,9 @@ export async function getUserCreature(
   return data;
 }
 
+// Get a specific user's creature by creatureId + level info.
+// Uses .limit(1) instead of .single() to safely handle duplicate rows in
+// User_Creature_Levels without throwing a 406 "multiple rows" error.
 export async function getUserCreatureById(
   userId: string,
   creatureId: string,
@@ -75,12 +78,16 @@ export async function getUserCreatureById(
     )
     .eq("user_id", userId)
     .eq("creature_id", creatureId)
-    .single();
+    .limit(1);
+
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
   }
-  return data;
+
+  if (!data || data.length === 0) return null;
+
+  return data[0] as UserCreatureRow;
 }
 
 export async function getTypes(): Promise<Type[] | null> {
@@ -103,22 +110,29 @@ export async function getMoves(): Promise<Move[] | null> {
   return data;
 }
 
+// Award XP to a creature and handle level-ups.
+// Uses .limit(1) to avoid 406 errors from duplicate rows in User_Creature_Levels.
 export async function awardXpToCreature(
   userId: string | number,
   creatureId: string | number,
-  xpAmount: number
+  xpAmount: number,
 ): Promise<{ newXp: number; newLevelId: number } | null> {
-  const { data: row, error: fetchError } = await supabase
+  const { data: rows, error: fetchError } = await supabase
     .from("User_Creature_Levels")
     .select("current_xp, level_id")
     .eq("user_id", userId)
     .eq("creature_id", creatureId)
-    .single();
+    .limit(1);
 
-  if (fetchError || !row) {
-    console.error("[awardXpToCreature] Failed to fetch creature row:", fetchError?.message);
+  if (fetchError || !rows || rows.length === 0) {
+    console.error(
+      "[awardXpToCreature] Failed to fetch creature row:",
+      fetchError?.message,
+    );
     return null;
   }
+
+  const row = rows[0] as { current_xp: number; level_id: number };
 
   const { data: levels, error: levelsError } = await supabase
     .from("Levels")
@@ -126,12 +140,13 @@ export async function awardXpToCreature(
     .order("level", { ascending: true });
 
   if (levelsError || !levels) {
-    console.error("[awardXpToCreature] Failed to fetch levels:", levelsError?.message);
+    console.error(
+      "[awardXpToCreature] Failed to fetch levels:",
+      levelsError?.message,
+    );
     return null;
   }
 
-  // Find current level entry — compare as numbers to avoid string/number mismatch
-    // Find current level entry
   const currentLevel = levels.find((l) => l.id === row.level_id);
 
   if (!currentLevel) {
@@ -139,9 +154,7 @@ export async function awardXpToCreature(
     return null;
   }
 
-  const nextLevel = levels.find(
-    (l) => l.level === currentLevel.level + 1
-  );
+  const nextLevel = levels.find((l) => l.level === currentLevel.level + 1);
 
   const tentativeXp = row.current_xp + xpAmount;
 
@@ -152,7 +165,7 @@ export async function awardXpToCreature(
     newLevelId = nextLevel.id;
     newXp = tentativeXp - currentLevel.xp_required;
   }
-  
+
   const { error: updateError } = await supabase
     .from("User_Creature_Levels")
     .update({ current_xp: newXp, level_id: newLevelId })
@@ -160,23 +173,25 @@ export async function awardXpToCreature(
     .eq("creature_id", creatureId);
 
   if (updateError) {
-    console.error("[awardXpToCreature] Failed to update XP:", updateError.message);
+    console.error(
+      "[awardXpToCreature] Failed to update XP:",
+      updateError.message,
+    );
     return null;
   }
 
   return { newXp, newLevelId };
 }
+
 // Insert a row in User_Creature_Levels for each creature, if not already present.
 // Called when a user/guest first joins so they start with level 1 and 0 xp.
 export async function initUserCreatures(userId: number): Promise<void> {
-  // Get all creatures
   const creatures = await getCreatures();
   if (!creatures) {
     console.error("[initUserCreatures] Failed to fetch creatures.");
     return;
   }
 
-  // Get the level row where level = 1 so we can use its id as level_id
   const { data: levelOne, error: levelError } = await supabase
     .from("Levels")
     .select("id")
@@ -191,7 +206,6 @@ export async function initUserCreatures(userId: number): Promise<void> {
     return;
   }
 
-  // Build one row per creature — ignore conflicts so existing rows are untouched
   const rows = creatures.map((creature) => ({
     user_id: userId,
     creature_id: creature.id,
