@@ -5,6 +5,7 @@ import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { useEffect, useMemo, useState } from "react";
+import InventoryPage from "../../views/Inventory/InventoryPage";
 import { useNavigate } from "react-router-dom";
 import { formatStamp } from "../../../api/centralbank.api";
 import type { TransactionResponse } from "../../../types/api.types";
@@ -93,6 +94,9 @@ export default function BattleArena({
     setPrevOpponentHp(opponentHp);
   }, [opponentHp, prevOpponentHp]);
 
+  // Inventory modal state (mirror Lobby behavior)
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+
   useEffect(() => {
     if (!playerOneCreature || !playerTwoCreature) return;
 
@@ -147,6 +151,11 @@ export default function BattleArena({
 
   return (
     <section className={styles.arena}>
+      <InventoryPage
+        isOpen={isInventoryOpen}
+        onClose={() => setIsInventoryOpen(false)}
+        userId={String(playerOneId)}
+      />
       <div className={styles.arenaContainer}>
         {/* Opponent */}
         <div className={styles.opponentContainer}>
@@ -195,6 +204,7 @@ export default function BattleArena({
             disabled={turnOwner !== "player" || isProcessing || battleOver}
             battleLog={battleLog}
             playerCreature={playerOneCreature}
+            onOpenInventory={() => setIsInventoryOpen(true)}
           />
         </div>
       </div>
