@@ -23,11 +23,19 @@ export default function BattleArena({
   playerOneCreatureId,
   playerTwoCreatureId,
 }: BattleArenaProps): ReactElement {
-  const { creature: playerOneCreature, level: playerOneLevel } =
-    useCreatureById(playerOneId, playerOneCreatureId);
+  const {
+    creature: playerOneCreature,
+    level: playerOneLevel,
+    loading: playerOneLoading,
+    error: playerOneError,
+  } = useCreatureById(playerOneId, playerOneCreatureId);
 
-  const { creature: playerTwoCreature, level: playerTwoLevel } =
-    useCreatureById(playerTwoId, playerTwoCreatureId);
+  const {
+    creature: playerTwoCreature,
+    level: playerTwoLevel,
+    loading: playerTwoLoading,
+    error: playerTwoError,
+  } = useCreatureById(playerTwoId, playerTwoCreatureId);
 
   const {
     playerHp,
@@ -48,8 +56,28 @@ export default function BattleArena({
   const battleIdRef = useRef<number | null>(null);
   const battleStartedRef = useRef<boolean>(false);
   const battleConcludedRef = useRef<boolean>(false);
+  const sessionInvalidRef = useRef<boolean>(false);
 
   const battleOver: boolean = playerHp <= 0 || opponentHp <= 0;
+
+  const creatureLoadFailed: boolean =
+    (!playerOneLoading && playerOneError !== null) ||
+    (!playerTwoLoading && playerTwoError !== null);
+
+  // If creature loading fails (e.g. 406 from duplicate DB rows),
+  // navigate to the result screen with a session error rather than hanging
+  useEffect((): void => {
+    if (!creatureLoadFailed) return;
+    sessionInvalidRef.current = true;
+    battleConcludedRef.current = true;
+    navigate("/result", {
+      replace: true,
+      state: {
+        sessionError: "unknown" as BattleError,
+        userId: Number(playerOneId),
+      },
+    });
+  }, [creatureLoadFailed, navigate, playerOneId]);
 
   // Register the battle server-side when both creatures are loaded
   useEffect((): void => {
@@ -67,6 +95,7 @@ export default function BattleArena({
         battleIdRef.current = battleId;
       })
       .catch((reason: BattleError): void => {
+        sessionInvalidRef.current = true;
         battleConcludedRef.current = true;
         navigate("/result", {
           replace: true,
@@ -85,7 +114,6 @@ export default function BattleArena({
       const battleId = battleIdRef.current;
       if (battleId === null) return;
 
-      // Fire-and-forget — can't await or catch meaningfully in a cleanup
       endBattle(battleId, 0).catch((): void => {
         // Swallow — forfeit errors are not actionable at unmount time
       });
@@ -96,13 +124,12 @@ export default function BattleArena({
   useEffect((): (() => void) | void => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (playerHp > 0 && opponentHp > 0) return;
+    if (sessionInvalidRef.current) return;
 
     const winner: "player" | "opponent" =
       opponentHp <= 0 ? "player" : "opponent";
 
     const timer = setTimeout(async (): Promise<void> => {
-      // Mark concluded immediately so the unmount forfeit cleanup
-      // doesn't also fire endBattle on the same battleId
       battleConcludedRef.current = true;
       const battleId = battleIdRef.current;
 
@@ -124,7 +151,6 @@ export default function BattleArena({
 
       try {
         await endBattle(battleId, winnerUserId);
-        // Success — navigate to the normal result screen
         navigate("/result", {
           replace: true,
           state: {
@@ -135,8 +161,6 @@ export default function BattleArena({
           },
         });
       } catch (reason: unknown) {
-        // Battle was abandoned server-side (e.g. overridden by a duplicate tab)
-        // Show a clear session error instead of a false "+5 RC earned!" message
         navigate("/result", {
           replace: true,
           state: {
@@ -150,7 +174,25 @@ export default function BattleArena({
     return (): void => clearTimeout(timer);
   }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, playerOneId, navigate]);
 
-  if (!playerOneCreature || !playerTwoCreature) {
+  // Show loading while creatures are being fetched
+  if (playerOneLoading || playerTwoLoading) {
+    return (
+      <section className={styles.arena}>
+        <div
+          className={styles.loadingState}
+          role="status"
+          aria-live="polite"
+          aria-label="Loading battle..."
+        >
+          Loading battle...
+        </div>
+      </section>
+    );
+  }
+
+  // Creature load failed — the useEffect above will navigate away,
+  // render nothing meaningful in the meantime
+  if (creatureLoadFailed || !playerOneCreature || !playerTwoCreature) {
     return (
       <section className={styles.arena}>
         <div

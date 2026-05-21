@@ -30,7 +30,7 @@ const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
     "This battle session was overridden by a newer battle in another tab. " +
     "No RuneCoins were awarded. Please close duplicate tabs and start a new battle.",
   reward_already_claimed: "The reward for this battle has already been claimed.",
-  unknown: "Something went wrong with this battle session. Please try again.",
+  unknown: "Failed to load battle data. This can happen with duplicate tabs or a connection issue. Please start a new battle.",
 };
 
 export default function ResultPage(): ReactElement {
