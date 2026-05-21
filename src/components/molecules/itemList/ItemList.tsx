@@ -13,9 +13,15 @@ interface ListProps {
   type?: "store" | "inventory";
   variant: "card" | "row";
   userId?: string;
+  onUseItem?: (item: ItemType) => void;
 }
 
-export default function ItemList({ type, variant, userId }: ListProps) {
+export default function ItemList({
+  type,
+  variant,
+  userId,
+  onUseItem,
+}: ListProps) {
   const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +105,11 @@ export default function ItemList({ type, variant, userId }: ListProps) {
           variant={variant}
           type={type}
           onBuy={type === "store" ? () => handleBuy(item) : undefined}
+          onUse={
+            type === "inventory" && onUseItem
+              ? () => onUseItem(item)
+              : undefined
+          }
         />
       ))}
     </div>

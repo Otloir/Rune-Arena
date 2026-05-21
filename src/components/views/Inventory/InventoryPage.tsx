@@ -1,16 +1,21 @@
 import ItemList from "../../molecules/itemList/ItemList";
+import type { Item as ItemType } from "../../../types/item.types";
 import style from "./InventoryPage.module.css";
 
 interface InventoryPageProps {
   userId: string;
   isOpen: boolean;
   onClose: () => void;
+  isInBattle?: boolean;
+  onUseItem?: (item: ItemType) => void;
 }
 
 export default function InventoryPage({
   userId,
   isOpen,
   onClose,
+  isInBattle = false,
+  onUseItem,
 }: InventoryPageProps) {
   if (!isOpen) return null;
 
@@ -26,7 +31,12 @@ export default function InventoryPage({
         </button>
         <h2>Inventory</h2>
         <div className={style.content}>
-          <ItemList userId={userId} variant="row" type="inventory" />
+          <ItemList
+            userId={userId}
+            variant="row"
+            type="inventory"
+            onUseItem={isInBattle && onUseItem ? onUseItem : undefined}
+          />
         </div>
       </div>
     </div>

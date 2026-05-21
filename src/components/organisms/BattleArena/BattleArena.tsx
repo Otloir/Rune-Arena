@@ -57,6 +57,7 @@ export default function BattleArena({
     battleLog,
     handlePlayerMove,
     xpGained,
+    handlePlayerUseItem,
   } = useBattle({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
@@ -155,6 +156,15 @@ export default function BattleArena({
         isOpen={isInventoryOpen}
         onClose={() => setIsInventoryOpen(false)}
         userId={String(playerOneId)}
+        isInBattle={true}
+        onUseItem={async (item) => {
+          try {
+            setIsInventoryOpen(false);
+            await handlePlayerUseItem(item.name);
+          } catch (err) {
+            console.error("Error using item:", err);
+          }
+        }}
       />
       <div className={styles.arenaContainer}>
         {/* Opponent */}

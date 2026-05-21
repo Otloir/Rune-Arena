@@ -157,6 +157,7 @@ export function useBattle({
   battleError: string | null;
   xpGained: number;
   handlePlayerMove: (move: MoveWithType) => Promise<void>;
+  handlePlayerUseItem: (itemName?: string) => Promise<void>;
 } {
   const [xpGained, setXpGained] = useState(0);
   const [playerHp, setPlayerHp] = useState<number | null>(null);
@@ -414,7 +415,7 @@ export function useBattle({
 
     const run = async (): Promise<void> => {
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 600));
       await executeOpponentTurn(opponentMoveIds);
       setIsProcessing(false);
     };
@@ -442,6 +443,18 @@ export function useBattle({
     [turnOwner, isProcessing, damageOpponent],
   );
 
+  const handlePlayerUseItem = useCallback(
+    async (itemName?: string): Promise<void> => {
+      if (turnOwner !== "player" || isProcessing) return;
+
+      // Using an item consumes the player's turn
+      log(`Player used ${itemName ?? "an item"}.`);
+      await new Promise((r) => setTimeout(r, 300));
+      setTurnOwner("opponent");
+    },
+    [turnOwner, isProcessing, log],
+  );
+
   // =========================
   // RETURN
   // =========================
@@ -455,5 +468,6 @@ export function useBattle({
     battleError,
     xpGained,
     handlePlayerMove,
+    handlePlayerUseItem,
   };
 }

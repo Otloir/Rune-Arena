@@ -8,6 +8,7 @@ interface ItemProps {
   variant?: "row" | "card";
   type?: "store" | "inventory";
   onBuy?: () => void;
+  onUse?: () => void;
 }
 
 const Item: React.FC<ItemProps> = ({
@@ -16,6 +17,7 @@ const Item: React.FC<ItemProps> = ({
   variant = "row",
   type,
   onBuy,
+  onUse,
 }) => {
   const {
     item: fetchedItem,
@@ -102,6 +104,17 @@ const Item: React.FC<ItemProps> = ({
         </p>
         <p className={styles.rowDescription}>{displayItem.description}</p>
       </div>
+      {type === "inventory" && onUse && (
+        <div className={styles.rowActions}>
+          <button
+            className={styles.useBtn}
+            onClick={onUse}
+            aria-label={`Use ${displayItem.name}`}
+          >
+            Use
+          </button>
+        </div>
+      )}
     </article>
   );
 };
