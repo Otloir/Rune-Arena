@@ -4,7 +4,7 @@ import styles from "./BattleArena.module.css";
 import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatStamp } from "../../../api/centralbank.api";
 import type { TransactionResponse } from "../../../types/api.types";
@@ -68,6 +68,30 @@ export default function BattleArena({
   const navigate = useNavigate();
 
   const battleOver = playerHp <= 0 || opponentHp <= 0;
+
+  // Track damage for shake animation
+  const [prevPlayerHp, setPrevPlayerHp] = useState<number | null>(null);
+  const [prevOpponentHp, setPrevOpponentHp] = useState<number | null>(null);
+  const [playerIsHit, setPlayerIsHit] = useState(false);
+  const [opponentIsHit, setOpponentIsHit] = useState(false);
+
+  useEffect(() => {
+    if (prevPlayerHp !== null && playerHp < prevPlayerHp) {
+      setPlayerIsHit(true);
+      const timer = setTimeout(() => setPlayerIsHit(false), 400);
+      return () => clearTimeout(timer);
+    }
+    setPrevPlayerHp(playerHp);
+  }, [playerHp, prevPlayerHp]);
+
+  useEffect(() => {
+    if (prevOpponentHp !== null && opponentHp < prevOpponentHp) {
+      setOpponentIsHit(true);
+      const timer = setTimeout(() => setOpponentIsHit(false), 400);
+      return () => clearTimeout(timer);
+    }
+    setPrevOpponentHp(opponentHp);
+  }, [opponentHp, prevOpponentHp]);
 
   useEffect(() => {
     if (!playerOneCreature || !playerTwoCreature) return;
@@ -138,6 +162,7 @@ export default function BattleArena({
               creatureId={playerTwoCreatureId}
               role="opponent"
               isAttacking={turnOwner === "opponent" && isProcessing}
+              isHit={opponentIsHit}
             />
           </div>
         </div>
@@ -156,6 +181,7 @@ export default function BattleArena({
               creatureId={playerOneCreatureId}
               role="player"
               isAttacking={turnOwner === "player" && isProcessing}
+              isHit={playerIsHit}
             />
           </div>
         </div>

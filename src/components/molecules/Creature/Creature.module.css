@@ -26,6 +26,10 @@
   animation: opponent 0.8s ease-in-out;
 }
 
+.creatureSprite.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
 @keyframes player {
   0% {
     transform: translateX(0) translateY(0);
@@ -47,6 +51,27 @@
   }
   100% {
     transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-0.4rem);
+  }
+  40% {
+    transform: translateX(0.4rem);
+  }
+  60% {
+    transform: translateX(-0.4rem);
+  }
+  80% {
+    transform: translateX(0.4rem);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
 
