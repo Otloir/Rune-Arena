@@ -15,6 +15,39 @@
   position: absolute;
   z-index: 1;
   padding-bottom: 5rem;
+  transition: transform 0.3s ease-out;
+}
+
+.creatureSprite.player {
+  animation: player 0.8s ease-in-out;
+}
+
+.creatureSprite.opponent {
+  animation: opponent 0.8s ease-in-out;
+}
+
+@keyframes player {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(2.5rem) translateY(-0.5rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes opponent {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-2.5rem) translateY(2rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
 }
 
 .platform {

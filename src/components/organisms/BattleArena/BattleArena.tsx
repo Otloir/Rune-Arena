@@ -137,6 +137,7 @@ export default function BattleArena({
               userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               role="opponent"
+              isAttacking={turnOwner === "opponent" && isProcessing}
             />
           </div>
         </div>
@@ -154,6 +155,7 @@ export default function BattleArena({
               userId={playerOneId}
               creatureId={playerOneCreatureId}
               role="player"
+              isAttacking={turnOwner === "player" && isProcessing}
             />
           </div>
         </div>
