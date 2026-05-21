@@ -8,6 +8,11 @@ import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
+import informationIcon from "../../../assets/icons/information_icon.svg";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
+import shopIcon from "../../../assets/icons/shop_icon.svg";
+import swordIcon from "../../../assets/icons/sword_icon.svg";
 
 // The amount charged to real users when they start a game
 const ENTRY_FEE = 2;
@@ -106,38 +111,69 @@ export default function LobbyPage() {
       <TextCarousel isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
+        onClose={closeInventory}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
         <section>
-          <Button
-            onClick={() => setIsInfoOpen(true)}
-            aria-label="open information button"
-          >
-            Info
-          </Button>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
-            {player.isGuest && (
-              <p>Playing as guest — progress won't be saved to your account.</p>
+            {isGuest && (
+              <p className={styles.guestText}>
+                <span> Playing as </span>
+                <span className={styles.guestTextGuest}> guest </span>
+                <span> - progress won't be saved to your account. </span>
+              </p>
             )}
           </div>
-          <nav>
+          <IconButton
+            hoverEffect={false}
+            iconSrc={informationIcon}
+            iconAlt="Information"
+            onClick={openInfo}
+            label="Open information"
+            className={styles.iconButton}
+          />
+          <div className={styles.inventoryShopComtainer}>
+            <nav>
+              <Button
+                onClick={navigateStore}
+                aria-label="navigate to shop button"
+                textColor="#155DFC"
+              >
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${shopIcon})`,
+                      maskImage: `url(${shopIcon})`,
+                    }}
+                  />
+                  <span>Store</span>
+                </span>
+              </Button>
+            </nav>
             <Button
-              onClick={() => navigate("/store", { state: { userId } })}
-              aria-label="navigate to shop button"
+              onClick={openInventory}
+              aria-label="open inventory button"
+              backgroundColor="#DCB8A0"
+              textColor="#955D38"
             >
-              Store
+              <span className={styles.buttonLabel}>
+                <span
+                  className={styles.buttonIcon}
+                  aria-hidden="true"
+                  style={{
+                    WebkitMaskImage: `url(${bagIcon})`,
+                    maskImage: `url(${bagIcon})`,
+                  }}
+                />
+                <span>Bag</span>
+              </span>
             </Button>
-          </nav>
-          <Button
-            onClick={() => setIsInventoryOpen(true)}
-            aria-label="open inventory button"
-          >
-            Bag
-          </Button>
+          </div>
         </section>
 
         <section>
@@ -168,10 +204,23 @@ export default function LobbyPage() {
               </div>
               {chargeError && <p>Payment failed: {chargeError}</p>}
               <Button
+                className={styles.startButton}
                 type="submit"
                 disabled={!selectedCreatureId || isCharging}
+                backgroundColor="#b23131"
+                size="lg"
               >
-                {startButtonLabel}
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${swordIcon})`,
+                      maskImage: `url(${swordIcon})`,
+                    }}
+                  />
+                  <span>Start</span>
+                </span>
               </Button>
             </form>
           </section>

@@ -14,6 +14,7 @@
   --text-tertiary: #4f5678;
   --text-light: #f3f4f6;
   --coin-text: #d08700;
+  --guest-text: #73d0ed;
 
   /* ─── Background Colors ─── */
   --bg: #7d756b;
@@ -127,7 +128,8 @@
 
   /* Global typography */
   font: 1.125rem/145% var(--sans);
-  letter-spacing: 0.18px;
+  font-size: 1rem;
+  letter-spacing: 0.01125rem;
 
   color: var(--text);
   background: var(--bg);
@@ -141,9 +143,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (max-width: 64rem) {
+@media (min-width: 64rem) {
   :root {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 }
 
@@ -176,28 +178,29 @@ h3 {
 }
 
 h1 {
-  font-size: 3.5rem;
-  letter-spacing: -0.105rem;
-  margin: 2rem 0;
+  font-size: 2.25rem;
+  letter-spacing: -0.0675rem;
+  margin: 1.25rem 0;
 }
 
-@media (max-width: 64rem) {
+@media (min-width: 64rem) {
   h1 {
-    font-size: 2.25rem;
-    margin: 1.25rem 0;
+    font-size: 3.5rem;
+    letter-spacing: -0.105rem;
+    margin: 2rem 0;
   }
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   line-height: 118%;
   letter-spacing: -0.015rem;
   margin: 0 0 0.5rem;
 }
 
-@media (max-width: 64rem) {
+@media (min-width: 64rem) {
   h2 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 }
 

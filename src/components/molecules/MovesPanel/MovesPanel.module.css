@@ -16,7 +16,7 @@
   min-height: 2.75rem;
   padding: 0.5rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   background: linear-gradient(
     135deg,
     var(--gray-lighter),
@@ -32,8 +32,8 @@
 .errorMessage {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
   background: var(--color-error-bg);
   color: var(--color-error-text);
   font-weight: 700;
