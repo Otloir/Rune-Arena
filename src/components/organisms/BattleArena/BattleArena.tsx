@@ -9,6 +9,7 @@ import InventoryPage from "../../views/Inventory/InventoryPage";
 import { useNavigate } from "react-router-dom";
 import { formatStamp } from "../../../api/centralbank.api";
 import type { TransactionResponse } from "../../../types/api.types";
+import { consumeUserItem } from "../../../database/item.database";
 
 interface BattleArenaProps {
   playerOneId: string | number;
@@ -57,7 +58,6 @@ export default function BattleArena({
     battleLog,
     handlePlayerMove,
     xpGained,
-    playerStatBoosts,
     handlePlayerUseItem,
   } = useBattle({
     playerCreature: playerOneCreature,
@@ -72,7 +72,6 @@ export default function BattleArena({
 
   const battleOver = playerHp <= 0 || opponentHp <= 0;
 
-  // Track damage for shake animation
   const [prevPlayerHp, setPrevPlayerHp] = useState<number | null>(null);
   const [prevOpponentHp, setPrevOpponentHp] = useState<number | null>(null);
   const [playerIsHit, setPlayerIsHit] = useState(false);
@@ -96,7 +95,6 @@ export default function BattleArena({
     setPrevOpponentHp(opponentHp);
   }, [opponentHp, prevOpponentHp]);
 
-  // Inventory modal state (mirror Lobby behavior)
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
 
   useEffect(() => {
@@ -162,8 +160,12 @@ export default function BattleArena({
           try {
             setIsInventoryOpen(false);
             await handlePlayerUseItem(item);
+            // Remove one instance of the used item from the user's inventory
+            const removed = await consumeUserItem(String(playerOneId), item.id);
+            return removed;
           } catch (err) {
             console.error("Error using item:", err);
+            return false;
           }
         }}
       />

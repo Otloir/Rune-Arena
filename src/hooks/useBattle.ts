@@ -177,7 +177,6 @@ export function useBattle({
   > | null>(null);
   const [battleError, setBattleError] = useState<string | null>(null);
   const [playerStatBoosts, setPlayerStatBoosts] = useState<StatBoosts>({
-    hpBoost: 0,
     evadeBoost: 0,
     speedBoost: 0,
     defenseBoost: 0,
@@ -451,7 +450,7 @@ export function useBattle({
   }, [turnOwner, isProcessing, opponentMoveIds, executeOpponentTurn, isReady]);
 
   // =========================
-  // PLAYER MOVE & ITEM USE
+  // PLAYER MOVE
   // =========================
 
   /**
@@ -464,16 +463,6 @@ export function useBattle({
       const { property, propvalue } = item;
       const propLower = property.toLowerCase().trim();
 
-      // Debug logging
-      console.log("[useBattle] Item used:", {
-        name: item.name,
-        property,
-        propLower,
-        propvalue,
-        currentHp: playerHp,
-        maxHp: playerCreature?.hp,
-      });
-
       // Handle HP recovery (immediate healing)
       // Support multiple variations: "hp", "health", "healing"
       if (
@@ -484,10 +473,6 @@ export function useBattle({
         const currentHp = playerHp ?? playerCreature?.hp ?? 0;
         const maxHp = playerCreature?.hp ?? 0;
         const healed = Math.min(propvalue, maxHp - currentHp);
-        console.log("[useBattle] Healing applied:", {
-          healed,
-          newHp: currentHp + healed,
-        });
         setPlayerHp(currentHp + healed);
         log(
           `${playerCreature?.name ?? "Your creature"} recovered ${healed} HP!`,
@@ -512,15 +497,15 @@ export function useBattle({
           `${playerCreature?.name ?? "Your creature"}'s ${property} increased by ${propvalue}%!`,
         );
       } else {
-        // Unknown property - log for debugging
-        console.warn(
-          `[useBattle] Unknown item property: "${property}" (lowercased: "${propLower}") from item "${item.name}"`,
-        );
         log(`Used ${item.name}... (effect unknown)`);
       }
     },
     [playerHp, playerCreature, log],
   );
+
+  // =========================
+  // PLAYER MOVE
+  // =========================
 
   const handlePlayerMove = useCallback(
     async (move: MoveWithType): Promise<void> => {

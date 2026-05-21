@@ -7,7 +7,8 @@ interface InventoryPageProps {
   isOpen: boolean;
   onClose: () => void;
   isInBattle?: boolean;
-  onUseItem?: (item: ItemType) => void;
+  onUseItem?: (item: ItemType) => Promise<boolean>;
+  refreshToggle?: boolean;
 }
 
 export default function InventoryPage({
@@ -16,6 +17,7 @@ export default function InventoryPage({
   onClose,
   isInBattle = false,
   onUseItem,
+  refreshToggle,
 }: InventoryPageProps) {
   if (!isOpen) return null;
 
@@ -36,6 +38,7 @@ export default function InventoryPage({
             variant="row"
             type="inventory"
             onUseItem={isInBattle && onUseItem ? onUseItem : undefined}
+            refreshToggle={refreshToggle}
           />
         </div>
       </div>
