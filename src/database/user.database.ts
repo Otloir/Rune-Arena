@@ -44,7 +44,11 @@ export async function purchaseItem(
 
   if (error) {
     const reason: PurchaseError = parsePurchaseError(error.message);
-    console.error("[purchaseItem]", reason, error.message);
+    // Only log genuinely unexpected errors — insufficient_funds and item_not_found
+    // are handled by the caller and shown to the user via the purchase modal
+    if (reason === "unknown") {
+      console.error("[purchaseItem]", reason, error.message);
+    }
     throw reason;
   }
 

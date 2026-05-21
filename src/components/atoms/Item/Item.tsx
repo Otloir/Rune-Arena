@@ -68,8 +68,7 @@ export default function Item({
           {type === "store" && onBuy && (
             <button
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
-              onClick={canAfford ? onBuy : undefined}
-              disabled={!canAfford}
+              onClick={onBuy}
               aria-label={
                 canAfford
                   ? `Buy ${displayItem.name} for ${displayItem.price} RC`
