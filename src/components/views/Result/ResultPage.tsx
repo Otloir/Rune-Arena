@@ -4,28 +4,42 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
 import { getUserBalance } from "../../../database/user.database";
+import type { BattleError } from "../../../database/battle.database";
 
 interface ResultState {
-  readonly winner: "player" | "opponent";
-  /**
-   * The local DB user id — passed from BattleArena via navigation state.
-   * Used here only to fetch the updated balance for display.
-   * The actual RC reward was already granted server-side by end_battle().
-   */
+  readonly winner?: "player" | "opponent";
   readonly userId?: number;
   readonly playerCreatureName?: string;
   readonly opponentCreatureName?: string;
   readonly rewardName?: string;
   readonly rewardImage?: string;
   readonly rewardQuantity?: number;
+  /**
+   * Set when the battle session was invalid (e.g. duplicate tab).
+   * When present, winner/creature names are not shown.
+   */
+  readonly sessionError?: BattleError;
 }
+
+const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
+  already_in_battle:
+    "This session is invalid — a battle is already in progress in another tab. " +
+    "Please close the other tab and start a new battle.",
+  battle_not_found: "Battle session not found. Please start a new battle.",
+  battle_already_ended:
+    "This battle session was overridden by a newer battle in another tab. " +
+    "No RuneCoins were awarded. Please close duplicate tabs and start a new battle.",
+  reward_already_claimed: "The reward for this battle has already been claimed.",
+  unknown: "Something went wrong with this battle session. Please try again.",
+};
 
 export default function ResultPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as ResultState | null;
 
-  const winner: ResultState["winner"] | undefined = state?.winner;
+  const sessionError: BattleError | undefined = state?.sessionError;
+  const winner: "player" | "opponent" | undefined = state?.winner;
   const playerName: string = state?.playerCreatureName ?? "Your creature";
   const opponentName: string = state?.opponentCreatureName ?? "The opponent";
   const rewardName: string = state?.rewardName ?? "Mystery Stamp";
@@ -33,14 +47,12 @@ export default function ResultPage(): ReactElement {
   const rewardQuantity: number = state?.rewardQuantity ?? 1;
   const playerWon: boolean = winner === "player";
 
-  // Display the fresh balance that was already updated by end_battle() server-side
   const [newBalance, setNewBalance] = useState<number | null>(null);
 
   useEffect((): void => {
     const userId: number | undefined = state?.userId;
     if (userId == null || !playerWon) return;
 
-    // The reward was granted server-side — just fetch the updated balance to show it
     getUserBalance(userId).then((balance: number | null): void => {
       if (balance !== null) setNewBalance(balance);
     });
@@ -50,6 +62,36 @@ export default function ResultPage(): ReactElement {
     navigate("/");
   };
 
+  // -----------------------------------------------------------------------
+  // Invalid session screen
+  // -----------------------------------------------------------------------
+  if (sessionError) {
+    return (
+      <main className={styles.resultPage} aria-label="Battle session error">
+        <section className={styles.content} aria-live="polite">
+          <h1 className={`${styles.title} ${styles.defeat}`}>
+            Invalid Session
+          </h1>
+          <p className={styles.subtitle}>
+            {SESSION_ERROR_MESSAGES[sessionError]}
+          </p>
+          <Button
+            type="button"
+            variant="neutral"
+            onClick={handleReturnHome}
+            aria-label="Return to main arena"
+            className={styles.secondaryButton}
+          >
+            Back to Arena
+          </Button>
+        </section>
+      </main>
+    );
+  }
+
+  // -----------------------------------------------------------------------
+  // Normal result screen
+  // -----------------------------------------------------------------------
   return (
     <main className={styles.resultPage} aria-label="Battle result">
       <section
@@ -74,14 +116,22 @@ export default function ResultPage(): ReactElement {
             className={styles.coinsAwarded}
             aria-label="RuneCoins earned this battle"
           >
-            {newBalance !== null ? `+5 RC earned! (Balance: ${newBalance} RC)` : "+5 RC earned!"}
+            {newBalance !== null
+              ? `+5 RC earned! (Balance: ${newBalance} RC)`
+              : "+5 RC earned!"}
           </p>
         )}
 
-        <section className={styles.rewardSection} aria-label="Reward information">
+        <section
+          className={styles.rewardSection}
+          aria-label="Reward information"
+        >
           <p className={styles.rewardLabel}>{"You earned:"}</p>
 
-          <article className={styles.rewardCard} aria-label="Item reward details">
+          <article
+            className={styles.rewardCard}
+            aria-label="Item reward details"
+          >
             <div className={styles.rewardImageContainer}>
               {rewardImage ? (
                 <img
@@ -92,7 +142,6 @@ export default function ResultPage(): ReactElement {
               ) : (
                 <span className={styles.rewardFallback}>🪲</span>
               )}
-
               <span
                 className={styles.rewardCount}
                 aria-label={`Item quantity: ${rewardQuantity}`}
@@ -100,7 +149,6 @@ export default function ResultPage(): ReactElement {
                 {rewardQuantity}
               </span>
             </div>
-
             <p className={styles.rewardName}>{rewardName}</p>
           </article>
         </section>

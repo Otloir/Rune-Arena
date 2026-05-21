@@ -8,6 +8,7 @@ import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { startBattle, endBattle } from "../../../database/battle.database";
+import type { BattleError } from "../../../database/battle.database";
 
 interface BattleArenaProps {
   readonly playerOneId: string | number;
@@ -44,11 +45,8 @@ export default function BattleArena({
 
   const navigate = useNavigate();
 
-  // Track the server-side battle id so we can close it on end or forfeit
   const battleIdRef = useRef<number | null>(null);
-  // Prevent double-registration in React StrictMode
   const battleStartedRef = useRef<boolean>(false);
-  // Track whether the battle concluded normally so the forfeit cleanup knows not to fire
   const battleConcludedRef = useRef<boolean>(false);
 
   const battleOver: boolean = playerHp <= 0 || opponentHp <= 0;
@@ -64,31 +62,35 @@ export default function BattleArena({
       opponentId: Number(playerTwoId),
       playerCreatureId: Number(playerOneCreatureId),
       enemyCreatureId: Number(playerTwoCreatureId),
-    }).then((battleId: number | null): void => {
-      if (battleId === null) {
-        console.error("[BattleArena] Failed to register battle server-side.");
-        return;
-      }
-      battleIdRef.current = battleId;
-    });
-  }, [playerOneCreature, playerTwoCreature, playerOneId, playerTwoId, playerOneCreatureId, playerTwoCreatureId]);
+    })
+      .then((battleId: number): void => {
+        battleIdRef.current = battleId;
+      })
+      .catch((reason: BattleError): void => {
+        battleConcludedRef.current = true;
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: reason,
+            userId: Number(playerOneId),
+          },
+        });
+      });
+  }, [playerOneCreature, playerTwoCreature, playerOneId, playerTwoId, playerOneCreatureId, playerTwoCreatureId, navigate]);
 
-  // Forfeit on unmount if the battle hasn't concluded normally.
-  // This covers: back button, navigate away, accidental tab close.
-  // Uses a synchronous beacon-style fire-and-forget since cleanup
-  // functions cannot be async.
+  // Forfeit on unmount if the battle hasn't concluded normally
   useEffect((): (() => void) => {
     return (): void => {
       if (battleConcludedRef.current) return;
       const battleId = battleIdRef.current;
       if (battleId === null) return;
 
-      // Fire-and-forget — we can't await in a cleanup function
-      endBattle(battleId, 0).catch((err: unknown): void => {
-        console.error("[BattleArena] Forfeit on unmount failed:", err);
+      // Fire-and-forget — can't await or catch meaningfully in a cleanup
+      endBattle(battleId, 0).catch((): void => {
+        // Swallow — forfeit errors are not actionable at unmount time
       });
     };
-  }, []); // empty deps — this cleanup should only register once
+  }, []);
 
   // When the battle ends normally, close it server-side then navigate
   useEffect((): (() => void) | void => {
@@ -99,29 +101,50 @@ export default function BattleArena({
       opponentHp <= 0 ? "player" : "opponent";
 
     const timer = setTimeout(async (): Promise<void> => {
+      // Mark concluded immediately so the unmount forfeit cleanup
+      // doesn't also fire endBattle on the same battleId
+      battleConcludedRef.current = true;
       const battleId = battleIdRef.current;
 
-      if (battleId !== null) {
-        const winnerUserId = winner === "player" ? Number(playerOneId) : 0;
-        // Mark as concluded before calling endBattle so the unmount
-        // cleanup doesn't also try to forfeit the same battle
-        battleConcludedRef.current = true;
-        await endBattle(battleId, winnerUserId);
-      } else {
+      if (battleId === null) {
         console.warn(
           "[BattleArena] Battle ended but no battleId recorded — reward not granted.",
         );
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: "battle_not_found" as BattleError,
+            userId: Number(playerOneId),
+          },
+        });
+        return;
       }
 
-      navigate("/result", {
-        replace: true,
-        state: {
-          winner,
-          userId: Number(playerOneId),
-          playerCreatureName: playerOneCreature.name,
-          opponentCreatureName: playerTwoCreature.name,
-        },
-      });
+      const winnerUserId = winner === "player" ? Number(playerOneId) : 0;
+
+      try {
+        await endBattle(battleId, winnerUserId);
+        // Success — navigate to the normal result screen
+        navigate("/result", {
+          replace: true,
+          state: {
+            winner,
+            userId: Number(playerOneId),
+            playerCreatureName: playerOneCreature.name,
+            opponentCreatureName: playerTwoCreature.name,
+          },
+        });
+      } catch (reason: unknown) {
+        // Battle was abandoned server-side (e.g. overridden by a duplicate tab)
+        // Show a clear session error instead of a false "+5 RC earned!" message
+        navigate("/result", {
+          replace: true,
+          state: {
+            sessionError: reason as BattleError,
+            userId: Number(playerOneId),
+          },
+        });
+      }
     }, 1200);
 
     return (): void => clearTimeout(timer);
