@@ -57,6 +57,7 @@ export default function BattleArena({
     battleLog,
     handlePlayerMove,
     xpGained,
+    playerStatBoosts,
     handlePlayerUseItem,
   } = useBattle({
     playerCreature: playerOneCreature,
@@ -160,7 +161,7 @@ export default function BattleArena({
         onUseItem={async (item) => {
           try {
             setIsInventoryOpen(false);
-            await handlePlayerUseItem(item.name);
+            await handlePlayerUseItem(item);
           } catch (err) {
             console.error("Error using item:", err);
           }
