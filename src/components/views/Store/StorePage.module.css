@@ -1,5 +1,5 @@
 .storePage {
-  padding: 5rem 1rem 1rem 1rem;
+  padding: 6rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -8,7 +8,16 @@
 .userShopInfo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  width: 100%;
+}
+
+.storeTitle {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  line-height: 1.15;
+  font-size: clamp(1.5rem, 8vw, 2.25rem);
+  letter-spacing: -0.03em;
 }
 
 .userShopInfo div {
@@ -28,8 +37,8 @@
 }
 
 .fixedInformationBar {
-  top: 2rem;
-  right: 2rem;
+  top: 3rem;
+  right: 3rem;
   position: fixed;
   display: flex;
   justify-content: center;
@@ -79,6 +88,24 @@
   box-shadow: none;
 }
 
+.backToTopButton {
+  display: flex;
+  align-self: center;
+  justify-content: center;
+}
+
+.backButton {
+  width: 100%;
+  max-width: 20rem;
+}
+
+/* desktop */
+@media (min-width: 768px) {
+  .storePage {
+    padding: 2rem 1rem 1rem 1rem;
+  }
+}
+
 /* desktop */
 @media (min-width: 1024px) {
   .creatureSelectButtons {
@@ -89,6 +116,9 @@
   }
   .storePage {
     padding: 2rem;
+  }
+  .storeTitle {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
   }
   .backButton {
     width: 30%;

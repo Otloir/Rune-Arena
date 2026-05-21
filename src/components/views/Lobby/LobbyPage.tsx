@@ -78,7 +78,11 @@ export default function LobbyPage() {
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
             {isGuest && (
-              <p>Playing as guest — progress won't be saved to your account.</p>
+              <p className={styles.guestText}>
+                <span> Playing as </span>
+                <span className={styles.guestTextGuest}> guest </span>
+                <span> - progress won't be saved to your account. </span>
+              </p>
             )}
           </div>
           <IconButton
@@ -161,6 +165,7 @@ export default function LobbyPage() {
                 type="submit"
                 disabled={!selectedCreatureId}
                 backgroundColor="#b23131"
+                size="lg"
               >
                 <span className={styles.buttonLabel}>
                   <span

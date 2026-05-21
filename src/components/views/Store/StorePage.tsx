@@ -82,7 +82,7 @@ export default function StorePage() {
           />
         </div>
         <div className={styles.userShopInfo}>
-          <h1>Marketplace</h1>
+          <h1 className={styles.storeTitle}>Marketplace</h1>
         </div>
 
         <Button onClick={navigateLobby} className={styles.backButton}>
@@ -95,7 +95,7 @@ export default function StorePage() {
               .getElementById("top")
               ?.scrollIntoView({ behavior: "smooth" })
           }
-          className={styles.backButton}
+          className={styles.backToTopButton}
         >
           <span className={styles.buttonLabel}>
             <span
