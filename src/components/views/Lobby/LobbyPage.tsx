@@ -6,6 +6,11 @@ import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./LobbyPage.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
+import informationIcon from "../../../assets/icons/information_icon.svg";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
+import shopIcon from "../../../assets/icons/shop_icon.svg";
+import swordIcon from "../../../assets/icons/sword_icon.svg";
 
 export default function LobbyPage() {
   const playerState = usePlayer();
@@ -56,6 +61,7 @@ export default function LobbyPage() {
   };
 
   const openInventory = () => setIsInventoryOpen(true);
+  const closeInventory = () => setIsInventoryOpen(false);
   const openInfo = () => setIsInfoOpen(true);
   const closeInfo = () => setIsInfoOpen(false);
   return (
@@ -63,32 +69,69 @@ export default function LobbyPage() {
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={() => setIsInventoryOpen(false)}
+        onClose={closeInventory}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
         <section>
-          <Button onClick={openInfo} aria-label="open information button">
-            Info
-          </Button>
           <div>
             <h1>RuneArena</h1>
             <p>Choose your fighter and dominate the arena!</p>
             {isGuest && (
-              <p>Playing as guest — progress won't be saved to your account.</p>
+              <p className={styles.guestText}>
+                <span> Playing as </span>
+                <span className={styles.guestTextGuest}> guest </span>
+                <span> - progress won't be saved to your account. </span>
+              </p>
             )}
           </div>
-          <nav>
+          <IconButton
+            hoverEffect={false}
+            iconSrc={informationIcon}
+            iconAlt="Information"
+            onClick={openInfo}
+            label="Open information"
+            className={styles.iconButton}
+          />
+          <div className={styles.inventoryShopComtainer}>
+            <nav>
+              <Button
+                onClick={navigateStore}
+                aria-label="navigate to shop button"
+                textColor="#155DFC"
+              >
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${shopIcon})`,
+                      maskImage: `url(${shopIcon})`,
+                    }}
+                  />
+                  <span>Store</span>
+                </span>
+              </Button>
+            </nav>
             <Button
-              onClick={navigateStore}
-              aria-label="navigate to shop button"
+              onClick={openInventory}
+              aria-label="open inventory button"
+              backgroundColor="#DCB8A0"
+              textColor="#955D38"
             >
-              Store
+              <span className={styles.buttonLabel}>
+                <span
+                  className={styles.buttonIcon}
+                  aria-hidden="true"
+                  style={{
+                    WebkitMaskImage: `url(${bagIcon})`,
+                    maskImage: `url(${bagIcon})`,
+                  }}
+                />
+                <span>Bag</span>
+              </span>
             </Button>
-          </nav>
-          <Button onClick={openInventory} aria-label="open inventory button">
-            Bag
-          </Button>
+          </div>
         </section>
 
         <section>
@@ -117,8 +160,24 @@ export default function LobbyPage() {
                   selected={selectedCreatureId === "3"}
                 />
               </div>
-              <Button type="submit" disabled={!selectedCreatureId}>
-                Start
+              <Button
+                className={styles.startButton}
+                type="submit"
+                disabled={!selectedCreatureId}
+                backgroundColor="#b23131"
+                size="lg"
+              >
+                <span className={styles.buttonLabel}>
+                  <span
+                    className={styles.buttonIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${swordIcon})`,
+                      maskImage: `url(${swordIcon})`,
+                    }}
+                  />
+                  <span>Start</span>
+                </span>
               </Button>
             </form>
           </section>

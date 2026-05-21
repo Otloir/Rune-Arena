@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,26 +19,26 @@
 }
 
 .modal {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 40px;
+  background: var(--modal-bg);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
   width: 90%;
-  max-width: 400px;
+  max-width: 25rem;
   text-align: center;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.25rem 1.875rem var(--shadow-black-22);
   animation: slideUp 0.3s ease-out;
-  --purchase-modal-button-bg: #2db34a;
-  --purchase-modal-button-hover-bg: #269f42;
+  --purchase-modal-button-bg: var(--btn-purchase-bg);
+  --purchase-modal-button-hover-bg: var(--btn-purchase-hover);
 }
 
 .failure {
-  --purchase-modal-button-bg: #e84040;
-  --purchase-modal-button-hover-bg: #d43535;
+  --purchase-modal-button-bg: var(--btn-failure-bg);
+  --purchase-modal-button-hover-bg: var(--color-error);
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
     opacity: 0;
   }
   to {
@@ -51,35 +51,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
 }
-
 
 .title {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 
 .message {
   margin: 0;
   font-size: 0.95rem;
-  color: #6b7399;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .button {
   background: var(--purchase-modal-button-bg);
-  color: #fff;
+  color: var(--color-white);
   font-size: 0.95rem;
   font-weight: 700;
   border: none;
-  border-radius: 12px;
-  padding: 12px 28px;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.75rem;
   cursor: pointer;
   transition: background 0.15s ease;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
 .button:hover {

@@ -5,6 +5,10 @@ import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
 import TextCarousel from "../TextCarousel/TextCarousel";
 import styles from "./StorePage.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
+import informationIcon from "../../../assets/icons/information_icon.svg";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
+import arrowUp from "../../../assets/icons/arrow_up_icon.svg";
 
 export default function StorePage() {
   const navigate = useNavigate();
@@ -44,28 +48,46 @@ export default function StorePage() {
       />
       <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
-      <nav>
-        <Button onClick={openInfo}>Info</Button>
-      </nav>
-        <div className={styles.userShopInfo}>
-          <h1>Marketplace</h1>
-          <div>
-            {/* TODO: make dynamic based on the user's actual balance */}
-            <div className={styles.userMoneyDisplay}>
-              <span>X€</span>
-            </div>
-            <Button
-              onClick={openInventory}
-              backgroundColor="#DBEAFE"
-              textColor="black"
-              size="sm"
-            >
-              Bag
-            </Button>
+        <div className={styles.fixedInformationBar}>
+          {/* TODO: make dynamic based on the user's actual balance */}
+          <div className={styles.userMoneyDisplay}>
+            <span>X€</span>
           </div>
+          <Button
+            onClick={openInventory}
+            backgroundColor="#DCB8A0"
+            textColor="#955D38"
+            size="sm"
+            className={styles.noShadow}
+          >
+            <span className={styles.buttonLabel}>
+              <span
+                className={styles.buttonIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${bagIcon})`,
+                  maskImage: `url(${bagIcon})`,
+                }}
+              />
+              <span>Bag</span>
+            </span>
+          </Button>
+          <IconButton
+            hoverEffect={false}
+            iconSrc={informationIcon}
+            iconAlt="Information"
+            onClick={openInfo}
+            label="Open information"
+            className={styles.iconButton}
+          />
+        </div>
+        <div className={styles.userShopInfo}>
+          <h1 className={styles.storeTitle}>Marketplace</h1>
         </div>
 
-        <Button onClick={navigateLobby}>Back to select</Button>
+        <Button onClick={navigateLobby} className={styles.backButton}>
+          Back to select
+        </Button>
         <ItemList type="store" variant="card" userId={userId} />
         <Button
           onClick={() =>
@@ -73,8 +95,19 @@ export default function StorePage() {
               .getElementById("top")
               ?.scrollIntoView({ behavior: "smooth" })
           }
+          className={styles.backToTopButton}
         >
-          Back to top
+          <span className={styles.buttonLabel}>
+            <span
+              className={styles.buttonIcon}
+              aria-hidden="true"
+              style={{
+                WebkitMaskImage: `url(${arrowUp})`,
+                maskImage: `url(${arrowUp})`,
+              }}
+            />
+            <span>Back to top</span>
+          </span>
         </Button>
       </section>
     </>
