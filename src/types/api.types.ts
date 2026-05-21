@@ -2,8 +2,7 @@ export type StampAnimal = "lion" | "dolphin" | "toucan" | "beetlebug" | "snake";
 
 export type StampMetal = "silver" | "gold" | "platinum";
 
-export type StampType = {
-  id: number;
+export type TransactionStamp = {
   animal: StampAnimal;
   metal: StampMetal | null;
   image_url: string | null;
@@ -11,28 +10,25 @@ export type StampType = {
 
 export type Stamp = {
   id: number;
-  user_id: number;
-  stamptype_id: number;
-  stamptype: StampType;
+  transaction_id: number | null;
+  animal: StampAnimal;
+  metal: StampMetal | null;
   image_url: string | null;
-  exchanged_at: string | null;
   created_at: string;
-  updated_at: string;
 };
 
-export type User = {
-  id: number;
-  name: string;
-  is_active: boolean;
-  group_id: number | null;
+/**
+ * The centralbank user shape returned by GET /user and POST /auth/login.
+ * Note: the API uses first_name/last_name, not a single name field.
+ */
+export type CentralbankUser = {
+  uuid: string;
+  first_name: string;
+  last_name: string | null;
+  github_url: string | null;
+  website_url: string | null;
   balance: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type TransactionResponse = {
-  id: number;
-  stamp: Stamp;
+  stamp_count: number;
 };
 
 export type IdentityTokenInfo = {
@@ -40,7 +36,12 @@ export type IdentityTokenInfo = {
   expires_at: string;
 };
 
-// Generic result wrapper — every API call returns one of these
+export type TransactionResponse = {
+  transaction_id: number;
+  amount: number;
+  stamp: TransactionStamp | null;
+};
+
 export type ApiResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; status?: number };
