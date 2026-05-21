@@ -7,6 +7,7 @@ interface StatusPanelProps {
   creatureId: string | number;
   currentHp?: number;
   side: "player" | "opponent";
+  levelOverride?: number;
 }
 
 export default function StatusPanel({
@@ -14,6 +15,7 @@ export default function StatusPanel({
   creatureId,
   currentHp,
   side,
+  levelOverride,
 }: StatusPanelProps) {
   const { creature, level, currentXp, xpRequired, loading, error } =
     useCreatureById(userId, creatureId);
@@ -40,7 +42,7 @@ export default function StatusPanel({
     >
       <div className={styles.statusBarInfo}>
         <span>{creature.name}</span>
-        <span>Lv. {level}</span>
+        <span>Lv. {levelOverride ?? level}</span>
       </div>
 
       <Bars current={currentXp} max={xpRequired} variant="xp" aria="xp bar" />

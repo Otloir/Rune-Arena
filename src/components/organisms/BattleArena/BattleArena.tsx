@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import StatusPanel from "../../molecules/StatusPanel/StatusPanel";
 import Creature from "../../molecules/Creature/Creature";
@@ -32,10 +32,32 @@ export default function BattleArena({
 
   const {
     creature: playerTwoCreature,
-    level: playerTwoLevel,
     loading: playerTwoLoading,
     error: playerTwoError,
   } = useCreatureById(playerTwoId, playerTwoCreatureId);
+
+  // ========================================
+  // RESTORED RANDOM OPPONENT LEVEL FEATURE
+  // ========================================
+
+  const randomizedOpponentLevel = useMemo((): number => {
+    if (!playerOneLevel) return 1;
+
+    const roll = Math.floor(Math.random() * 3);
+
+    // -1 level
+    if (roll === 0) {
+      return Math.max(1, playerOneLevel - 1);
+    }
+
+    // +1 level
+    if (roll === 2) {
+      return playerOneLevel + 1;
+    }
+
+    // same level
+    return playerOneLevel;
+  }, [playerOneLevel]);
 
   const {
     playerHp,
@@ -49,7 +71,10 @@ export default function BattleArena({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
     opponentCreatureId: playerTwoCreatureId,
-    opponentLevel: playerTwoLevel,
+
+    // Use randomized level instead of actual DB level
+    opponentLevel: randomizedOpponentLevel,
+
     playerUserId: playerOneId,
     playerCreatureId: playerOneCreatureId,
   });
@@ -67,12 +92,16 @@ export default function BattleArena({
     (!playerOneLoading && playerOneError !== null) ||
     (!playerTwoLoading && playerTwoError !== null);
 
-  // If creature loading fails (e.g. 406 from duplicate DB rows),
-  // navigate to the result screen with a session error rather than hanging
+  // ========================================
+  // HANDLE CREATURE LOAD FAILURE
+  // ========================================
+
   useEffect((): void => {
     if (!creatureLoadFailed) return;
+
     sessionInvalidRef.current = true;
     battleConcludedRef.current = true;
+
     navigate("/result", {
       replace: true,
       state: {
@@ -82,10 +111,14 @@ export default function BattleArena({
     });
   }, [creatureLoadFailed, navigate, playerOneId]);
 
-  // Register the battle server-side when both creatures are loaded
+  // ========================================
+  // REGISTER BATTLE
+  // ========================================
+
   useEffect((): void => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (battleStartedRef.current) return;
+
     battleStartedRef.current = true;
 
     startBattle({
@@ -100,6 +133,7 @@ export default function BattleArena({
       .catch((reason: BattleError): void => {
         sessionInvalidRef.current = true;
         battleConcludedRef.current = true;
+
         navigate("/result", {
           replace: true,
           state: {
@@ -108,22 +142,38 @@ export default function BattleArena({
           },
         });
       });
-  }, [playerOneCreature, playerTwoCreature, playerOneId, playerTwoId, playerOneCreatureId, playerTwoCreatureId, navigate]);
+  }, [
+    playerOneCreature,
+    playerTwoCreature,
+    playerOneId,
+    playerTwoId,
+    playerOneCreatureId,
+    playerTwoCreatureId,
+    navigate,
+  ]);
 
-  // Forfeit on unmount if the battle hasn't concluded normally
+  // ========================================
+  // FORFEIT ON UNMOUNT
+  // ========================================
+
   useEffect((): (() => void) => {
     return (): void => {
       if (battleConcludedRef.current) return;
+
       const battleId = battleIdRef.current;
+
       if (battleId === null) return;
 
       endBattle(battleId, 0).catch((): void => {
-        // Swallow — forfeit errors are not actionable at unmount time
+        // Ignore unmount cleanup errors
       });
     };
   }, []);
 
-  // When the battle ends normally, close it server-side then navigate
+  // ========================================
+  // HANDLE BATTLE END
+  // ========================================
+
   useEffect((): (() => void) | void => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (playerHp > 0 && opponentHp > 0) return;
@@ -134,12 +184,14 @@ export default function BattleArena({
 
     const timer = setTimeout(async (): Promise<void> => {
       battleConcludedRef.current = true;
+
       const battleId = battleIdRef.current;
 
       if (battleId === null) {
         console.warn(
           "[BattleArena] Battle ended but no battleId recorded — reward not granted.",
         );
+
         navigate("/result", {
           replace: true,
           state: {
@@ -147,13 +199,17 @@ export default function BattleArena({
             userId: Number(playerOneId),
           },
         });
+
         return;
       }
 
-      const winnerUserId = winner === "player" ? Number(playerOneId) : 0;
+      const winnerUserId = winner === "player"
+        ? Number(playerOneId)
+        : 0;
 
       try {
         await endBattle(battleId, winnerUserId);
+
         navigate("/result", {
           replace: true,
           state: {
@@ -161,7 +217,9 @@ export default function BattleArena({
             userId: Number(playerOneId),
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
-            xpGained: winner === "player" ? 100 : 0,
+
+            // Use ACTUAL XP gained from useBattle
+            xpGained: winner === "player" ? xpGained : 0,
           },
         });
       } catch (reason: unknown) {
@@ -176,9 +234,20 @@ export default function BattleArena({
     }, 1200);
 
     return (): void => clearTimeout(timer);
-  }, [playerHp, opponentHp, playerOneCreature, playerTwoCreature, playerOneId, navigate]);
+  }, [
+    playerHp,
+    opponentHp,
+    playerOneCreature,
+    playerTwoCreature,
+    playerOneId,
+    navigate,
+    xpGained,
+  ]);
 
-  // Show loading while creatures are being fetched
+  // ========================================
+  // LOADING STATE
+  // ========================================
+
   if (playerOneLoading || playerTwoLoading) {
     return (
       <section className={styles.arena}>
@@ -194,8 +263,10 @@ export default function BattleArena({
     );
   }
 
-  // Creature load failed — the useEffect above will navigate away,
-  // render nothing meaningful in the meantime
+  // ========================================
+  // LOAD FAILURE FALLBACK
+  // ========================================
+
   if (creatureLoadFailed || !playerOneCreature || !playerTwoCreature) {
     return (
       <section className={styles.arena}>
@@ -211,6 +282,10 @@ export default function BattleArena({
     );
   }
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
     <section className={styles.arena}>
       <div className={styles.arenaContainer}>
@@ -222,7 +297,9 @@ export default function BattleArena({
               creatureId={playerTwoCreatureId}
               currentHp={opponentHp}
               side="opponent"
+              levelOverride={randomizedOpponentLevel}
             />
+
             <Creature
               userId={playerTwoId}
               creatureId={playerTwoCreatureId}
@@ -240,6 +317,7 @@ export default function BattleArena({
               currentHp={playerHp}
               side="player"
             />
+
             <Creature
               userId={playerOneId}
               creatureId={playerOneCreatureId}
@@ -248,13 +326,17 @@ export default function BattleArena({
           </div>
         </div>
 
-        {/* Bottom controls panel */}
+        {/* Controls */}
         <div className={styles.controlsWrapper}>
           <PlayerPanel
             creatureId={Number(playerOneCreatureId)}
             creatureLevel={playerOneLevel}
             onMoveSelect={handlePlayerMove}
-            disabled={turnOwner !== "player" || isProcessing || battleOver}
+            disabled={
+              turnOwner !== "player" ||
+              isProcessing ||
+              battleOver
+            }
             battleLog={battleLog}
             playerCreature={playerOneCreature}
           />
