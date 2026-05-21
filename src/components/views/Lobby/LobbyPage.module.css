@@ -98,7 +98,20 @@ padding-top: 1rem;
   cursor: pointer;
 }
 
+.loadingState{
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ height: 100%;
+}
+
 /* tablet */
+
+@media (min-width: 641px) {
+  .lobbyPage {
+  padding: 1rem;
+  }
+}
 
 /* desktop */
 @media (min-width: 1024px) {

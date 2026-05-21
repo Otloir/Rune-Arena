@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePlayer } from "./../../../hooks/usePlayer";
+import { startTransaction } from "./../../../api/centralbank.api";
+import type { TransactionResponse } from "./../../../types/api.types";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
@@ -12,16 +14,22 @@ import bagIcon from "../../../assets/icons/bag_icon.svg";
 import shopIcon from "../../../assets/icons/shop_icon.svg";
 import swordIcon from "../../../assets/icons/sword_icon.svg";
 
+// The amount charged to real users when they start a game
+const ENTRY_FEE = 2;
+
 export default function LobbyPage() {
   const playerState = usePlayer();
   const navigate = useNavigate();
+
   const [selectedCreatureId, setSelectedCreatureId] = useState<string | null>(
     null,
   );
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isCharging, setIsCharging] = useState(false);
+  const [chargeError, setChargeError] = useState<string | null>(null);
 
-  // Disable body scroll when inventory or info is open
+  // Disable body scroll when a modal is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -32,44 +40,71 @@ export default function LobbyPage() {
   }, [isInventoryOpen, isInfoOpen]);
 
   if (playerState.status === "loading") {
-    return <p>Loading...</p>;
+    return <p className={styles.loadingState}>Loading...</p>;
   }
 
   if (playerState.status === "error") {
     return <p>Something went wrong: {playerState.message}</p>;
   }
 
-  const userId = String(playerState.player.id);
-  const isGuest = playerState.player.isGuest;
+  const { player, identityToken } = playerState;
+  const userId = String(player.id);
+  const isGuest = player.isGuest;
 
   const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
+    setChargeError(null);
   };
 
-  const handleStartArena = (): void => {
-    if (!selectedCreatureId) return;
+  const goToArena = (transaction: TransactionResponse | null): void => {
     navigate("/arena", {
       state: {
         playerOneUserId: userId,
         playerOneCreatureId: selectedCreatureId,
+        transaction,
       },
     });
   };
 
-  const navigateStore = (): void => {
-    navigate("/store", { state: { userId } });
+  const handleStartArena = async (): Promise<void> => {
+    if (!selectedCreatureId) return;
+
+    // Guests play for free — skip payment
+    if (isGuest || !identityToken) {
+      goToArena(null);
+      return;
+    }
+
+    // Charge the real user the entry fee before starting
+    setIsCharging(true);
+    setChargeError(null);
+
+    const result = await startTransaction(identityToken, ENTRY_FEE);
+
+    setIsCharging(false);
+
+    if (!result.success) {
+      // 401 = token expired, 402 = insufficient funds
+      setChargeError(result.error);
+      return;
+    }
+
+    // Pass the full transaction so the arena can forward the stamp to the result page
+    goToArena(result.data);
   };
 
-  const openInventory = () => setIsInventoryOpen(true);
-  const closeInventory = () => setIsInventoryOpen(false);
-  const openInfo = () => setIsInfoOpen(true);
-  const closeInfo = () => setIsInfoOpen(false);
+  const startButtonLabel = isCharging
+    ? "Processing payment..."
+    : isGuest
+      ? "Start"
+      : `Start (€${ENTRY_FEE.toFixed(2)})`;
+
   return (
     <>
-      <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
+      <TextCarousel isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={closeInventory}
+        onClose={() => setIsInventoryOpen(false)}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
@@ -79,9 +114,9 @@ export default function LobbyPage() {
             <p>Choose your fighter and dominate the arena!</p>
             {isGuest && (
               <p className={styles.guestText}>
-                <span> Playing as </span>
-                <span className={styles.guestTextGuest}> guest </span>
-                <span> - progress won't be saved to your account. </span>
+                <span>Playing as </span>
+                <span className={styles.guestTextGuest}>guest</span>
+                <span> — progress won't be saved to your account.</span>
               </p>
             )}
           </div>
@@ -89,14 +124,14 @@ export default function LobbyPage() {
             hoverEffect={false}
             iconSrc={informationIcon}
             iconAlt="Information"
-            onClick={openInfo}
+            onClick={() => setIsInfoOpen(true)}
             label="Open information"
             className={styles.iconButton}
           />
           <div className={styles.inventoryShopComtainer}>
             <nav>
               <Button
-                onClick={navigateStore}
+                onClick={() => navigate("/store", { state: { userId } })}
                 aria-label="navigate to shop button"
                 textColor="#155DFC"
               >
@@ -114,7 +149,7 @@ export default function LobbyPage() {
               </Button>
             </nav>
             <Button
-              onClick={openInventory}
+              onClick={() => setIsInventoryOpen(true)}
               aria-label="open inventory button"
               backgroundColor="#DCB8A0"
               textColor="#955D38"
@@ -160,10 +195,11 @@ export default function LobbyPage() {
                   selected={selectedCreatureId === "3"}
                 />
               </div>
+              {chargeError && <p>Payment failed: {chargeError}</p>}
               <Button
                 className={styles.startButton}
                 type="submit"
-                disabled={!selectedCreatureId}
+                disabled={!selectedCreatureId || isCharging}
                 backgroundColor="#b23131"
                 size="lg"
               >
@@ -176,7 +212,7 @@ export default function LobbyPage() {
                       maskImage: `url(${swordIcon})`,
                     }}
                   />
-                  <span>Start</span>
+                  <span>{startButtonLabel}</span>
                 </span>
               </Button>
             </form>
