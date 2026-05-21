@@ -5,9 +5,11 @@ import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { useEffect, useMemo, useState } from "react";
+import InventoryPage from "../../views/Inventory/InventoryPage";
 import { useNavigate } from "react-router-dom";
 import { formatStamp } from "../../../api/centralbank.api";
 import type { TransactionResponse } from "../../../types/api.types";
+import { consumeUserItem } from "../../../database/item.database";
 
 interface BattleArenaProps {
   playerOneId: string | number;
@@ -56,6 +58,7 @@ export default function BattleArena({
     battleLog,
     handlePlayerMove,
     xpGained,
+    handlePlayerUseItem,
   } = useBattle({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
@@ -69,7 +72,6 @@ export default function BattleArena({
 
   const battleOver = playerHp <= 0 || opponentHp <= 0;
 
-  // Track damage for shake animation
   const [prevPlayerHp, setPrevPlayerHp] = useState<number | null>(null);
   const [prevOpponentHp, setPrevOpponentHp] = useState<number | null>(null);
   const [playerIsHit, setPlayerIsHit] = useState(false);
@@ -92,6 +94,8 @@ export default function BattleArena({
     }
     setPrevOpponentHp(opponentHp);
   }, [opponentHp, prevOpponentHp]);
+
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
 
   useEffect(() => {
     if (!playerOneCreature || !playerTwoCreature) return;
@@ -147,6 +151,24 @@ export default function BattleArena({
 
   return (
     <section className={styles.arena}>
+      <InventoryPage
+        isOpen={isInventoryOpen}
+        onClose={() => setIsInventoryOpen(false)}
+        userId={String(playerOneId)}
+        isInBattle={true}
+        onUseItem={async (item) => {
+          try {
+            setIsInventoryOpen(false);
+            await handlePlayerUseItem(item);
+            // Remove one instance of the used item from the user's inventory
+            const removed = await consumeUserItem(String(playerOneId), item.id);
+            return removed;
+          } catch (err) {
+            console.error("Error using item:", err);
+            return false;
+          }
+        }}
+      />
       <div className={styles.arenaContainer}>
         {/* Opponent */}
         <div className={styles.opponentContainer}>
@@ -195,6 +217,7 @@ export default function BattleArena({
             disabled={turnOwner !== "player" || isProcessing || battleOver}
             battleLog={battleLog}
             playerCreature={playerOneCreature}
+            onOpenInventory={() => setIsInventoryOpen(true)}
           />
         </div>
       </div>

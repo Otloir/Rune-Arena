@@ -98,6 +98,26 @@
   min-width: 0;
 }
 
+.buttonLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: block;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
 /* ── TABLET + DESKTOP ── */
 @media (min-width: 641px) {
   .controlsPanel {

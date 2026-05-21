@@ -13,9 +13,25 @@ interface ListProps {
   type?: "store" | "inventory";
   variant: "card" | "row";
   userId?: string;
+  onUseItem?: (item: ItemType) => Promise<boolean>;
+  refreshToggle?: boolean;
 }
 
-export default function ItemList({ type, variant, userId }: ListProps) {
+type InventoryConsumptionWindow = Window & {
+  __consumingItems?: Set<string>;
+};
+
+function getInventoryConsumptionWindow(): InventoryConsumptionWindow {
+  return window as InventoryConsumptionWindow;
+}
+
+export default function ItemList({
+  type,
+  variant,
+  userId,
+  onUseItem,
+  refreshToggle,
+}: ListProps) {
   const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,11 +39,10 @@ export default function ItemList({ type, variant, userId }: ListProps) {
     itemName: string;
     status: "success" | "failure";
   } | null>(null);
+  const [inProgressIds, setInProgressIds] = useState<number[]>([]);
 
   const handleBuy = async (item: ItemType): Promise<void> => {
-    // userId is required to buy — if missing, do nothing
     if (!userId) {
-      console.error("Cannot buy item: no userId provided");
       return;
     }
     const success = await buyItem(userId, item.id);
@@ -43,22 +58,57 @@ export default function ItemList({ type, variant, userId }: ListProps) {
   };
 
   useEffect(() => {
-    async function load(): Promise<void> {
+    let isComponentMounted = true;
+
+    async function loadItems(): Promise<void> {
       setLoading(true);
       setError(null);
-      const data =
-        type === "inventory" && userId != null
-          ? await getUserItems(userId)
-          : await getItems();
-      if (data) {
-        setItems(Array.isArray(data) ? data : []);
-      } else {
+      try {
+        const data =
+          type === "inventory" && userId != null
+            ? await getUserItems(userId)
+            : await getItems();
+        if (!isComponentMounted) return;
+        if (data) {
+          setItems(Array.isArray(data) ? data : []);
+        } else {
+          setError("Failed to load items");
+        }
+      } catch (e) {
+        if (!isComponentMounted) return;
         setError("Failed to load items");
+      } finally {
+        if (isComponentMounted) setLoading(false);
       }
-      setLoading(false);
     }
-    load();
-  }, [userId, type]);
+
+    loadItems();
+
+    const inventoryChangeHandler = (event: Event) => {
+      try {
+        const inventoryChangeEvent = event as CustomEvent;
+        if (!userId) return;
+        const changedUserId = String(inventoryChangeEvent.detail?.userId ?? "");
+        if (changedUserId === String(userId)) {
+          loadItems();
+        }
+      } catch (err) {
+      }
+    };
+
+    window.addEventListener(
+      "inventory:changed",
+      inventoryChangeHandler as EventListener,
+    );
+
+    return () => {
+      isComponentMounted = false;
+      window.removeEventListener(
+        "inventory:changed",
+        inventoryChangeHandler as EventListener,
+      );
+    };
+  }, [userId, type, refreshToggle]);
 
   if (loading) return <div>Loading items...</div>;
   if (error) return <div>{error}</div>;
@@ -80,6 +130,56 @@ export default function ItemList({ type, variant, userId }: ListProps) {
     );
   }
 
+  const handleUse = async (item: ItemType) => {
+    if (!onUseItem) return;
+
+    if (inProgressIds.includes(item.id)) {
+      return;
+    }
+
+    const consumptionWindow = getInventoryConsumptionWindow();
+    consumptionWindow.__consumingItems ??= new Set<string>();
+    const consumptionKey = `${userId}:${item.id}`;
+    const activeConsumptionSet = consumptionWindow.__consumingItems;
+    if (activeConsumptionSet && activeConsumptionSet.has(consumptionKey)) {
+      return;
+    }
+    if (activeConsumptionSet) activeConsumptionSet.add(consumptionKey);
+
+    setInProgressIds((p) => [...p, item.id]);
+
+    const previousItems = items;
+
+    const itemIndex = items.findIndex(
+      (currentItem) => currentItem.id === item.id,
+    );
+    if (itemIndex !== -1) {
+      const updatedItems = items
+        .map((i) =>
+          i.id === item.id ? { ...i, quantity: (i.quantity ?? 1) - 1 } : i,
+        )
+        .filter((i) => (i.quantity ?? 1) > 0);
+      setItems(updatedItems);
+    }
+
+    try {
+      const wasItemUsed = await onUseItem(item);
+      if (!wasItemUsed) {
+        setItems(previousItems);
+      } else {
+        if (userId) {
+          const refreshedItems = await getUserItems(userId);
+          if (refreshedItems) setItems(refreshedItems);
+        }
+      }
+    } catch (err) {
+      setItems(previousItems);
+    } finally {
+      setInProgressIds((p) => p.filter((id) => id !== item.id));
+      consumptionWindow.__consumingItems?.delete(consumptionKey);
+    }
+  };
+
   return (
     <div
       className={
@@ -99,6 +199,11 @@ export default function ItemList({ type, variant, userId }: ListProps) {
           variant={variant}
           type={type}
           onBuy={type === "store" ? () => handleBuy(item) : undefined}
+          onUse={
+            type === "inventory" && onUseItem
+              ? () => handleUse(item)
+              : undefined
+          }
         />
       ))}
     </div>

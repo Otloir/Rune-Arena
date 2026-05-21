@@ -4,6 +4,7 @@ import Button from "../../atoms/buttons/Button";
 import styles from "./PlayerPanel.module.css";
 import type { MoveWithType } from "../../../types/move.types";
 import type { Creature } from "../../../types/creature.types";
+import bagIcon from "../../../assets/icons/bag_icon.svg";
 
 interface PlayerPanelProps {
   creatureId: number;
@@ -12,6 +13,7 @@ interface PlayerPanelProps {
   disabled: boolean;
   battleLog: string[];
   playerCreature: Creature | null;
+  onOpenInventory?: () => void;
 }
 
 export default function PlayerPanel({
@@ -21,6 +23,7 @@ export default function PlayerPanel({
   disabled,
   battleLog,
   playerCreature,
+  onOpenInventory,
 }: PlayerPanelProps) {
   const logScrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -36,7 +39,6 @@ export default function PlayerPanel({
       aria-label="Battle controls"
       role="region"
     >
-
       {/* Left: battle log */}
       <div className={styles.logPanel}>
         <h3 className={styles.logTitle}>Battle Log</h3>
@@ -47,7 +49,9 @@ export default function PlayerPanel({
           aria-label="Battle log"
         >
           {battleLog.map((entry, i) => (
-            <p key={i} className={styles.logEntry}>{entry}</p>
+            <p key={i} className={styles.logEntry}>
+              {entry}
+            </p>
           ))}
         </div>
       </div>
@@ -69,14 +73,23 @@ export default function PlayerPanel({
           aria-label="Battle actions"
         >
           <Button
-            variant="action"
-            color="#a855f7"
-            disabled
+            onClick={() => onOpenInventory && onOpenInventory()}
+            aria-label="open inventory button"
+            backgroundColor="#DCB8A0"
+            textColor="#955D38"
             className={styles.actionBtn}
-            aria-label="Use item (not yet available)"
-            title="Items are not yet available."
           >
-            Use Item
+            <span className={styles.buttonLabel}>
+              <span
+                className={styles.buttonIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${bagIcon})`,
+                  maskImage: `url(${bagIcon})`,
+                }}
+              />
+              <span>Bag</span>
+            </span>
           </Button>
           <Button
             variant="neutral"
@@ -97,7 +110,6 @@ export default function PlayerPanel({
           </Button>
         </div>
       </div>
-
     </div>
   );
 }

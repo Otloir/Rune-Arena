@@ -18,7 +18,9 @@ export async function getItems(): Promise<ItemType[] | null> {
 }
 
 // Get items a specific user has, grouped by item so duplicates show as quantity
-export async function getUserItems(userId: string | number): Promise<ItemType[] | null> {
+export async function getUserItems(
+  userId: string | number,
+): Promise<ItemType[] | null> {
   const { data, error } = await supabase
     .from("User_Items")
     .select(
@@ -42,10 +44,8 @@ export async function getUserItems(userId: string | number): Promise<ItemType[] 
   // Group items by id and count how many the user has of each
   const grouped = flatItems.reduce<Record<number, ItemType>>((acc, item) => {
     if (acc[item.id]) {
-      // Item already seen — increment quantity
       acc[item.id].quantity = (acc[item.id].quantity ?? 1) + 1;
     } else {
-      // First time seeing this item — add it with quantity 1
       acc[item.id] = { ...item, quantity: 1 };
     }
     return acc;
@@ -67,5 +67,47 @@ export async function buyItem(
     console.error("Supabase error:", error.message);
     return false;
   }
+  return true;
+}
+
+// Remove one instance of an item from a user's inventory.
+export async function consumeUserItem(
+  userId: string,
+  itemId: number,
+): Promise<boolean> {
+  const { data: rows, error: selectError } = await supabase
+    .from("User_Items")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("item_id", itemId)
+    .limit(1);
+
+  if (selectError) {
+    console.error(
+      "Supabase select error while consuming item:",
+      selectError.message,
+    );
+    return false;
+  }
+
+  if (!rows || (Array.isArray(rows) && rows.length === 0)) {
+    return false;
+  }
+
+  const rowId = Array.isArray(rows) ? (rows[0] as any).id : (rows as any).id;
+
+  const { error: delError } = await supabase
+    .from("User_Items")
+    .delete()
+    .eq("id", rowId);
+
+  if (delError) {
+    console.error(
+      "Supabase delete error while consuming item:",
+      delError.message,
+    );
+    return false;
+  }
+
   return true;
 }

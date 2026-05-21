@@ -133,3 +133,19 @@
 .buyBtn:hover {
   background: var(--btn-purchase-hover);
 }
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.useBtn {
+  background: var(--btn-cta-bg);
+  color: var(--btn-cta-text);
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+}

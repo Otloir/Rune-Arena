@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import type { MoveWithType } from "../types/move.types";
 import type { Creature } from "../types/creature.types";
+import type { Item } from "../types/item.types";
+import type { StatBoosts } from "../types/battleEffects.types";
 import { getMoveById } from "../database/move.database";
 import { supabase } from "../lib/supabase";
 import { awardXpToCreature } from "../database/creature.database";
@@ -156,7 +158,9 @@ export function useBattle({
   battleLog: string[];
   battleError: string | null;
   xpGained: number;
+  playerStatBoosts: StatBoosts;
   handlePlayerMove: (move: MoveWithType) => Promise<void>;
+  handlePlayerUseItem: (item: Item) => Promise<void>;
 } {
   const [xpGained, setXpGained] = useState(0);
   const [playerHp, setPlayerHp] = useState<number | null>(null);
@@ -172,6 +176,11 @@ export function useBattle({
     Map<number, number>
   > | null>(null);
   const [battleError, setBattleError] = useState<string | null>(null);
+  const [playerStatBoosts, setPlayerStatBoosts] = useState<StatBoosts>({
+    evadeBoost: 0,
+    speedBoost: 0,
+    defenseBoost: 0,
+  });
 
   // =========================
   // READY STATE
@@ -344,7 +353,14 @@ export function useBattle({
       const attackerName = opponentCreature?.name ?? "The opponent";
       const moveName = move.name;
 
-      if (!attackHits(move.chance ?? 100, playerCreature.evade ?? 0)) {
+      // Calculate effective evade with stat boosts
+      const baseEvade = playerCreature.evade ?? 0;
+      const evadeBoostAmount = Math.floor(
+        (baseEvade * playerStatBoosts.evadeBoost) / 100,
+      );
+      const effectiveEvade = baseEvade + evadeBoostAmount;
+
+      if (!attackHits(move.chance ?? 100, effectiveEvade)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
         return;
       }
@@ -356,9 +372,19 @@ export function useBattle({
         effectivenessMap,
       );
 
-      setPlayerHp((p) => Math.max(0, (p ?? playerCreature.hp) - result.damage));
+      // Calculate effective defense with stat boosts
+      const baseDefense = playerCreature.defense ?? 0;
+      const defenseBoostAmount = Math.floor(
+        (baseDefense * playerStatBoosts.defenseBoost) / 100,
+      );
+      const effectiveDefense = baseDefense + defenseBoostAmount;
 
-      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
+      // Apply the boosted defense to the damage
+      const boostedDamage = applyDefense(result.damage, effectiveDefense);
+
+      setPlayerHp((p) => Math.max(0, (p ?? playerCreature.hp) - boostedDamage));
+
+      log(`${attackerName} used ${moveName} for ${boostedDamage} damage!`);
       if (result.message) log(result.message);
     },
     [
@@ -367,6 +393,7 @@ export function useBattle({
       opponentCreature,
       playerTypeIds,
       effectivenessMap,
+      playerStatBoosts,
       log,
     ],
   );
@@ -414,13 +441,67 @@ export function useBattle({
 
     const run = async (): Promise<void> => {
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 600));
       await executeOpponentTurn(opponentMoveIds);
       setIsProcessing(false);
     };
 
     run();
   }, [turnOwner, isProcessing, opponentMoveIds, executeOpponentTurn, isReady]);
+
+  // =========================
+  // PLAYER MOVE
+  // =========================
+
+  /**
+   * Applies an item's effect to the player's creature.
+   * Effects are permanently applied to stats for the duration of the battle.
+   * HP healing is immediately applied to current HP.
+   */
+  const applyItemEffect = useCallback(
+    (item: Item): void => {
+      const { property, propvalue } = item;
+      const propLower = property.toLowerCase().trim();
+
+      // Handle HP recovery (immediate healing)
+      // Support multiple variations: "hp", "health", "healing"
+      if (
+        propLower === "hp" ||
+        propLower === "health" ||
+        propLower === "healing"
+      ) {
+        const currentHp = playerHp ?? playerCreature?.hp ?? 0;
+        const maxHp = playerCreature?.hp ?? 0;
+        const healed = Math.min(propvalue, maxHp - currentHp);
+        setPlayerHp(currentHp + healed);
+        log(
+          `${playerCreature?.name ?? "Your creature"} recovered ${healed} HP!`,
+        );
+        return;
+      }
+
+      // Handle stat boosts (percentage-based, lasting whole battle)
+      const boostMap: Record<string, keyof StatBoosts> = {
+        evade: "evadeBoost",
+        defense: "defenseBoost",
+        speed: "speedBoost",
+      };
+
+      const boostKey = boostMap[propLower];
+      if (boostKey) {
+        setPlayerStatBoosts((prev) => ({
+          ...prev,
+          [boostKey]: prev[boostKey] + propvalue,
+        }));
+        log(
+          `${playerCreature?.name ?? "Your creature"}'s ${property} increased by ${propvalue}%!`,
+        );
+      } else {
+        log(`Used ${item.name}... (effect unknown)`);
+      }
+    },
+    [playerHp, playerCreature, log],
+  );
 
   // =========================
   // PLAYER MOVE
@@ -442,6 +523,24 @@ export function useBattle({
     [turnOwner, isProcessing, damageOpponent],
   );
 
+  const handlePlayerUseItem = useCallback(
+    async (item: Item): Promise<void> => {
+      if (turnOwner !== "player" || isProcessing) return;
+
+      setIsProcessing(true);
+      await new Promise((r) => setTimeout(r, 300));
+
+      // Apply the item's effect
+      applyItemEffect(item);
+
+      // Using an item consumes the player's turn
+      await new Promise((r) => setTimeout(r, 300));
+      setTurnOwner("opponent");
+      setIsProcessing(false);
+    },
+    [turnOwner, isProcessing, applyItemEffect],
+  );
+
   // =========================
   // RETURN
   // =========================
@@ -454,6 +553,8 @@ export function useBattle({
     battleLog,
     battleError,
     xpGained,
+    playerStatBoosts,
     handlePlayerMove,
+    handlePlayerUseItem,
   };
 }
