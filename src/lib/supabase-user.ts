@@ -7,9 +7,27 @@ export interface LocalUser {
   readonly runecoins: number;
 }
 
-/**
- * Real centralbank user — upserts on centralbank_id conflict.
- */
+// Returns a stable negative guest centralbank_id from localStorage.
+// Guests get -1, -2, -3... so they never collide with real positive centralbank IDs.
+function getOrCreateGuestCentralbankId(): number {
+  const stored = localStorage.getItem("guest_centralbank_id");
+  const parsed = Number(stored);
+
+  // Reuse the stored id if it's a valid negative number
+  if (Number.isFinite(parsed) && parsed < 0) {
+    return parsed;
+  }
+
+  // No valid id stored — generate the next one in the sequence
+  const existingCount = Number(localStorage.getItem("guest_count") ?? 0);
+  const nextId = -1 - existingCount;
+  localStorage.setItem("guest_centralbank_id", String(nextId));
+  localStorage.setItem("guest_count", String(existingCount + 1));
+  return nextId;
+}
+
+// Upsert a real centralbank user into Supabase.
+// If the user already exists (matched by centralbank_id), their name is updated.
 export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,

@@ -1,8 +1,35 @@
 .inputContainer {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }
 
-.number{
-    width: 2rem;
+.inputWrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.number {
+  width: 2rem;
+}
+
+.error {
+  border: 0.125rem solid #e84040;
+  background-color: #ffe5e5;
+}
+
+.helpText {
+  font-size: 0.75rem;
+  color: #6b7399;
+  margin-top: 0.25rem;
+}
+
+.errorMessage {
+  font-size: 0.75rem;
+  color: #b42323;
+  background-color: #ffe5e5;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
 }

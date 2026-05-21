@@ -43,6 +43,7 @@ export interface ButtonProps extends NativeButtonProps {
   type?: "button" | "submit" | "reset";
   loading?: boolean;
   radius?: number;
+  hoverEffect?: boolean;
 }
 
 function darkenHex(hex: string, amount = 40): string {
@@ -70,6 +71,7 @@ const Button: FC<ButtonProps> = ({
   loading = false,
   radius,
   style,
+  hoverEffect = true,
   ...nativeProps
 }) => {
   const isValidBackgroundColor =
@@ -107,6 +109,7 @@ const Button: FC<ButtonProps> = ({
         styles[size],
         styles[shape],
         shadow ? styles.withShadow : "",
+        hoverEffect ? styles.hoverable : "",
         className,
       ].join(" ")}
       style={{

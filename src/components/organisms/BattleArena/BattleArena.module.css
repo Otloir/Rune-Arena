@@ -1,5 +1,5 @@
 .arena {
-  background-color: rgb(199, 238, 225);
+  background-color: var(--battle-arena-bg);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -27,7 +27,6 @@
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
-  
 }
 
 .opponentContainer {
@@ -66,7 +65,7 @@
   align-items: center;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 
 @media (min-width: 1024px) {

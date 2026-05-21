@@ -4,34 +4,34 @@
 }
 
 .bar {
-  border-radius: 15px;
+  border-radius: 0.9375rem;
   overflow: hidden;
 }
 
 .bar:has(.hp) {
-  background-color: #a42121;
+  background-color: var(--hp-bar-damage);
 }
 
 .bar:has(.xp) {
-  background-color: #d9d9d9;
+  background-color: var(--xp-bar-empty);
 }
 
 .hp {
-  background-color: #04aa6d;
-  height: 10px;
+  background-color: var(--hp-bar);
+  height: 0.625rem;
 }
 
 .xp {
-  background-color: #0483aa;
-  height: 5px;
+  background-color: var(--xp-bar);
+  height: 0.3125rem;
 }
 
 @media (min-width: 1024px) {
   .hp {
-    height: 14px;
+    height: 0.875rem;
   }
   
   .xp {
-    height: 9px;
+    height: 0.5625rem;
   }
 }

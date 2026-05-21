@@ -58,9 +58,10 @@ async function fetchCreatureTypeIds(
   return data.map((e) => e.type_id);
 }
 
-async function fetchAllTypeEffectiveness(): Promise<
-  Map<number, Map<number, number>> | null
-> {
+async function fetchAllTypeEffectiveness(): Promise<Map<
+  number,
+  Map<number, number>
+> | null> {
   const { data, error } = await supabase
     .from("Type_Effectiveness")
     .select("attacker_id, defender_id, effectiveness");
@@ -190,53 +191,29 @@ export function useBattle({
   battleLog: string[];
   battleError: string | null;
   xpGained: number;
-  handlePlayerMove: (
-    move: MoveWithType,
-  ) => Promise<void>;
+  handlePlayerMove: (move: MoveWithType) => Promise<void>;
 } {
   const [xpGained, setXpGained] = useState(0);
-
-  const [playerHp, setPlayerHp] =
-    useState<number | null>(null);
-
-  const [opponentHp, setOpponentHp] =
-    useState<number | null>(null);
-
-  const [turnOwner, setTurnOwner] =
-    useState<TurnOwner | null>(null);
-
-  const [isProcessing, setIsProcessing] =
-    useState(false);
-
-  const [battleLog, setBattleLog] = useState<
-    string[]
-  >([]);
-
-  const [opponentMoveIds, setOpponentMoveIds] =
-    useState<number[]>([]);
-
-  const [playerTypeIds, setPlayerTypeIds] =
-    useState<number[]>([]);
-
-  const [opponentTypeIds, setOpponentTypeIds] =
-    useState<number[]>([]);
-
-  const [effectivenessMap, setEffectivenessMap] =
-    useState<Map<number, Map<number, number>> | null>(
-      null,
-    );
-
-  const [battleError, setBattleError] =
-    useState<string | null>(null);
+  const [playerHp, setPlayerHp] = useState<number | null>(null);
+  const [opponentHp, setOpponentHp] = useState<number | null>(null);
+  const [turnOwner, setTurnOwner] = useState<TurnOwner | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [battleLog, setBattleLog] = useState<string[]>([]);
+  const [opponentMoveIds, setOpponentMoveIds] = useState<number[]>([]);
+  const [playerTypeIds, setPlayerTypeIds] = useState<number[]>([]);
+  const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
+  const [effectivenessMap, setEffectivenessMap] = useState<Map<
+    number,
+    Map<number, number>
+  > | null>(null);
+  const [battleError, setBattleError] = useState<string | null>(null);
 
   // =========================
   // READY STATE
   // =========================
 
   const isReady =
-    !!playerCreature &&
-    !!opponentCreature &&
-    effectivenessMap !== null;
+    !!playerCreature && !!opponentCreature && effectivenessMap !== null;
 
   const log = useCallback((msg: string) => {
     setBattleLog((prev) => [...prev, msg]);
@@ -309,7 +286,8 @@ export function useBattle({
       ).then((ids) => {
         if (ids.length === 0) {
           console.warn(
-            `[useBattle] Player creature "${playerCreature.name}" has no types.`,
+            `[useBattle] Player creature "${playerCreature.name}" (id: ${playerCreature.id}) ` +
+              `has no types in the database. Damage multipliers will default to ×1.`,
           );
         }
 
@@ -323,7 +301,8 @@ export function useBattle({
       ).then((ids) => {
         if (ids.length === 0) {
           console.warn(
-            `[useBattle] Opponent creature "${opponentCreature.name}" has no types.`,
+            `[useBattle] Opponent creature "${opponentCreature.name}" (id: ${opponentCreature.id}) ` +
+              `has no types in the database. Damage multipliers will default to ×1.`,
           );
         }
 
@@ -337,14 +316,10 @@ export function useBattle({
   // =========================
 
   useEffect(() => {
-    if (!opponentCreatureId) {
-      return;
-    }
-
-    fetchCreatureMoveIds(
-      Number(opponentCreatureId),
-      opponentLevel,
-    ).then(setOpponentMoveIds);
+    if (!opponentCreatureId) return;
+    fetchCreatureMoveIds(Number(opponentCreatureId), opponentLevel).then(
+      setOpponentMoveIds,
+    );
   }, [opponentCreatureId, opponentLevel]);
 
   // =========================
@@ -352,33 +327,15 @@ export function useBattle({
   // =========================
 
   const damageOpponent = useCallback(
-    async (
-      move: MoveWithType,
-    ): Promise<boolean> => {
-      if (
-        !isReady ||
-        !opponentCreature ||
-        !effectivenessMap
-      ) {
+    async (move: MoveWithType): Promise<boolean> => {
+      if (!isReady || !opponentCreature || !effectivenessMap) {
         return false;
       }
 
-      const attackerName =
-        playerCreature?.name ??
-        "Your creature";
-
       const moveName = move.name;
 
-      if (
-        !attackHits(
-          move.chance ?? 100,
-          opponentCreature.evade ?? 0,
-        )
-      ) {
-        log(
-          `${attackerName} used ${moveName}, but it missed!`,
-        );
-
+      if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
+        log(`${attackerName} used ${moveName}, but it missed!`);
         return true;
       }
 
@@ -389,19 +346,12 @@ export function useBattle({
         effectivenessMap,
       );
 
-      const currentHp =
-        opponentHp ?? opponentCreature.hp;
-
-      const newHp = Math.max(
-        0,
-        currentHp - result.damage,
-      );
+      const currentHp = opponentHp ?? opponentCreature.hp;
+      const newHp = Math.max(0, currentHp - result.damage);
 
       setOpponentHp(newHp);
 
-      log(
-        `${attackerName} used ${moveName} for ${result.damage} damage!`,
-      );
+      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
 
       if (result.message) {
         log(result.message);
@@ -661,21 +611,15 @@ export function useBattle({
       }
 
       setIsProcessing(true);
-
-      const opponentAlive =
-        await damageOpponent(move);
+      await new Promise((r) => setTimeout(r, 800));
+      const opponentAlive = await damageOpponent(move);
 
       if (opponentAlive) {
         setTurnOwner("opponent");
       }
-
       setIsProcessing(false);
     },
-    [
-      turnOwner,
-      isProcessing,
-      damageOpponent,
-    ],
+    [turnOwner, isProcessing, damageOpponent],
   );
 
   // =========================

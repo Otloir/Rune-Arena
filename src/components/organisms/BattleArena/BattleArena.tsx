@@ -9,12 +9,15 @@ import { useCreatureById } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { startBattle, endBattle } from "../../../database/battle.database";
 import type { BattleError } from "../../../database/battle.database";
+import { formatStamp } from "../../../api/centralbank.api";
+import type { TransactionResponse } from "../../../types/api.types";
 
 interface BattleArenaProps {
   readonly playerOneId: string | number;
   readonly playerTwoId: string | number;
   readonly playerOneCreatureId: string | number;
   readonly playerTwoCreatureId: string | number;
+  transaction: TransactionResponse | null;
 }
 
 export default function BattleArena({
@@ -22,6 +25,7 @@ export default function BattleArena({
   playerTwoId,
   playerOneCreatureId,
   playerTwoCreatureId,
+  transaction,
 }: BattleArenaProps): ReactElement {
   const {
     creature: playerOneCreature,
@@ -114,8 +118,32 @@ export default function BattleArena({
   // ========================================
   // REGISTER BATTLE
   // ========================================
+  
+  // Track damage for shake animation
+  const [prevPlayerHp, setPrevPlayerHp] = useState<number | null>(null);
+  const [prevOpponentHp, setPrevOpponentHp] = useState<number | null>(null);
+  const [playerIsHit, setPlayerIsHit] = useState(false);
+  const [opponentIsHit, setOpponentIsHit] = useState(false);
 
-  useEffect((): void => {
+  useEffect(() => {
+    if (prevPlayerHp !== null && playerHp < prevPlayerHp) {
+      setPlayerIsHit(true);
+      const timer = setTimeout(() => setPlayerIsHit(false), 400);
+      return () => clearTimeout(timer);
+    }
+    setPrevPlayerHp(playerHp);
+  }, [playerHp, prevPlayerHp]);
+
+  useEffect(() => {
+    if (prevOpponentHp !== null && opponentHp < prevOpponentHp) {
+      setOpponentIsHit(true);
+      const timer = setTimeout(() => setOpponentIsHit(false), 400);
+      return () => clearTimeout(timer);
+    }
+    setPrevOpponentHp(opponentHp);
+  }, [opponentHp, prevOpponentHp]);
+
+  useEffect(() => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (battleStartedRef.current) return;
 
@@ -220,6 +248,12 @@ export default function BattleArena({
 
             // Use ACTUAL XP gained from useBattle
             xpGained: winner === "player" ? xpGained : 0,
+            stamp: transaction?.stamp
+              ? {
+                  name: formatStamp(transaction.stamp.stamptype),
+                  imageUrl: transaction.stamp.stamptype.image_url,
+                }
+              : null,
           },
         });
       } catch (reason: unknown) {
@@ -242,6 +276,7 @@ export default function BattleArena({
     playerOneId,
     navigate,
     xpGained,
+    transaction,
   ]);
 
   // ========================================
@@ -304,6 +339,8 @@ export default function BattleArena({
               userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               role="opponent"
+              isAttacking={turnOwner === "opponent" && isProcessing}
+              isHit={opponentIsHit}
             />
           </div>
         </div>
@@ -322,6 +359,8 @@ export default function BattleArena({
               userId={playerOneId}
               creatureId={playerOneCreatureId}
               role="player"
+              isAttacking={turnOwner === "player" && isProcessing}
+              isHit={playerIsHit}
             />
           </div>
         </div>

@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import type { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
 import { getUserBalance } from "../../../database/user.database";
 import type { BattleError } from "../../../database/battle.database";
+
+interface StampReward {
+  name: string;
+  imageUrl: string | null;
+}
 
 interface ResultState {
   readonly winner?: "player" | "opponent";
@@ -15,6 +21,7 @@ interface ResultState {
   readonly rewardImage?: string;
   readonly rewardQuantity?: number;
   readonly xpGained?: number;
+  readonly stamp: StampReward | null;
   /**
    * Set when the battle session was invalid (e.g. duplicate tab).
    * When present, winner/creature names are not shown.
@@ -48,17 +55,22 @@ export default function ResultPage(): ReactElement {
   const rewardQuantity: number = state?.rewardQuantity ?? 1;
   const xpGained: number = state?.xpGained ?? 0;  
   const playerWon: boolean = winner === "player";
+  const stamp = state?.stamp ?? null;
 
   const [newBalance, setNewBalance] = useState<number | null>(null);
 
   useEffect((): void => {
     const userId: number | undefined = state?.userId;
     if (userId == null || !playerWon) return;
+    
+    if (stamp === null) {
+      console.log("ResultPage: no stamp awarded (guest)");
+    }
 
     getUserBalance(userId).then((balance: number | null): void => {
       if (balance !== null) setNewBalance(balance);
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [stamp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReturnHome = (): void => {
     navigate("/");
@@ -90,6 +102,15 @@ export default function ResultPage(): ReactElement {
       </main>
     );
   }
+  const playerWon = state?.winner === "player";
+  const playerName = state?.playerCreatureName ?? "Your creature";
+  const opponentName = state?.opponentCreatureName ?? "The opponent";
+  const xpGained = state?.xpGained ?? 0;
+  
+
+  //consol log to check if the stamp works
+  //todo: REMOVE AFTER 100% CERTAIN EVERYTHING WORKS
+  
 
   // -----------------------------------------------------------------------
   // Normal result screen
@@ -123,51 +144,36 @@ export default function ResultPage(): ReactElement {
               : "+5 RC earned!"}
           </p>
         )}
-
-        {playerWon && (
-          <p
-            className={styles.xpGained}
-            aria-label={`XP gained: ${xpGained}`}
-          >
-            +{xpGained} XP
-          </p>
+        
+        {/* Only show the stamp section for real users who received one */}
+        {stamp !== null && (
+          <section className={styles.rewardSection} aria-label="Stamp reward">
+            <p className={styles.rewardLabel}>You earned a stamp:</p>
+            <article className={styles.rewardCard} aria-label="Stamp details">
+              <div className={styles.rewardImageContainer}>
+                {stamp.imageUrl ? (
+                  <img
+                    src={stamp.imageUrl}
+                    alt={stamp.name}
+                    className={styles.rewardImage}
+                  />
+                ) : (
+                  <span className={styles.rewardFallback}>🪲</span>
+                )}
+              </div>
+              <p className={styles.rewardName}>{stamp.name}</p>
+            </article>
+          </section>
         )}
 
-        <section
-          className={styles.rewardSection}
-          aria-label="Reward information"
-        >
-          <p className={styles.rewardLabel}>{"You earned:"}</p>
-
-          <article
-            className={styles.rewardCard}
-            aria-label="Item reward details"
-          >
-            <div className={styles.rewardImageContainer}>
-              {rewardImage ? (
-                <img
-                  src={rewardImage}
-                  alt={rewardName}
-                  className={styles.rewardImage}
-                />
-              ) : (
-                <span className={styles.rewardFallback}>🪲</span>
-              )}
-              <span
-                className={styles.rewardCount}
-                aria-label={`Item quantity: ${rewardQuantity}`}
-              >
-                {rewardQuantity}
-              </span>
-            </div>
-            <p className={styles.rewardName}>{rewardName}</p>
-          </article>
-        </section>
+        <p className={styles.xpGained} aria-label={`XP gained: ${xpGained}`}>
+          +{xpGained} XP
+        </p>
 
         <Button
           type="button"
           variant="neutral"
-          onClick={handleReturnHome}
+          onClick={() => navigate("/")}
           aria-label="Return to main arena"
           className={styles.secondaryButton}
         >

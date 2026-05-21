@@ -1,7 +1,7 @@
 .movesPanel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0.375rem;
 
   width: 100%;
   min-width: 0;
@@ -13,12 +13,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 8px;
+  min-height: 2.75rem;
+  padding: 0.5rem;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #dfe4f0, #eef2f8);
-  color: #6b7399;
+  border-radius: 0.625rem;
+  background: linear-gradient(
+    135deg,
+    var(--gray-lighter),
+    var(--gray-lightest)
+  );
+  color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: not-allowed;
@@ -28,10 +32,10 @@
 .errorMessage {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 10px;
-  border-radius: 10px;
-  background: #ffe5e5;
-  color: #b42323;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
   font-weight: 700;
   font-size: 0.88rem;
 }
