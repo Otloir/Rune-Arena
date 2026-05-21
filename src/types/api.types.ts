@@ -13,7 +13,7 @@ export type Stamp = {
   id: number;
   user_id: number;
   stamptype_id: number;
-  stamp_type: StampType;
+  stamptype: StampType;
   image_url: string | null;
   exchanged_at: string | null;
   created_at: string;
