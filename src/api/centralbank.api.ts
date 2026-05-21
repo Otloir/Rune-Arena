@@ -32,7 +32,7 @@ async function apiFetch<T>(
 
     const response = await fetch(`${BASE_URL}${path}`, {
       ...options,
-      credentials: "include", // send session cookie automatically
+      credentials: "include",
       headers,
     });
 
@@ -69,12 +69,17 @@ async function apiFetch<T>(
 /**
  * Read `identity_token` from the current URL and immediately scrub it from
  * history so it does not leak via referer headers or browser history.
+ * The token is saved to sessionStorage first so it survives the page load
+ * and can still be used even after the URL is cleaned up.
  */
 export function readIdentityTokenFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
   const token = params.get("identity_token");
 
   if (token) {
+    // Save to sessionStorage before scrubbing from URL
+    sessionStorage.setItem("identity_token", token);
+
     params.delete("identity_token");
     const clean =
       window.location.pathname +
@@ -83,7 +88,8 @@ export function readIdentityTokenFromUrl(): string | null {
     window.history.replaceState({}, "", clean);
   }
 
-  return token;
+  // Fall back to sessionStorage if token wasn't in the URL this load
+  return token ?? sessionStorage.getItem("identity_token");
 }
 
 /**
@@ -97,7 +103,7 @@ export async function getPlayerInfo(
 }
 
 // -----------------------------------------------------------------------------
-// Transactions  (api_key is read from env — no need to pass it at call site)
+// Transactions (api_key is read from env — no need to pass it at call site)
 // -----------------------------------------------------------------------------
 
 /**
@@ -121,6 +127,7 @@ export async function startTransaction(
     }),
   });
 }
+
 // -----------------------------------------------------------------------------
 // Stamps
 // -----------------------------------------------------------------------------
