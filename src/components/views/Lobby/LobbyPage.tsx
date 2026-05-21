@@ -89,7 +89,8 @@ export default function LobbyPage() {
       return;
     }
 
-    // Pass the full transaction so the arena can forward the stamp to the result page
+    // Pass the full transaction so the arena can forward the stamp to the result page.
+    // result.data is { transaction_id, amount, stamp } per the updated API.
     goToArena(result.data);
   };
 

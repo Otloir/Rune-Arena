@@ -104,6 +104,13 @@ export default function BattleArena({
       const winner: "player" | "opponent" =
         opponentHp <= 0 ? "player" : "opponent";
 
+      const stamp = transaction?.stamp
+        ? {
+            name: formatStamp(transaction.stamp),
+            imageUrl: transaction.stamp.image_url,
+          }
+        : null;
+
       const timer = setTimeout(() => {
         navigate("/result", {
           replace: true,
@@ -112,12 +119,7 @@ export default function BattleArena({
             playerCreatureName: playerOneCreature.name,
             opponentCreatureName: playerTwoCreature.name,
             xpGained,
-            stamp: transaction?.stamp
-              ? {
-                  name: formatStamp(transaction.stamp.stamptype),
-                  imageUrl: transaction.stamp.stamptype.image_url,
-                }
-              : null,
+            stamp,
           },
         });
       }, 1200);
