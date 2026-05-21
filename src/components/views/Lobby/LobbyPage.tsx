@@ -49,6 +49,7 @@ export default function LobbyPage() {
 
   const { player, identityToken } = playerState;
   const userId = String(player.id);
+  const isGuest = player.isGuest;
 
   const handleCreatureSelect = (creatureId: string): void => {
     setSelectedCreatureId(creatureId);
@@ -65,15 +66,11 @@ export default function LobbyPage() {
     });
   };
 
-  // todo: Remove console log checks
   const handleStartArena = async (): Promise<void> => {
     if (!selectedCreatureId) return;
 
-    // Guests play for free
-    if (player.isGuest || !identityToken) {
-      console.log(
-        "Lobby: guest play — skipping transaction and navigating to arena",
-      );
+    // Guests play for free — skip payment
+    if (isGuest || !identityToken) {
       goToArena(null);
       return;
     }
@@ -82,27 +79,23 @@ export default function LobbyPage() {
     setIsCharging(true);
     setChargeError(null);
 
-    console.log("Lobby: initiating transaction", { amount: ENTRY_FEE });
-
     const result = await startTransaction(identityToken, ENTRY_FEE);
 
     setIsCharging(false);
 
     if (!result.success) {
       // 401 = token expired, 402 = insufficient funds
-      console.log("Lobby: transaction failed", { error: result.error });
       setChargeError(result.error);
       return;
     }
 
-    // Pass the full transaction payload so the arena can forward the stamp to the result page
-    console.log("Lobby: transaction succeeded", { transaction: result.data });
+    // Pass the full transaction so the arena can forward the stamp to the result page
     goToArena(result.data);
   };
 
   const startButtonLabel = isCharging
     ? "Processing payment..."
-    : player.isGuest
+    : isGuest
       ? "Start"
       : `Start (€${ENTRY_FEE.toFixed(2)})`;
 
@@ -111,7 +104,7 @@ export default function LobbyPage() {
       <TextCarousel isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
       <InventoryPage
         isOpen={isInventoryOpen}
-        onClose={closeInventory}
+        onClose={() => setIsInventoryOpen(false)}
         userId={userId}
       />
       <section className={styles.lobbyPage}>
@@ -121,9 +114,9 @@ export default function LobbyPage() {
             <p>Choose your fighter and dominate the arena!</p>
             {isGuest && (
               <p className={styles.guestText}>
-                <span> Playing as </span>
-                <span className={styles.guestTextGuest}> guest </span>
-                <span> - progress won't be saved to your account. </span>
+                <span>Playing as </span>
+                <span className={styles.guestTextGuest}>guest</span>
+                <span> — progress won't be saved to your account.</span>
               </p>
             )}
           </div>
@@ -131,14 +124,14 @@ export default function LobbyPage() {
             hoverEffect={false}
             iconSrc={informationIcon}
             iconAlt="Information"
-            onClick={openInfo}
+            onClick={() => setIsInfoOpen(true)}
             label="Open information"
             className={styles.iconButton}
           />
           <div className={styles.inventoryShopComtainer}>
             <nav>
               <Button
-                onClick={navigateStore}
+                onClick={() => navigate("/store", { state: { userId } })}
                 aria-label="navigate to shop button"
                 textColor="#155DFC"
               >
@@ -156,7 +149,7 @@ export default function LobbyPage() {
               </Button>
             </nav>
             <Button
-              onClick={openInventory}
+              onClick={() => setIsInventoryOpen(true)}
               aria-label="open inventory button"
               backgroundColor="#DCB8A0"
               textColor="#955D38"
@@ -219,7 +212,7 @@ export default function LobbyPage() {
                       maskImage: `url(${swordIcon})`,
                     }}
                   />
-                  <span>Start</span>
+                  <span>{startButtonLabel}</span>
                 </span>
               </Button>
             </form>
