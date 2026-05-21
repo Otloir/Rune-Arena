@@ -86,8 +86,8 @@ export default function BattleArena({
             xpGained,
             stamp: transaction?.stamp
               ? {
-                  name: formatStamp(transaction.stamp.stamp_type),
-                  imageUrl: transaction.stamp.stamp_type.image_url,
+                  name: formatStamp(transaction.stamp.stamptype),
+                  imageUrl: transaction.stamp.stamptype.image_url,
                 }
               : null,
           },

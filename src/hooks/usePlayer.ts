@@ -39,6 +39,10 @@ export function usePlayer(): PlayerState {
   useEffect(() => {
     async function load(): Promise<void> {
       const token = readIdentityTokenFromUrl();
+      console.log(
+        "[usePlayer] identity token from URL:",
+        token ? "present" : "missing",
+      );
 
       // No token means the user came directly or the API is unavailable — use guest
       if (!token) {
@@ -59,9 +63,12 @@ export function usePlayer(): PlayerState {
 
       // If the API is down or the token is invalid, fall back to guest
       if (!result.success) {
-        console.warn(
-          "[usePlayer] API unavailable, falling back to guest:",
+        console.error(
+          "[usePlayer] getPlayerInfo failed — status:",
+          result.status,
+          "error:",
           result.error,
+          "| falling back to guest",
         );
         const guest = await loadGuestPlayer();
         if (!guest) {
