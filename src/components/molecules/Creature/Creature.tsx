@@ -6,9 +6,17 @@ interface CreatureProps {
   userId: string | number;
   creatureId: string | number;
   role: "player" | "opponent";
+  isAttacking?: boolean;
+  isHit?: boolean;
 }
 
-export default function Creature({ userId, creatureId, role }: CreatureProps) {
+export default function Creature({
+  userId,
+  creatureId,
+  role,
+  isAttacking = false,
+  isHit = false,
+}: CreatureProps) {
   // Get the specific creature for this user
   const { creature, loading, error } = useCreatureById(userId, creatureId);
 
@@ -40,7 +48,7 @@ export default function Creature({ userId, creatureId, role }: CreatureProps) {
         alt={spriteAlt}
         width="500"
         height="600"
-        className={styles.creatureSprite}
+        className={`${styles.creatureSprite} ${isAttacking ? (role === "player" ? styles.player : styles.opponent) : ""} ${isHit ? styles.shake : ""}`}
       />
       <img
         src={platformImage}

@@ -13,8 +13,8 @@ interface UseBattleProps {
   opponentCreature: Creature | null;
   opponentCreatureId: number | string;
   opponentLevel?: number;
-  playerUserId: number | string;      
-  playerCreatureId: number | string;   
+  playerUserId: number | string;
+  playerCreatureId: number | string;
 }
 
 // =========================
@@ -23,7 +23,7 @@ interface UseBattleProps {
 
 async function fetchCreatureMoveIds(
   creatureId: number,
-  creatureLevel?: number
+  creatureLevel?: number,
 ): Promise<number[]> {
   let query = supabase
     .from("Creature_Moves")
@@ -52,7 +52,10 @@ async function fetchCreatureTypeIds(creatureId: number): Promise<number[]> {
   return data.map((e) => e.type_id);
 }
 
-async function fetchAllTypeEffectiveness(): Promise<Map<number, Map<number, number>> | null> {
+async function fetchAllTypeEffectiveness(): Promise<Map<
+  number,
+  Map<number, number>
+> | null> {
   const { data, error } = await supabase
     .from("Type_Effectiveness")
     .select("attacker_id, defender_id, effectiveness");
@@ -78,7 +81,7 @@ async function fetchAllTypeEffectiveness(): Promise<Map<number, Map<number, numb
 function getTypeMultiplier(
   map: Map<number, Map<number, number>>,
   attackerTypeId: number,
-  defenderTypeIds: number[]
+  defenderTypeIds: number[],
 ): number {
   let multiplier = 1;
 
@@ -118,7 +121,7 @@ async function calculateDamage(
   move: MoveWithType,
   defender: Creature,
   defenderTypes: number[],
-  map: Map<number, Map<number, number>>
+  map: Map<number, Map<number, number>>,
 ): Promise<DamageResult> {
   let dmg = applyDefense(move.damage, defender.defense ?? 0);
 
@@ -164,8 +167,10 @@ export function useBattle({
   const [opponentMoveIds, setOpponentMoveIds] = useState<number[]>([]);
   const [playerTypeIds, setPlayerTypeIds] = useState<number[]>([]);
   const [opponentTypeIds, setOpponentTypeIds] = useState<number[]>([]);
-  const [effectivenessMap, setEffectivenessMap] =
-    useState<Map<number, Map<number, number>> | null>(null);
+  const [effectivenessMap, setEffectivenessMap] = useState<Map<
+    number,
+    Map<number, number>
+  > | null>(null);
   const [battleError, setBattleError] = useState<string | null>(null);
 
   // =========================
@@ -173,9 +178,7 @@ export function useBattle({
   // =========================
 
   const isReady =
-    !!playerCreature &&
-    !!opponentCreature &&
-    effectivenessMap !== null;
+    !!playerCreature && !!opponentCreature && effectivenessMap !== null;
 
   const log = useCallback((msg: string) => {
     setBattleLog((p) => [...p, msg]);
@@ -212,7 +215,7 @@ export function useBattle({
       if (map === null) {
         console.error("[useBattle] Failed to load Type_Effectiveness table.");
         setBattleError(
-          "Could not load battle data. Please check your connection and try again."
+          "Could not load battle data. Please check your connection and try again.",
         );
         return;
       }
@@ -232,7 +235,7 @@ export function useBattle({
         if (ids.length === 0) {
           console.warn(
             `[useBattle] Player creature "${playerCreature.name}" (id: ${playerCreature.id}) ` +
-            `has no types in the database. Damage multipliers will default to ×1.`
+              `has no types in the database. Damage multipliers will default to ×1.`,
           );
         }
         setPlayerTypeIds(ids);
@@ -244,7 +247,7 @@ export function useBattle({
         if (ids.length === 0) {
           console.warn(
             `[useBattle] Opponent creature "${opponentCreature.name}" (id: ${opponentCreature.id}) ` +
-            `has no types in the database. Damage multipliers will default to ×1.`
+              `has no types in the database. Damage multipliers will default to ×1.`,
           );
         }
         setOpponentTypeIds(ids);
@@ -258,7 +261,9 @@ export function useBattle({
 
   useEffect(() => {
     if (!opponentCreatureId) return;
-    fetchCreatureMoveIds(Number(opponentCreatureId), opponentLevel).then(setOpponentMoveIds);
+    fetchCreatureMoveIds(Number(opponentCreatureId), opponentLevel).then(
+      setOpponentMoveIds,
+    );
   }, [opponentCreatureId, opponentLevel]);
 
   // =========================
@@ -267,66 +272,66 @@ export function useBattle({
 
   const damageOpponent = useCallback(
     async (move: MoveWithType): Promise<boolean> => {
-        if (!isReady || !opponentCreature || !effectivenessMap) {
+      if (!isReady || !opponentCreature || !effectivenessMap) {
         return false;
-        }
+      }
 
-        const attackerName = playerCreature?.name ?? "Your creature";
-        const moveName = move.name;
+      const attackerName = playerCreature?.name ?? "Your creature";
+      const moveName = move.name;
 
-        if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
+      if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
         return true;
-        }
+      }
 
-        const result = await calculateDamage(
+      const result = await calculateDamage(
         move,
         opponentCreature,
         opponentTypeIds,
-        effectivenessMap
-        );
+        effectivenessMap,
+      );
 
-        const currentHp = opponentHp ?? opponentCreature.hp;
-        const newHp = Math.max(0, currentHp - result.damage);
+      const currentHp = opponentHp ?? opponentCreature.hp;
+      const newHp = Math.max(0, currentHp - result.damage);
 
-        setOpponentHp(newHp);
+      setOpponentHp(newHp);
 
-        log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
+      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
 
-        if (result.message) {
+      if (result.message) {
         log(result.message);
-        }
+      }
 
-        // Enemy defeated
-        if (newHp <= 0) {
+      // Enemy defeated
+      if (newHp <= 0) {
         const awarded = await awardXpToCreature(
-            playerUserId,
-            playerCreatureId,
-            100
+          playerUserId,
+          playerCreatureId,
+          100,
         );
 
         if (awarded) {
-            setXpGained(100);
-            log(`${attackerName} gained 100 XP!`);
+          setXpGained(100);
+          log(`${attackerName} gained 100 XP!`);
         }
 
         return false;
-        }
+      }
 
-        return true;
+      return true;
     },
     [
-        isReady,
-        playerCreature,
-        opponentCreature,
-        opponentHp,
-        opponentTypeIds,
-        effectivenessMap,
-        playerUserId,
-        playerCreatureId,
-        log,
-    ]
-    );
+      isReady,
+      playerCreature,
+      opponentCreature,
+      opponentHp,
+      opponentTypeIds,
+      effectivenessMap,
+      playerUserId,
+      playerCreatureId,
+      log,
+    ],
+  );
 
   // =========================
   // OPPONENT DAMAGE
@@ -348,17 +353,22 @@ export function useBattle({
         move,
         playerCreature,
         playerTypeIds,
-        effectivenessMap
+        effectivenessMap,
       );
 
-      setPlayerHp((p) =>
-        Math.max(0, (p ?? playerCreature.hp) - result.damage)
-      );
+      setPlayerHp((p) => Math.max(0, (p ?? playerCreature.hp) - result.damage));
 
       log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
       if (result.message) log(result.message);
     },
-    [isReady, playerCreature, opponentCreature, playerTypeIds, effectivenessMap, log]
+    [
+      isReady,
+      playerCreature,
+      opponentCreature,
+      playerTypeIds,
+      effectivenessMap,
+      log,
+    ],
   );
 
   // =========================
@@ -374,7 +384,7 @@ export function useBattle({
       }
 
       const move = await getMoveById(
-        ids[Math.floor(Math.random() * ids.length)]
+        ids[Math.floor(Math.random() * ids.length)],
       );
 
       if (!move) {
@@ -386,7 +396,7 @@ export function useBattle({
       await damagePlayer(move);
       setTurnOwner("player");
     },
-    [damagePlayer, opponentCreature, log]
+    [damagePlayer, opponentCreature, log],
   );
 
   // =========================
@@ -399,7 +409,8 @@ export function useBattle({
       isProcessing ||
       !opponentMoveIds.length ||
       !isReady
-    ) return;
+    )
+      return;
 
     const run = async (): Promise<void> => {
       setIsProcessing(true);
@@ -420,14 +431,15 @@ export function useBattle({
       if (turnOwner !== "player" || isProcessing) return;
 
       setIsProcessing(true);
+      await new Promise((r) => setTimeout(r, 800));
       const opponentAlive = await damageOpponent(move);
 
-        if (opponentAlive) {
+      if (opponentAlive) {
         setTurnOwner("opponent");
-        }
+      }
       setIsProcessing(false);
     },
-    [turnOwner, isProcessing, damageOpponent]
+    [turnOwner, isProcessing, damageOpponent],
   );
 
   // =========================
