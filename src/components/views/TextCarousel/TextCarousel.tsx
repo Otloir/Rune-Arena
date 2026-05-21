@@ -15,12 +15,16 @@ const infoSlides = [
       { tag: "h4", text: "How do you play?" },
       {
         tag: "p",
-        text: "RuneArena is a turn based creature fighting 1v1 experience where you fight one other opponent.",
+        text: "RuneArena is a turn based creature fighting 1v1 experience where you fight one other opponent. By fighting, you earn RC (RuneCoin) and XP.",
       },
       { tag: "h4", text: "Battle" },
       {
         tag: "p",
-        text: "In the Arena, you fight with one other opponent. You can play multiplayer or singleplayer against a bot. Each turn, you battle by pressing one of the attack buttons, or using items bought in the shop. If the opponent's creature HP reaches 0, you win and gain XP!",
+        text: "In the Arena, you fight with one other opponent. You get to play against a bot. Each turn, you battle by clicking one of the attack buttons, or using one of the items bought in the shop. If the opponent's creature HP reaches 0, you win and gain XP, RC (RuneCoin) and a stamp*!",
+      },
+      {
+        tag: "p",
+        text: "*the stamp is only available to get if you are logged into your account on 'https://loopland.se/'",
       },
     ],
   },
@@ -31,14 +35,45 @@ const infoSlides = [
       { tag: "h4", text: "How do you level up?" },
       {
         tag: "p",
-        text: "You level up by fighting in the Arena. When your creature has reached the criteria for leveling up, it may gain better base stats, or even another move to use during battle!",
+        text: "You level up by fighting in the Arena. When your creature has reached the criteria for leveling up, it may gain another move to use during battle!",
+      },
+      { tag: "h4", text: "Levels" },
+      {
+        tag: "p",
+        text: "Currently, the max level for each creature is 5. ",
       },
     ],
   },
   {
     accName: "Properties",
     title: "Properties",
-    content: [],
+    content: [
+      { tag: "h4", text: "What are 'Properties'?" },
+      {
+        tag: "p",
+        text: "Properties are you creatures stats! Each creature have a different base stat, which you can enhance during the battle by using items bought in the store.",
+      },
+      {
+        tag: "h4",
+        text: "Properties definition:",
+      },
+      {
+        tag: "p",
+        text: "- Health: It decides how much damage your creature can take until it faints.",
+      },
+      {
+        tag: "p",
+        text: "- Evade: It decides how easily your creature can dodge an attack.",
+      },
+      {
+        tag: "p",
+        text: "- Defence: It decides how much damage your creature can resist.",
+      },
+      {
+        tag: "p",
+        text: "- Speed: It decides which creature goes first",
+      },
+    ],
   },
   {
     accName: "Types",
@@ -49,12 +84,18 @@ const infoSlides = [
         tag: "p",
         text: "Different creature types have different effectiveness on specific types. For example, Grass is more effective on Water types, but weak against Fire. There is also the Normal type, which is neither good nor bad against any type.",
       },
+      { tag: "h4", text: "Type Chart" },
     ],
   },
   {
     accName: "Store",
     title: "Store",
-    content: [{ tag: "h4", text: "Choose what game mode to play!" }],
+    content: [{ tag: "h4", text: "Items" },
+      {
+        tag: "p",
+        text: "Different items you can buy do difrent things. Some gives you more defence, others heals your creature when you are in a critical condition. Each item cost different amount of RC, and can be acessed in your Bag. You can only use items in battle, and gets consumed upon use.",
+      },
+    ],
   },
 ] as const;
 
