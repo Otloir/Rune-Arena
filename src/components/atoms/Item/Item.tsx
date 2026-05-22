@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
 import styles from "./Item.module.css";
@@ -28,7 +27,8 @@ const Item: React.FC<ItemProps> = ({
     error,
   } = useItem(itemId && !item ? itemId : undefined);
 
-  const displayItem: ItemType | undefined = item ?? fetchedItem;
+  const displayItem: ItemType | undefined =
+    item ?? fetchedItem ?? undefined;
 
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
