@@ -28,7 +28,7 @@ export default function ArenaPage(): ReactElement {
       playerOneId={playerOneUserId}
       playerTwoId="1"
       playerOneCreatureId={playerOneCreatureId}
-      playerTwoCreatureId="3"
+      playerTwoCreatureId="3" //TODO, make this random creature
       transaction={transaction}
     />
   );

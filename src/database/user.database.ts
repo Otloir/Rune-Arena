@@ -9,9 +9,7 @@ export type PurchaseError =
   | "item_not_found"
   | "unknown";
 
-/**
- * Fetch the current RuneCoin balance for a user.
- */
+
 export async function getUserBalance(userId: number): Promise<number | null> {
   const { data, error } = await supabase
     .from("Users")
@@ -27,14 +25,7 @@ export async function getUserBalance(userId: number): Promise<number | null> {
   return data.runecoins;
 }
 
-/**
- * Purchase an item for a user via the secure server-side Postgres function.
- * Price is resolved and deducted server-side — the client never touches runecoins directly.
- * Returns the new runecoins balance on success.
- * Throws a PurchaseError string on failure so callers can catch and handle it.
- * Only logs genuinely unexpected errors — insufficient_funds and item_not_found
- * are expected states communicated to the user via the purchase modal.
- */
+
 export async function purchaseItem(
   userId: number,
   itemId: number,

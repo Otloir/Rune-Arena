@@ -17,7 +17,6 @@ export async function getItems(): Promise<ItemType[] | null> {
   }
   return data;
 }
-// Get items a specific user has, grouped by item so duplicates show as quantity
 export async function getUserItems(
   userId: string | number,
 ): Promise<ItemType[] | null> {

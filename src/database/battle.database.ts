@@ -14,11 +14,7 @@ export type BattleError =
   | "reward_already_claimed"
   | "unknown";
 
-/**
- * Create a battle record when the arena loads.
- * Returns the new battle id on success.
- * Throws a BattleError string on failure.
- */
+
 export async function startBattle(
   params: BattleStartParams,
 ): Promise<number> {
@@ -38,14 +34,7 @@ export async function startBattle(
   return data as number;
 }
 
-/**
- * Close the battle record and grant RC to the winner server-side.
- * Pass winnerUserId = 0 when the opponent wins (no reward issued).
- * Returns the player's new runecoins balance on success.
- * Throws a BattleError string on failure.
- * battle_already_ended is not logged — it is an expected case when a
- * duplicate tab has overridden this session.
- */
+
 export async function endBattle(
   battleId: number,
   winnerUserId: number,

@@ -139,7 +139,6 @@ export default function ResultPage(): ReactElement {
           </p>
         )}
 
-        {/* Only show the stamp section for real users who received one */}
         {stamp !== null && (
           <section className={styles.rewardSection} aria-label="Stamp reward">
             <p className={styles.rewardLabel}>You earned a stamp:</p>

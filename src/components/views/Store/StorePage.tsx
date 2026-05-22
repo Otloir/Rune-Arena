@@ -23,7 +23,6 @@ export default function StorePage(): ReactElement {
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [balance, setBalance] = useState<number | null>(null);
 
-  // Read userId passed from LobbyPage via navigation state
   const { userId } = (location.state ?? {}) as StoreLocationState;
 
   const refreshBalance = useCallback(async (): Promise<void> => {
