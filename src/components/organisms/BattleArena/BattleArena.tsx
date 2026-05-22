@@ -232,6 +232,14 @@ export default function BattleArena({
 
       try {
         await endBattle(battleId, winnerUserId);
+      const stamp = transaction?.stamp
+        ? {
+            name: formatStamp(transaction.stamp),
+            imageUrl: transaction.stamp.image_url,
+          }
+        : null;
+
+      const timer = setTimeout(() => {
         navigate("/result", {
           replace: true,
           state: {
