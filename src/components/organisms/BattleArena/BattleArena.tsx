@@ -104,6 +104,8 @@ export default function BattleArena({
       const winner: "player" | "opponent" =
         opponentHp <= 0 ? "player" : "opponent";
 
+      // Build the stamp for the result page.
+      // transaction.stamp is already flat { animal, metal, image_url } per the new API.
       const stamp = transaction?.stamp
         ? {
             name: formatStamp(transaction.stamp),
@@ -120,6 +122,7 @@ export default function BattleArena({
             opponentCreatureName: playerTwoCreature.name,
             xpGained,
             stamp,
+            isGuest: transaction === null, // no transaction = guest
           },
         });
       }, 1200);
