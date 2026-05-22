@@ -1,22 +1,41 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { ReactElement } from "react";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
-import type { ReactElement } from "react";
+import { getUserBalance } from "../../../database/user.database";
+import type { BattleError } from "../../../database/battle.database";
 
 interface StampReward {
-  name: string;
-  imageUrl: string | null;
+  readonly name: string;
+  readonly imageUrl: string | null;
 }
 
 interface ResultState {
-  readonly winner: "player" | "opponent";
+  readonly winner?: "player" | "opponent";
   readonly playerCreatureName?: string;
   readonly opponentCreatureName?: string;
   readonly xpGained?: number;
   readonly stamp: StampReward | null;
+  readonly sessionError?: BattleError;
+  readonly userId?: number;
   readonly isGuest: boolean;
 }
+
+const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
+  already_in_battle:
+    "This session is invalid — a battle is already in progress in another tab. " +
+    "Please close the other tab and start a new battle.",
+  battle_not_found: "Battle session not found. Please start a new battle.",
+  battle_already_ended:
+    "This battle session was overridden by a newer battle in another tab. " +
+    "No RuneCoins were awarded. Please close duplicate tabs and start a new battle.",
+  reward_already_claimed:
+    "The reward for this battle has already been claimed.",
+  unknown:
+    "Failed to load battle data. This can happen with duplicate tabs or a connection issue. " +
+    "Please start a new battle.",
+};
 
 const loopland_url = "https://loopland.se";
 
@@ -25,26 +44,66 @@ export default function ResultPage(): ReactElement {
   const navigate = useNavigate();
   const state = location.state as ResultState | null;
 
-  const playerWon = state?.winner === "player";
-  const playerName = state?.playerCreatureName ?? "Your creature";
-  const opponentName = state?.opponentCreatureName ?? "The opponent";
-  const xpGained = state?.xpGained ?? 0;
-  const stamp = state?.stamp ?? null;
-  const isGuest = state?.isGuest ?? true;
+  const sessionError: BattleError | undefined = state?.sessionError;
+  const playerWon: boolean = state?.winner === "player";
+  const playerName: string = state?.playerCreatureName ?? "Your creature";
+  const opponentName: string = state?.opponentCreatureName ?? "The opponent";
+  const xpGained: number = state?.xpGained ?? 0;
+  const stamp: StampReward | null = state?.stamp ?? null;
+  const isGuest: boolean = state?.isGuest ?? true;
 
-  useEffect(() => {
+  const handleBack = (): void => {
+    if (isGuest) {
+      void navigate("/");
+    } else {
+      window.location.href = loopland_url;
+    }
+  };
+
+  const [newBalance, setNewBalance] = useState<number | null>(null);
+
+  useEffect((): void => {
     if (stamp === null) {
       console.log("ResultPage: no stamp awarded (guest)");
     }
   }, [stamp]);
 
-  const handleBack = () => {
-    if (isGuest) {
-      navigate("/");
-    } else {
-      window.location.href = loopland_url;
-    }
-  };
+  useEffect((): void => {
+    const userId: number | undefined = state?.userId;
+    if (!playerWon || userId == null || sessionError != null) return;
+
+    getUserBalance(userId).then((balance: number | null): void => {
+      if (balance !== null) setNewBalance(balance);
+    });
+  }, []);
+
+  // ── Invalid session screen ───────────────────────────────────────────────
+
+  if (sessionError) {
+    return (
+      <main className={styles.resultPage} aria-label="Battle session error">
+        <section className={styles.content} aria-live="polite">
+          <h1 className={`${styles.title} ${styles.defeat}`}>
+            Invalid Session
+          </h1>
+          <p className={styles.subtitle}>
+            {SESSION_ERROR_MESSAGES[sessionError]}
+          </p>
+          <Button
+            type="button"
+            variant="neutral"
+            onClick={(): void => void navigate("/")}
+            aria-label="Return to main arena"
+            className={styles.secondaryButton}
+          >
+            Back to Arena
+          </Button>
+        </section>
+      </main>
+    );
+  }
+
+  // ── Normal result screen ─────────────────────────────────────────────────
 
   return (
     <main className={styles.resultPage} aria-label="Battle result">
@@ -64,6 +123,21 @@ export default function ResultPage(): ReactElement {
             ? `${playerName} defeated ${opponentName}!`
             : `${playerName} was defeated by ${opponentName}...`}
         </p>
+
+        {playerWon && (
+          <p
+            className={styles.coinsAwarded}
+            aria-label={
+              newBalance !== null
+                ? `Earned 5 RuneCoins, balance is now ${newBalance}`
+                : "Earned 5 RuneCoins"
+            }
+          >
+            {newBalance !== null
+              ? `+5 RC earned! (Balance: ${newBalance} RC)`
+              : "+5 RC earned!"}
+          </p>
+        )}
 
         {stamp !== null && (
           <section className={styles.rewardSection} aria-label="Stamp reward">
@@ -85,7 +159,10 @@ export default function ResultPage(): ReactElement {
           </section>
         )}
 
-        <p className={styles.xpGained} aria-label={`XP gained: ${xpGained}`}>
+        <p
+          className={styles.xpGained}
+          aria-label={`XP gained: ${xpGained}`}
+        >
           +{xpGained} XP
         </p>
 

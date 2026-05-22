@@ -1,11 +1,12 @@
 import { supabase } from "./supabase";
 import { getIdentityTokenFromUrl, getPlayerInfo } from "../api/centralbank.api";
 
-export type LocalUser = {
-  id: number;
-  centralbank_id: number;
-  name: string;
-};
+export interface LocalUser {
+  readonly id: number;
+  readonly centralbank_id: number;
+  readonly name: string;
+  readonly runecoins: number;
+}
 
 // Returns a stable negative guest centralbank_id from localStorage.
 // Guests get -1, -2, -3... so they never collide with real positive centralbank IDs.
@@ -26,8 +27,6 @@ function getOrCreateGuestCentralbankId(): number {
   return nextId;
 }
 
-// Upsert a real centralbank user into Supabase.
-// If the user already exists (matched by centralbank_id), their name is updated.
 export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,
@@ -49,7 +48,7 @@ export async function upsertCentralbankUser(
 
   const { data, error: selectError } = await supabase
     .from("Users")
-    .select("id, centralbank_id, name")
+    .select("id, centralbank_id, name, runecoins")
     .eq("centralbank_id", centralbankId)
     .single();
 
@@ -64,8 +63,6 @@ export async function upsertCentralbankUser(
   return data;
 }
 
-// Upsert a guest user into Supabase using a stable negative centralbank_id.
-// Returning guests reuse their existing row thanks to the onConflict clause.
 export async function upsertGuestUser(): Promise<LocalUser | null> {
   const guestCentralbankId = getOrCreateGuestCentralbankId();
 
@@ -83,7 +80,7 @@ export async function upsertGuestUser(): Promise<LocalUser | null> {
 
   const { data, error: selectError } = await supabase
     .from("Users")
-    .select("id, centralbank_id, name")
+    .select("id, centralbank_id, name, runecoins")
     .eq("centralbank_id", guestCentralbankId)
     .single();
 
@@ -99,10 +96,7 @@ export type ResolvedPlayer =
   | { isGuest: true; localUser: LocalUser; identityToken: null }
   | { isGuest: false; localUser: LocalUser; identityToken: string };
 
-/**
- * Returns the local user row plus whether they are a guest, and keeps the
- * identity token in memory so LobbyPage can pass it to startTransaction.
- */
+
 export async function resolvePlayer(): Promise<ResolvedPlayer> {
   const token = getIdentityTokenFromUrl();
 

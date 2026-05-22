@@ -17,10 +17,7 @@ export type Stamp = {
   created_at: string;
 };
 
-/**
- * The centralbank user shape returned by GET /user and POST /auth/login.
- * Note: the API uses first_name/last_name, not a single name field.
- */
+
 export type CentralbankUser = {
   uuid: string;
   first_name: string;

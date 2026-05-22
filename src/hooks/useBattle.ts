@@ -453,18 +453,12 @@ export function useBattle({
   // PLAYER MOVE
   // =========================
 
-  /**
-   * Applies an item's effect to the player's creature.
-   * Effects are permanently applied to stats for the duration of the battle.
-   * HP healing is immediately applied to current HP.
-   */
+  
   const applyItemEffect = useCallback(
     (item: Item): void => {
       const { property, propvalue } = item;
       const propLower = property.toLowerCase().trim();
 
-      // Handle HP recovery (immediate healing)
-      // Support multiple variations: "hp", "health", "healing"
       if (
         propLower === "hp" ||
         propLower === "health" ||
@@ -480,7 +474,6 @@ export function useBattle({
         return;
       }
 
-      // Handle stat boosts (percentage-based, lasting whole battle)
       const boostMap: Record<string, keyof StatBoosts> = {
         evade: "evadeBoost",
         defense: "defenseBoost",
