@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { getIdentityTokenFromUrl, getPlayerInfo } from "../api/centralbank.api";
 
 export type LocalUser = {
   id: number;
@@ -68,4 +69,45 @@ export async function upsertGuestUser(): Promise<LocalUser | null> {
   }
 
   return data;
+}
+
+export type ResolvedPlayer =
+  | { isGuest: true; localUser: LocalUser; identityToken: null }
+  | { isGuest: false; localUser: LocalUser; identityToken: string };
+
+/**
+ * Returns the local user row plus whether they are a guest, and keeps the
+ * identity token in memory so LobbyPage can pass it to startTransaction.
+ */
+export async function resolvePlayer(): Promise<ResolvedPlayer> {
+  const token = getIdentityTokenFromUrl();
+
+  if (token) {
+    const result = await getPlayerInfo(token);
+
+    if (result.success) {
+      const { id: centralbankId, name } = result.data.user;
+      const localUser = await upsertCentralbankUser(centralbankId, name);
+
+      if (localUser) {
+        return { isGuest: false, localUser, identityToken: token };
+      }
+      // upsert failed — fall through to guest
+      console.warn(
+        "[resolvePlayer] upsertCentralbankUser failed, falling back to guest",
+      );
+    } else {
+      // Token expired or invalid — fall through to guest
+      console.warn("[resolvePlayer] identity token invalid:", result.error);
+    }
+  }
+
+  // No token or resolution failed — create / reuse a guest account
+  const guestUser = await upsertGuestUser();
+
+  if (!guestUser) {
+    throw new Error("[resolvePlayer] Failed to create guest user");
+  }
+
+  return { isGuest: true, localUser: guestUser, identityToken: null };
 }
