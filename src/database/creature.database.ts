@@ -9,10 +9,14 @@ export type UserCreatureRow = {
   level: JoinedCreatureLevel | JoinedCreatureLevel[];
 };
 
+/** Shared column selection for the Creatures table (includes new `description` column). */
+const CREATURE_COLUMNS =
+  "id, name, front_img, back_img, evade, speed, defense, hp, description";
+
 export async function getCreatures(): Promise<Creature[] | null> {
   const { data, error } = await supabase
     .from("Creatures")
-    .select("id, name, front_img, back_img, evade, speed, defense, hp");
+    .select(CREATURE_COLUMNS);
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
@@ -25,7 +29,7 @@ export async function getCreatureById(
 ): Promise<Creature | null> {
   const { data, error } = await supabase
     .from("Creatures")
-    .select("id, name, front_img, back_img, evade, speed, defense, hp")
+    .select(CREATURE_COLUMNS)
     .eq("id", creatureId)
     .single();
   if (error) {
@@ -33,6 +37,27 @@ export async function getCreatureById(
     return null;
   }
   return data;
+}
+
+/**
+ * Fetches all moves available to a creature via the Creature_Moves join table.
+ * Assumes a join table named "Creature_Moves" with columns: creature_id, move_id.
+ * Returns move IDs only — MoveButton fetches full move data itself.
+ */
+export async function getMoveIdsByCreatureId(
+  creatureId: string | number,
+): Promise<number[] | null> {
+  const { data, error } = await supabase
+    .from("Creature_Moves")
+    .select("move_id")
+    .eq("creature_id", creatureId);
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
+  return (data ?? []).map((row: { move_id: number }) => row.move_id);
 }
 
 export async function getUserCreature(
@@ -43,7 +68,7 @@ export async function getUserCreature(
     .select(
       `
       current_xp,
-      creature:creature_id ( id, name, front_img, back_img, evade, speed, defense, hp ),
+      creature:creature_id ( ${CREATURE_COLUMNS} ),
       level:level_id ( level, xp_required )
     `,
     )
@@ -65,7 +90,7 @@ export async function getUserCreatureById(
     .select(
       `
       current_xp,
-      creature:creature_id ( id, name, front_img, back_img, evade, speed, defense, hp ),
+      creature:creature_id ( ${CREATURE_COLUMNS} ),
       level:level_id ( level, xp_required )
     `,
     )

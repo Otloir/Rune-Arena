@@ -1,40 +1,47 @@
 // Creature
 export type Creature = {
-  id: string;
-  name: string;
-  front_img: string;
-  back_img: string;
-  evade: number;
-  speed: number;
-  defense: number;
-  hp: number;
+  readonly id: string;
+  readonly name: string;
+  readonly front_img: string;
+  readonly back_img: string;
+  readonly evade: number;
+  readonly speed: number;
+  readonly defense: number;
+  readonly hp: number;
+  /** Lore / flavour text stored in the Supabase `description` column. */
+  readonly description?: string;
+  /**
+   * IDs of moves this creature can use.
+   * Populated when the creature is fetched with move data joined.
+   */
+  readonly move_ids?: readonly number[];
 };
 
 // Types
 export type Type = {
-  id: number;
-  name: string;
+  readonly id: number;
+  readonly name: string;
 };
 
 // Moves
 export type Move = {
-  id: number;
-  name: string;
-  damage: number;
-  chance: number;
+  readonly id: number;
+  readonly name: string;
+  readonly damage: number;
+  readonly chance: number;
 };
 
 // Type Effectiveness
 export type TypeEffectiveness = {
-  id: number;
-  attacker_id: number;
-  defender_id: number;
-  effectiveness: number;
+  readonly id: number;
+  readonly attacker_id: number;
+  readonly defender_id: number;
+  readonly effectiveness: number;
 };
 
 // Levels
 export type Level = {
-  id: number;
-  level: number;
-  xp_required: number;
+  readonly id: number;
+  readonly level: number;
+  readonly xp_required: number;
 };

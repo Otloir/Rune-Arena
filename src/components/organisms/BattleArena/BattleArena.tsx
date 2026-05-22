@@ -399,6 +399,8 @@ export default function BattleArena({
             }
             battleLog={battleLog}
             playerCreature={playerOneCreature}
+            currentHp={playerHp}
+            maxHp={playerOneCreature.hp}
             onOpenInventory={(): void =>
               setIsInventoryOpen(true)
             }

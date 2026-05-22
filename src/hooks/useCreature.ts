@@ -6,10 +6,11 @@ import {
   getMoves,
   getUserCreature,
   getUserCreatureById,
+  getMoveIdsByCreatureId,
 } from "../database/creature.database";
 
 // Hook that handles loading/error state for any async fetch.
-// FetchedData is a placeholder for the data type gets passed in
+// The `enabled` flag lets callers defer fetching (e.g. until a modal opens).
 export function useAsyncData<FetchedData>(
   fetcher: () => Promise<FetchedData | null>,
   enabled: boolean,
@@ -30,12 +31,15 @@ export function useAsyncData<FetchedData>(
       return;
     }
 
+    let cancelled = false;
+
     async function load(): Promise<void> {
       setLoading(true);
       setError(null);
       setData(null);
       try {
         const result = await fetcher();
+        if (cancelled) return;
         if (!result) {
           setError("No data found");
           return;
@@ -43,13 +47,20 @@ export function useAsyncData<FetchedData>(
         setData(result);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
     load();
+
+    // Cleanup: ignore stale responses if creatureId or enabled changes mid-flight
+    return (): void => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
 
   return { data, loading, error };
@@ -104,7 +115,10 @@ export function useUserCreature(userId: number | string): {
   };
 }
 
-export function useCreatureById(userId: string | number, creatureId: number | string): {
+export function useCreatureById(
+  userId: string | number,
+  creatureId: number | string,
+): {
   creature: Creature | null;
   level: number;
   currentXp: number;
@@ -140,6 +154,57 @@ export function useCreatureById(userId: string | number, creatureId: number | st
     loading,
     error,
   };
+}
+
+/**
+ * Fetches the list of move IDs for a given creature.
+ * Only fires when `enabled` is true (e.g. when the info modal is open).
+ */
+export function useCreatureMoveIds(
+  creatureId: Creature["id"] | null,
+  enabled: boolean,
+): {
+  moveIds: readonly number[];
+  loading: boolean;
+  error: string | null;
+} {
+  const [moveIds, setMoveIds] = useState<readonly number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!enabled || !creatureId) {
+      setMoveIds([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const ids = await getMoveIdsByCreatureId(creatureId!);
+        if (cancelled) return;
+        setMoveIds(ids ?? []);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load moves");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+  }, [creatureId, enabled]);
+
+  return { moveIds, loading, error };
 }
 
 export function useType(): { types: Type[] } {
