@@ -16,7 +16,6 @@ interface ResultState {
   readonly playerCreatureName?: string;
   readonly opponentCreatureName?: string;
   readonly xpGained?: number;
-  // Only present for real (non-guest) users — null means guest or no stamp
   readonly stamp: StampReward | null;
   /**
    * Set when the battle session was invalid (e.g. duplicate tab).
