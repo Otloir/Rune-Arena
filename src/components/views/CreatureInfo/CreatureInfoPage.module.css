@@ -140,7 +140,8 @@
   line-height: 1.6;
   text-align: left;
   letter-spacing: 0;
-  /* width is handled by align-items: stretch on .body */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── HP section ──────────────────────────────────────────────── */
@@ -149,6 +150,8 @@
   background: #fff0f0;
   border-radius: 0.875rem;
   padding: 0.875rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .hpRow {
@@ -211,7 +214,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.625rem;
-  /* width is driven by align-items: stretch on the parent .body */
+  width: 100%;     /* concrete width so 1fr columns have something to divide */
+  box-sizing: border-box;
 }
 
 .statsGrid[data-cols="3"] {
@@ -226,6 +230,8 @@
   padding: 0.75rem 0.5rem;
   border-radius: 0.75rem;
   background: var(--surface-muted);
+  min-width: 0;    /* prevents grid blowout from long content */
+  box-sizing: border-box;
 }
 
 .statCellHighlighted {
@@ -262,7 +268,8 @@
 /* ── Moves section ───────────────────────────────────────────── */
 
 .movesSection {
-  /* width from stretch, no extra rules needed */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .movesHeading {
