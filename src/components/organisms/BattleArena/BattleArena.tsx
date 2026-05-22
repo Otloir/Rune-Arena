@@ -46,9 +46,12 @@ export default function BattleArena({
   // one below, or one above with equal probability
   const randomizedOpponentLevel = useMemo((): number => {
     if (!playerOneLevel) return 1;
+
     const roll = Math.floor(Math.random() * 3);
+
     if (roll === 0) return Math.max(1, playerOneLevel - 1);
     if (roll === 2) return playerOneLevel + 1;
+
     return playerOneLevel;
   }, [playerOneLevel]);
 
@@ -76,6 +79,7 @@ export default function BattleArena({
   const battleIdRef = useRef<number | null>(null);
   const battleStartedRef = useRef<boolean>(false);
   const battleConcludedRef = useRef<boolean>(false);
+
   // Prevents the battle-end effect from calling endBattle when startBattle failed
   const sessionInvalidRef = useRef<boolean>(false);
 
@@ -99,18 +103,28 @@ export default function BattleArena({
   useEffect((): (() => void) | void => {
     if (prevPlayerHp !== null && playerHp < prevPlayerHp) {
       setPlayerIsHit(true);
-      const timer = setTimeout((): void => setPlayerIsHit(false), 400);
+
+      const timer = setTimeout((): void => {
+        setPlayerIsHit(false);
+      }, 400);
+
       return (): void => clearTimeout(timer);
     }
+
     setPrevPlayerHp(playerHp);
   }, [playerHp, prevPlayerHp]);
 
   useEffect((): (() => void) | void => {
     if (prevOpponentHp !== null && opponentHp < prevOpponentHp) {
       setOpponentIsHit(true);
-      const timer = setTimeout((): void => setOpponentIsHit(false), 400);
+
+      const timer = setTimeout((): void => {
+        setOpponentIsHit(false);
+      }, 400);
+
       return (): void => clearTimeout(timer);
     }
+
     setPrevOpponentHp(opponentHp);
   }, [opponentHp, prevOpponentHp]);
 
@@ -118,8 +132,10 @@ export default function BattleArena({
 
   useEffect((): void => {
     if (!creatureLoadFailed) return;
+
     sessionInvalidRef.current = true;
     battleConcludedRef.current = true;
+
     navigate("/result", {
       replace: true,
       state: {
@@ -138,6 +154,7 @@ export default function BattleArena({
   useEffect((): void => {
     if (!playerOneCreature || !playerTwoCreature) return;
     if (battleStartedRef.current) return;
+
     battleStartedRef.current = true;
 
     startBattle({
@@ -152,6 +169,7 @@ export default function BattleArena({
       .catch((reason: BattleError): void => {
         sessionInvalidRef.current = true;
         battleConcludedRef.current = true;
+
         navigate("/result", {
           replace: true,
           state: {
@@ -179,7 +197,9 @@ export default function BattleArena({
   useEffect((): (() => void) => {
     return (): void => {
       if (battleConcludedRef.current) return;
+
       const battleId = battleIdRef.current;
+
       if (battleId === null) return;
 
       endBattle(battleId, 0).catch((): void => {
@@ -200,6 +220,7 @@ export default function BattleArena({
 
     const timer = setTimeout(async (): Promise<void> => {
       battleConcludedRef.current = true;
+
       const battleId = battleIdRef.current;
 
       const stamp =
@@ -214,6 +235,7 @@ export default function BattleArena({
         console.warn(
           "[BattleArena] Battle ended but no battleId recorded — reward not granted.",
         );
+
         navigate("/result", {
           replace: true,
           state: {
@@ -225,6 +247,7 @@ export default function BattleArena({
             stamp,
           },
         });
+
         return;
       }
 
@@ -232,14 +255,7 @@ export default function BattleArena({
 
       try {
         await endBattle(battleId, winnerUserId);
-      const stamp = transaction?.stamp
-        ? {
-            name: formatStamp(transaction.stamp),
-            imageUrl: transaction.stamp.image_url,
-          }
-        : null;
 
-      const timer = setTimeout(() => {
         navigate("/result", {
           replace: true,
           state: {
@@ -279,8 +295,13 @@ export default function BattleArena({
 
   // ── Loading state ────────────────────────────────────────────────────────
 
-  if (playerOneLoading || playerTwoLoading || creatureLoadFailed ||
-      !playerOneCreature || !playerTwoCreature) {
+  if (
+    playerOneLoading ||
+    playerTwoLoading ||
+    creatureLoadFailed ||
+    !playerOneCreature ||
+    !playerTwoCreature
+  ) {
     return (
       <section className={styles.arena}>
         <div
@@ -307,8 +328,14 @@ export default function BattleArena({
         onUseItem={async (item): Promise<boolean> => {
           try {
             setIsInventoryOpen(false);
+
             await handlePlayerUseItem(item);
-            const removed = await consumeUserItem(String(playerOneId), item.id);
+
+            const removed = await consumeUserItem(
+              String(playerOneId),
+              item.id,
+            );
+
             return removed;
           } catch (err) {
             console.error("Error using item:", err);
@@ -316,6 +343,7 @@ export default function BattleArena({
           }
         }}
       />
+
       <div className={styles.arenaContainer}>
         {/* Opponent */}
         <div className={styles.opponentContainer}>
@@ -326,11 +354,14 @@ export default function BattleArena({
               currentHp={opponentHp}
               side="opponent"
             />
+
             <Creature
               userId={playerTwoId}
               creatureId={playerTwoCreatureId}
               role="opponent"
-              isAttacking={turnOwner === "opponent" && isProcessing}
+              isAttacking={
+                turnOwner === "opponent" && isProcessing
+              }
               isHit={opponentIsHit}
             />
           </div>
@@ -345,6 +376,7 @@ export default function BattleArena({
               currentHp={playerHp}
               side="player"
             />
+
             <Creature
               userId={playerOneId}
               creatureId={playerOneCreatureId}
@@ -361,10 +393,16 @@ export default function BattleArena({
             creatureId={Number(playerOneCreatureId)}
             creatureLevel={playerOneLevel}
             onMoveSelect={handlePlayerMove}
-            disabled={turnOwner !== "player" || isProcessing || battleOver}
+            disabled={
+              turnOwner !== "player" ||
+              isProcessing ||
+              battleOver
+            }
             battleLog={battleLog}
             playerCreature={playerOneCreature}
-            onOpenInventory={(): void => setIsInventoryOpen(true)}
+            onOpenInventory={(): void =>
+              setIsInventoryOpen(true)
+            }
           />
         </div>
       </div>
