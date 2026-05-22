@@ -25,6 +25,7 @@ interface ResultState {
   readonly sessionError?: BattleError;
   // userId is used only to fetch the updated RC balance for display
   readonly userId?: number;
+  readonly isGuest: boolean;
 }
 
 const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
@@ -42,6 +43,8 @@ const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
     "Please start a new battle.",
 };
 
+const loopland_url = "https://loopland.se";
+
 export default function ResultPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,6 +56,15 @@ export default function ResultPage(): ReactElement {
   const opponentName: string = state?.opponentCreatureName ?? "The opponent";
   const xpGained: number = state?.xpGained ?? 0;
   const stamp: StampReward | null = state?.stamp ?? null;
+  const isGuest: boolean = state?.isGuest ?? true;
+
+  const handleBack = (): void => {
+    if (isGuest) {
+      void navigate("/");
+    } else {
+      window.location.href = loopland_url;
+    }
+  };
 
   // Fetch the updated balance only on a real win to show the RC reward
   const [newBalance, setNewBalance] = useState<number | null>(null);
@@ -166,11 +178,11 @@ export default function ResultPage(): ReactElement {
         <Button
           type="button"
           variant="neutral"
-          onClick={(): void => void navigate("/")}
-          aria-label="Return to main arena"
+          onClick={handleBack}
+          aria-label={isGuest ? "Return to lobby" : "Return to Tivoli"}
           className={styles.secondaryButton}
         >
-          Back to Arena
+          {isGuest ? "Back to Lobby" : "Back to Tivoli"}
         </Button>
       </section>
     </main>

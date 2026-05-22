@@ -264,6 +264,7 @@ export default function BattleArena({
             opponentCreatureName: playerTwoCreature.name,
             xpGained,
             stamp,
+            isGuest: transaction === null,
           },
         });
       } catch (reason: unknown) {
