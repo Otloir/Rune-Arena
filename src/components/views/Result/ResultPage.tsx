@@ -17,12 +17,7 @@ interface ResultState {
   readonly opponentCreatureName?: string;
   readonly xpGained?: number;
   readonly stamp: StampReward | null;
-  /**
-   * Set when the battle session was invalid (e.g. duplicate tab).
-   * When present, the normal result UI is replaced with an error screen.
-   */
   readonly sessionError?: BattleError;
-  // userId is used only to fetch the updated RC balance for display
   readonly userId?: number;
   readonly isGuest: boolean;
 }
@@ -65,7 +60,6 @@ export default function ResultPage(): ReactElement {
     }
   };
 
-  // Fetch the updated balance only on a real win to show the RC reward
   const [newBalance, setNewBalance] = useState<number | null>(null);
 
   useEffect((): void => {
@@ -81,7 +75,6 @@ export default function ResultPage(): ReactElement {
     getUserBalance(userId).then((balance: number | null): void => {
       if (balance !== null) setNewBalance(balance);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Invalid session screen ───────────────────────────────────────────────

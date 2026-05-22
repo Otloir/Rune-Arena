@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import styles from "./PurchaseModal.module.css";
 import type { BuyResult } from "../../../database/item.database";
 
-// "null" means the modal is closed — no status to show
 export type PurchaseStatus = BuyResult | null;
 
 interface PurchaseModalProps {

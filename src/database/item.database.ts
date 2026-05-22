@@ -50,16 +50,7 @@ export async function getUserItems(
   }, {});
   return Object.values(grouped);
 }
-/**
- * Attempt to buy an item for a user.
- * Delegates to purchaseItem() which calls the secure server-side Postgres function.
- * The server resolves the price and deducts RC — the client sends no amounts.
- *
- * Returns:
- *   "success"            — item purchased, coins deducted, inventory updated
- *   "insufficient_funds" — user cannot afford the item
- *   "error"              — unexpected failure
- */
+
 export async function buyItem(
   userId: string,
   itemId: number,

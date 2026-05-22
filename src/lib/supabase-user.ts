@@ -27,8 +27,6 @@ function getOrCreateGuestCentralbankId(): number {
   return nextId;
 }
 
-// Upsert a real centralbank user into Supabase.
-// If the user already exists (matched by centralbank_id), their name is updated.
 export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,
@@ -65,8 +63,6 @@ export async function upsertCentralbankUser(
   return data;
 }
 
-// Upsert a guest user into Supabase using a stable negative centralbank_id.
-// Returning guests reuse their existing row thanks to the onConflict clause.
 export async function upsertGuestUser(): Promise<LocalUser | null> {
   const guestCentralbankId = getOrCreateGuestCentralbankId();
 
@@ -100,10 +96,7 @@ export type ResolvedPlayer =
   | { isGuest: true; localUser: LocalUser; identityToken: null }
   | { isGuest: false; localUser: LocalUser; identityToken: string };
 
-/**
- * Returns the local user row plus whether they are a guest, and keeps the
- * identity token in memory so LobbyPage can pass it to startTransaction.
- */
+
 export async function resolvePlayer(): Promise<ResolvedPlayer> {
   const token = getIdentityTokenFromUrl();
 

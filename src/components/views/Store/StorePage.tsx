@@ -36,7 +36,6 @@ export default function StorePage(): ReactElement {
     refreshBalance();
   }, [refreshBalance]);
 
-  // Disable body scroll when inventory or info is open
   useEffect((): (() => void) | void => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;

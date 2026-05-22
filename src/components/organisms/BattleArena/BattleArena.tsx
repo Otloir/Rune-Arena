@@ -42,8 +42,6 @@ export default function BattleArena({
     error: playerTwoError,
   } = useCreatureById(playerTwoId, playerTwoCreatureId);
 
-  // Randomise the opponent's level relative to the player's — same level,
-  // one below, or one above with equal probability
   const randomizedOpponentLevel = useMemo((): number => {
     if (!playerOneLevel) return 1;
 

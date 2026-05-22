@@ -9,7 +9,6 @@ export type UserCreatureRow = {
   level: JoinedCreatureLevel | JoinedCreatureLevel[];
 };
 
-// Get all creatures
 export async function getCreatures(): Promise<Creature[] | null> {
   const { data, error } = await supabase
     .from("Creatures")
@@ -21,7 +20,6 @@ export async function getCreatures(): Promise<Creature[] | null> {
   return data;
 }
 
-// Get a single creature by its ID
 export async function getCreatureById(
   creatureId: string | number,
 ): Promise<Creature | null> {
@@ -37,8 +35,6 @@ export async function getCreatureById(
   return data;
 }
 
-// Get a user's creature + level info in one query
-// Joins: User_Creature_Levels → Creatures + Levels
 export async function getUserCreature(
   userId: string | number,
 ): Promise<UserCreatureRow | null> {
@@ -60,9 +56,6 @@ export async function getUserCreature(
   return data;
 }
 
-// Get a specific user's creature by creatureId + level info.
-// Uses .limit(1) instead of .single() to safely handle duplicate rows in
-// User_Creature_Levels without throwing a 406 "multiple rows" error.
 export async function getUserCreatureById(
   userId: string,
   creatureId: string,
@@ -110,8 +103,6 @@ export async function getMoves(): Promise<Move[] | null> {
   return data;
 }
 
-// Award XP to a creature and handle level-ups.
-// Uses .limit(1) to avoid 406 errors from duplicate rows in User_Creature_Levels.
 export async function awardXpToCreature(
   userId: string | number,
   creatureId: string | number,
@@ -183,8 +174,6 @@ export async function awardXpToCreature(
   return { newXp, newLevelId };
 }
 
-// Insert a row in User_Creature_Levels for each creature, if not already present.
-// Called when a user/guest first joins so they start with level 1 and 0 xp.
 export async function initUserCreatures(userId: number): Promise<void> {
   const creatures = await getCreatures();
   if (!creatures) {
