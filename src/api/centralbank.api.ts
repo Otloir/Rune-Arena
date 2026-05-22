@@ -13,7 +13,7 @@ function getRequiredEnvVar(name: string): string {
   return value;
 }
 
-const BASE_URL = getRequiredEnvVar("VITE_TIVOLI_API_URL");
+const BASE_URL = getRequiredEnvVar("VITE_TIVOLI_API_URL").replace(/\/$/, "");
 const API_KEY = getRequiredEnvVar("VITE_AMUSEMENT_API_KEY");
 
 // -----------------------------------------------------------------------------
@@ -33,7 +33,6 @@ async function apiFetch<T>(
 
     const response = await fetch(`${BASE_URL}${path}`, {
       ...options,
-      credentials: "include",
       headers,
     });
 
@@ -93,7 +92,6 @@ export async function getPlayerInfo(
  * Charge the player the entrance fee and receive a stamp.
  * The identity_token is consumed for stamp-minting on the first call;
  * subsequent calls with the same token still process the payment but
- * return stamp: null.
  */
 export async function startTransaction(
   identityToken: string,
