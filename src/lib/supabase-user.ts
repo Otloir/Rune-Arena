@@ -33,17 +33,32 @@ export async function upsertCentralbankUser(
   centralbankId: number,
   name: string,
 ): Promise<LocalUser | null> {
-  const { data, error } = await supabase
+  const { error: upsertError } = await supabase
     .from("Users")
     .upsert(
       { centralbank_id: centralbankId, name },
       { onConflict: "centralbank_id" },
-    )
-    .select("id, centralbank_id, name, runecoins")
-    .single<LocalUser>();
+    );
 
-  if (error) {
-    console.error("[upsertCentralbankUser]", error.message);
+  if (upsertError) {
+    console.error(
+      "[upsertCentralbankUser] upsert failed:",
+      upsertError.message,
+    );
+    return null;
+  }
+
+  const { data, error: selectError } = await supabase
+    .from("Users")
+    .select("id, centralbank_id, name")
+    .eq("centralbank_id", centralbankId)
+    .single();
+
+  if (selectError) {
+    console.error(
+      "[upsertCentralbankUser] select failed:",
+      selectError.message,
+    );
     return null;
   }
 
@@ -55,17 +70,26 @@ export async function upsertCentralbankUser(
 export async function upsertGuestUser(): Promise<LocalUser | null> {
   const guestCentralbankId = getOrCreateGuestCentralbankId();
 
-  const { data, error } = await supabase
+  const { error: upsertError } = await supabase
     .from("Users")
     .upsert(
       { centralbank_id: guestCentralbankId, name: "Guest" },
-      { onConflict: "centralbank_id" },
-    )
-    .select("id, centralbank_id, name, runecoins")
-    .single<LocalUser>();
+      { onConflict: "centralbank_id", ignoreDuplicates: true },
+    );
 
-  if (error) {
-    console.error("[upsertGuestUser]", error.message);
+  if (upsertError) {
+    console.error("[upsertGuestUser] upsert failed:", upsertError.message);
+    return null;
+  }
+
+  const { data, error: selectError } = await supabase
+    .from("Users")
+    .select("id, centralbank_id, name")
+    .eq("centralbank_id", guestCentralbankId)
+    .single();
+
+  if (selectError) {
+    console.error("[upsertGuestUser] select failed:", selectError.message);
     return null;
   }
 
