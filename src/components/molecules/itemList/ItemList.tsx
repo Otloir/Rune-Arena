@@ -101,7 +101,7 @@ export default function ItemList({
           loadItems();
         }
       } catch {
-        // Ignore malformed events
+        console.error("Malformed inventory event", error);
       }
     };
 
@@ -156,6 +156,7 @@ export default function ItemList({
         }
       }
     } catch {
+      console.error("Failed to use item", error);
       setItems(previousItems);
     } finally {
       setInProgressIds((p) => p.filter((id) => id !== item.id));
