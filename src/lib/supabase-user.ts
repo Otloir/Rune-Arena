@@ -50,7 +50,7 @@ export async function upsertCentralbankUser(
 
   const { data, error: selectError } = await supabase
     .from("Users")
-    .select("id, centralbank_id, name")
+    .select("id, centralbank_id, name, runecoins")
     .eq("centralbank_id", centralbankId)
     .single();
 
@@ -84,7 +84,7 @@ export async function upsertGuestUser(): Promise<LocalUser | null> {
 
   const { data, error: selectError } = await supabase
     .from("Users")
-    .select("id, centralbank_id, name")
+    .select("id, centralbank_id, name, runecoins")
     .eq("centralbank_id", guestCentralbankId)
     .single();
 
