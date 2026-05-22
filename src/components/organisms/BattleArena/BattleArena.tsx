@@ -226,8 +226,8 @@ export default function BattleArena({
       const stamp =
         transaction?.stamp
           ? {
-              name: formatStamp(transaction.stamp.stamptype),
-              imageUrl: transaction.stamp.stamptype.image_url,
+              name: formatStamp(transaction.stamp),
+              imageUrl: transaction.stamp.image_url,
             }
           : null;
 
