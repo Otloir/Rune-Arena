@@ -202,8 +202,8 @@ export default function BattleArena({
 
       if (battleId === null) return;
 
-      endBattle(battleId, 0).catch((): void => {
-        // Swallow — forfeit errors are not actionable at unmount time
+      endBattle(battleId, 0).catch((reason: unknown): void => {
+        console.warn("[BattleArena] Forfeit endBattle failed silently:", reason);
       });
     };
   }, []);

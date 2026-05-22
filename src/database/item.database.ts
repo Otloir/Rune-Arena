@@ -2,13 +2,10 @@ import { supabase } from "../lib/supabase";
 import type { Item as ItemType } from "../types/item.types";
 import { purchaseItem } from "./user.database";
 import type { PurchaseError } from "./user.database";
-
 export type BuyResult = "success" | "insufficient_funds" | "error";
-
 interface UserItemsRow {
   item: ItemType[] | ItemType | null;
 }
-
 // Get all items from the database
 export async function getItems(): Promise<ItemType[] | null> {
   const { data, error } = await supabase
@@ -20,7 +17,6 @@ export async function getItems(): Promise<ItemType[] | null> {
   }
   return data;
 }
-
 // Get items a specific user has, grouped by item so duplicates show as quantity
 export async function getUserItems(
   userId: string | number,
@@ -36,7 +32,6 @@ export async function getUserItems(
     return null;
   }
   if (!data) return [];
-
   // Flatten joined rows into a flat list of items
   const flatItems = data
     .map((row: UserItemsRow) => {
@@ -44,7 +39,6 @@ export async function getUserItems(
       return item;
     })
     .filter((item): item is ItemType => Boolean(item));
-
   // Group items by id and count how many the user has of each
   const grouped = flatItems.reduce<Record<number, ItemType>>((acc, item) => {
     if (acc[item.id]) {
@@ -54,10 +48,8 @@ export async function getUserItems(
     }
     return acc;
   }, {});
-
   return Object.values(grouped);
 }
-
 /**
  * Attempt to buy an item for a user.
  * Delegates to purchaseItem() which calls the secure server-side Postgres function.
@@ -81,7 +73,6 @@ export async function buyItem(
     return "error";
   }
 }
-
 // Remove one instance of an item from a user's inventory.
 export async function consumeUserItem(
   userId: string,
@@ -93,7 +84,6 @@ export async function consumeUserItem(
     .eq("user_id", userId)
     .eq("item_id", itemId)
     .limit(1);
-
   if (selectError) {
     console.error(
       "Supabase select error while consuming item:",
@@ -101,19 +91,19 @@ export async function consumeUserItem(
     );
     return false;
   }
-
   if (!rows || (Array.isArray(rows) && rows.length === 0)) {
     return false;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rowId = Array.isArray(rows) ? (rows[0] as any).id : (rows as any).id;
-
+  interface UserItemRowId {
+    readonly id: number;
+  }
+  const rowId = Array.isArray(rows)
+    ? (rows[0] as UserItemRowId).id
+    : (rows as UserItemRowId).id;
   const { error: delError } = await supabase
     .from("User_Items")
     .delete()
     .eq("id", rowId);
-
   if (delError) {
     console.error(
       "Supabase delete error while consuming item:",
@@ -121,6 +111,5 @@ export async function consumeUserItem(
     );
     return false;
   }
-
   return true;
 }

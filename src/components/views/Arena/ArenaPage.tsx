@@ -26,7 +26,7 @@ export default function ArenaPage(): ReactElement {
   return (
     <BattleArena
       playerOneId={playerOneUserId}
-      playerTwoId="2"
+      playerTwoId="1"
       playerOneCreatureId={playerOneCreatureId}
       playerTwoCreatureId="3"
       transaction={transaction}

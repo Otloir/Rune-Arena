@@ -1,17 +1,15 @@
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
 import styles from "./Item.module.css";
-
 interface ItemProps {
   readonly item?: ItemType;
   readonly itemId?: number;
   readonly variant?: "row" | "card";
   readonly type?: "store" | "inventory";
-  readonly onBuy?: () => void;
-  readonly onUse?: () => void;
+  readonly onBuy?: () => void | Promise<void>;
+  readonly onUse?: () => void | Promise<void>;
   readonly canAfford?: boolean;
 }
-
 const Item: React.FC<ItemProps> = ({
   item,
   itemId,
@@ -26,17 +24,13 @@ const Item: React.FC<ItemProps> = ({
     loading,
     error,
   } = useItem(itemId && !item ? itemId : undefined);
-
   const displayItem: ItemType | undefined =
     item ?? fetchedItem ?? undefined;
-
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
     if (error) return <div role="alert">{error}</div>;
   }
-
   if (!displayItem) return <div role="status">No item found.</div>;
-
   if (variant === "card") {
     return (
       <article
@@ -79,7 +73,6 @@ const Item: React.FC<ItemProps> = ({
       </article>
     );
   }
-
   return (
     <article
       className={styles.row}
@@ -119,5 +112,4 @@ const Item: React.FC<ItemProps> = ({
     </article>
   );
 };
-
 export default Item;
