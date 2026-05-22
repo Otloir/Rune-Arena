@@ -14,9 +14,11 @@ interface ResultState {
   readonly playerCreatureName?: string;
   readonly opponentCreatureName?: string;
   readonly xpGained?: number;
-  // Only present for real (non-guest) users — null means guest or no stamp
   readonly stamp: StampReward | null;
+  readonly isGuest: boolean;
 }
+
+const loopland_url = "https://loopland.se";
 
 export default function ResultPage(): ReactElement {
   const location = useLocation();
@@ -28,14 +30,21 @@ export default function ResultPage(): ReactElement {
   const opponentName = state?.opponentCreatureName ?? "The opponent";
   const xpGained = state?.xpGained ?? 0;
   const stamp = state?.stamp ?? null;
+  const isGuest = state?.isGuest ?? true;
 
-  //consol log to check if the stamp works
-  //todo: REMOVE AFTER 100% CERTAIN EVERYTHING WORKS
   useEffect(() => {
     if (stamp === null) {
       console.log("ResultPage: no stamp awarded (guest)");
     }
   }, [stamp]);
+
+  const handleBack = () => {
+    if (isGuest) {
+      navigate("/");
+    } else {
+      window.location.href = loopland_url;
+    }
+  };
 
   return (
     <main className={styles.resultPage} aria-label="Battle result">
@@ -56,7 +65,6 @@ export default function ResultPage(): ReactElement {
             : `${playerName} was defeated by ${opponentName}...`}
         </p>
 
-        {/* Only show the stamp section for real users who received one */}
         {stamp !== null && (
           <section className={styles.rewardSection} aria-label="Stamp reward">
             <p className={styles.rewardLabel}>You earned a stamp:</p>
@@ -84,11 +92,11 @@ export default function ResultPage(): ReactElement {
         <Button
           type="button"
           variant="neutral"
-          onClick={() => navigate("/")}
-          aria-label="Return to main arena"
+          onClick={handleBack}
+          aria-label={isGuest ? "Return to lobby" : "Return to Tivoli"}
           className={styles.secondaryButton}
         >
-          Back to Arena
+          {isGuest ? "Back to Lobby" : "Back to Tivoli"}
         </Button>
       </section>
     </main>
