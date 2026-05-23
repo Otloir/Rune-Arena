@@ -14,7 +14,6 @@ import bagIcon from "../../../assets/icons/bag_icon.svg";
 import shopIcon from "../../../assets/icons/shop_icon.svg";
 import swordIcon from "../../../assets/icons/sword_icon.svg";
 
-// The amount charged to real users when they start a game
 const ENTRY_FEE = 2;
 
 export default function LobbyPage() {
@@ -29,7 +28,6 @@ export default function LobbyPage() {
   const [isCharging, setIsCharging] = useState(false);
   const [chargeError, setChargeError] = useState<string | null>(null);
 
-  // Disable body scroll when a modal is open
   useEffect(() => {
     if (!isInventoryOpen && !isInfoOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -89,7 +87,7 @@ export default function LobbyPage() {
       return;
     }
 
-    // Pass the full transaction so the arena can forward the stamp to the result page
+
     goToArena(result.data);
   };
 

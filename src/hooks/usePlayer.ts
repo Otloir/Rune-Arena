@@ -1,110 +1,59 @@
-import { useState, useEffect } from "react";
-import { getIdentityTokenFromUrl, getPlayerInfo } from "../api/centralbank.api";
-import { upsertCentralbankUser, upsertGuestUser } from "../lib/supabase-user";
+import { useEffect, useState } from "react";
+import { resolvePlayer } from "../lib/supabase-user";
+import type { LocalUser } from "../lib/supabase-user";
 import { initUserCreatures } from "../database/creature.database";
-
-export type Player = {
-  id: number;
-  name: string;
-  isGuest: boolean;
-};
 
 export type PlayerState =
   | { status: "loading" }
-  | { status: "ready"; player: Player; identityToken: string | null }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string }
+  | {
+      status: "ready";
+      player: LocalUser & { isGuest: boolean };
+      identityToken: string | null;
+    };
 
-// Creates or reuses a guest player in Supabase
-async function loadGuestPlayer(): Promise<Player | null> {
-  const user = await upsertGuestUser();
-  if (!user) return null;
-  return { id: user.id, name: "Guest", isGuest: true };
-}
-
-// Sets state to a guest player and initialises their creatures
-async function setGuestState(
-  guest: Player,
-  setState: (state: PlayerState) => void,
-): Promise<void> {
-  await initUserCreatures(guest.id);
-  setState({ status: "ready", player: guest, identityToken: null });
-}
-
+/**
+ * Reads the identity_token from the URL. 
+ * If a token exists, calls GET /identity-tokens/{token} then upserts them into Supabase Users table.
+ * If no token (or resolution fails), creates / reuses a guest account.
+ * After the user row exists, ensures all creature rows are initialised
+ */
 export function usePlayer(): PlayerState {
   const [state, setState] = useState<PlayerState>({ status: "loading" });
 
   useEffect(() => {
-    async function load(): Promise<void> {
-      // Read token from URL without removing it so other subdomains behave the same way
-      const token = getIdentityTokenFromUrl();
-      console.log(
-        "[usePlayer] identity token from URL:",
-        token ? "present" : "missing",
-      );
+    let cancelled = false;
 
-      // No token — user came directly or wasn't redirected from the main site
-      if (!token) {
-        const guest = await loadGuestPlayer();
-        if (!guest) {
+    async function init() {
+      try {
+        const { isGuest, localUser, identityToken } = await resolvePlayer();
+
+        // Ensure the user has creature rows so the arena won't 404
+        await initUserCreatures(localUser.id);
+
+        if (!cancelled) {
+          setState({
+            status: "ready",
+            player: { ...localUser, isGuest },
+            identityToken,
+          });
+        }
+      } catch (err) {
+        if (!cancelled) {
           setState({
             status: "error",
-            message: "Failed to create guest player.",
+            message:
+              err instanceof Error ? err.message : "Unknown error during login",
           });
-          return;
         }
-        await setGuestState(guest, setState);
-        return;
       }
-
-      // Try to resolve the token to a real user
-      const result = await getPlayerInfo(token);
-
-      // API down or token invalid — fall back to guest
-      if (!result.success) {
-        console.error(
-          "[usePlayer] getPlayerInfo failed — status:",
-          result.status,
-          "error:",
-          result.error,
-          "| falling back to guest",
-        );
-        const guest = await loadGuestPlayer();
-        if (!guest) {
-          setState({
-            status: "error",
-            message: "Failed to create guest player.",
-          });
-          return;
-        }
-        await setGuestState(guest, setState);
-        return;
-      }
-
-      // Token resolved — save the real user to Supabase
-      const { id: centralbankId, name } = result.data.user;
-      const savedUser = await upsertCentralbankUser(centralbankId, name);
-
-      if (!savedUser) {
-        setState({
-          status: "error",
-          message: "Failed to persist player locally.",
-        });
-        return;
-      }
-
-      // Clear the token from sessionStorage now that the user is identified
-      sessionStorage.removeItem("identity_token");
-
-      // Initialise creatures and store the token so LobbyPage can charge the user on Start
-      await initUserCreatures(savedUser.id);
-      setState({
-        status: "ready",
-        player: { id: savedUser.id, name, isGuest: false },
-        identityToken: token,
-      });
     }
 
-    load();
+    init();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return state;

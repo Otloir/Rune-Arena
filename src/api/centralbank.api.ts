@@ -1,5 +1,5 @@
 import type {
-  StampType,
+  TransactionStamp,
   TransactionResponse,
   IdentityTokenInfo,
   ApiResult,
@@ -12,7 +12,8 @@ function getRequiredEnvVar(name: string): string {
   }
   return value;
 }
-const BASE_URL = getRequiredEnvVar("VITE_TIVOLI_API_URL");
+
+const BASE_URL = getRequiredEnvVar("VITE_TIVOLI_API_URL").replace(/\/$/, "");
 const API_KEY = getRequiredEnvVar("VITE_AMUSEMENT_API_KEY");
 
 // -----------------------------------------------------------------------------
@@ -32,7 +33,6 @@ async function apiFetch<T>(
 
     const response = await fetch(`${BASE_URL}${path}`, {
       ...options,
-      credentials: "include",
       headers,
     });
 
@@ -68,8 +68,6 @@ async function apiFetch<T>(
 
 /**
  * Read `identity_token` from the current URL without removing it.
- * The token stays in the URL so it remains available if the page reloads
- * or the API call needs to be retried.
  */
 export function getIdentityTokenFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
@@ -77,8 +75,8 @@ export function getIdentityTokenFromUrl(): string | null {
 }
 
 /**
- * Resolve an identity token to the user's id + name without consuming it.
- * Unauthenticated — useful for greeting the player before charging.
+ * Resolve an identity token to the player's centralbank id and name.
+ * Unauthenticated — possession of a valid, unexpired token is sufficient.
  */
 export async function getPlayerInfo(
   token: string,
@@ -87,16 +85,13 @@ export async function getPlayerInfo(
 }
 
 // -----------------------------------------------------------------------------
-// Transactions (api_key is read from env — no need to pass it at call site)
+// Transactions
 // -----------------------------------------------------------------------------
 
 /**
- * Charge the player the entrance fee / stake. The identity_token is consumed here.
- * Always returns a stamp — used when the player starts a game.
- *
- * Error codes to handle:
- *   401 — token expired or already used → show error + link back to tivoli
- *   402 — player has insufficient funds
+ * Charge the player the entrance fee and receive a stamp.
+ * The identity_token is consumed for stamp-minting on the first call;
+ * subsequent calls with the same token still process the payment but
  */
 export async function startTransaction(
   identityToken: string,
@@ -116,10 +111,13 @@ export async function startTransaction(
 // Stamps
 // -----------------------------------------------------------------------------
 
-/** Format a stamp's type into a readable string, e.g. "gold dolphin" or "lion". */
-export function formatStamp(stampType: StampType): string {
-  if (stampType.metal) {
-    return `${stampType.metal} ${stampType.animal}`;
+/**
+ * Format a transaction stamp into a human-readable name.
+ * Examples: "gold dolphin", "silver lion", "toucan"
+ */
+export function formatStamp(stamp: TransactionStamp): string {
+  if (stamp.metal) {
+    return `${stamp.metal} ${stamp.animal}`;
   }
-  return stampType.animal;
+  return stamp.animal;
 }
