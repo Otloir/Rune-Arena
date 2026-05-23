@@ -93,7 +93,6 @@
 /* Make h3-equivalent headings a bit larger */
 .textCarouselSlide h4 {
   font-size: var(--fs-lg);
-  font-weight: 600;
 }
 
 /* Slightly darker body text for improved contrast */
@@ -107,7 +106,6 @@
   align-items: center;
   gap: 0.75rem;
   width: 90%;
-  max-width: 28rem;
   text-align: left;
   background: var(--carousel-property-bg);
   border-radius: 0.75rem;
