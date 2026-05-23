@@ -345,11 +345,9 @@ export function useBattle({
       const attackerName = opponentCreature?.name ?? "The opponent";
       const moveName = move.name;
   
-      const baseEvade = playerCreature.evade ?? 0;
-      const evadeBoostAmount = Math.floor(
-        (baseEvade * playerStatBoosts.evadeBoost) / 100,
-      );
-      const effectiveEvade = baseEvade + evadeBoostAmount;
+      // Evade boost is flat points — add directly, same unit as base evade
+      const effectiveEvade =
+        (playerCreature.evade ?? 0) + playerStatBoosts.evadeBoost;
   
       if (!attackHits(move.chance ?? 100, effectiveEvade)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
@@ -363,7 +361,7 @@ export function useBattle({
         effectivenessMap,
       );
   
-      // Apply defense exactly once, with item boost included
+      // Defense boost is percentage-based — scales off base stat
       const baseDefense = playerCreature.defense ?? 0;
       const defenseBoostAmount = Math.floor(
         (baseDefense * playerStatBoosts.defenseBoost) / 100,
@@ -446,7 +444,7 @@ export function useBattle({
     (item: Item): void => {
       const { property, propvalue } = item;
       const propLower = property.toLowerCase().trim();
-
+  
       if (
         propLower === "hp" ||
         propLower === "health" ||
@@ -461,13 +459,25 @@ export function useBattle({
         );
         return;
       }
-
+  
+      if (propLower === "evade") {
+        // propvalue is added as flat evade points, matching the unit
+        // used by attackHits() which subtracts evade directly from move chance.
+        setPlayerStatBoosts((prev) => ({
+          ...prev,
+          evadeBoost: prev.evadeBoost + propvalue,
+        }));
+        log(
+          `${playerCreature?.name ?? "Your creature"}'s evade increased by ${propvalue}!`,
+        );
+        return;
+      }
+  
       const boostMap: Record<string, keyof StatBoosts> = {
-        evade: "evadeBoost",
         defense: "defenseBoost",
         speed: "speedBoost",
       };
-
+  
       const boostKey = boostMap[propLower];
       if (boostKey) {
         setPlayerStatBoosts((prev) => ({
