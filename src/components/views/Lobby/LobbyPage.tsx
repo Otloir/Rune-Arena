@@ -6,7 +6,7 @@ import type { TransactionResponse } from "./../../../types/api.types";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
-import TextCarousel from "../TextCarousel/TextCarousel";
+import TextCarousel from "../Turtorial/Turtorial";
 import styles from "./LobbyPage.module.css";
 import IconButton from "../../atoms/buttons/IconButton";
 import informationIcon from "../../../assets/icons/information_icon.svg";
