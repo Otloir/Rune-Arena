@@ -6,7 +6,7 @@ import type { TransactionResponse } from "./../../../types/api.types";
 import Button from "../../atoms/buttons/Button";
 import CreatureButton from "../../atoms/buttons/CreatureButton";
 import InventoryPage from "../Inventory/InventoryPage";
-import TextCarousel from "../TextCarousel/TextCarousel";
+import Tutorial from "../Tutorial/Tutorial";
 import styles from "./LobbyPage.module.css";
 import IconButton from "../../atoms/buttons/IconButton";
 import informationIcon from "../../../assets/icons/information_icon.svg";
@@ -99,7 +99,7 @@ export default function LobbyPage() {
 
   return (
     <>
-      <TextCarousel isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
+      <Tutorial isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
       <InventoryPage
         isOpen={isInventoryOpen}
         onClose={() => setIsInventoryOpen(false)}
