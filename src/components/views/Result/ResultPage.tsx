@@ -37,8 +37,6 @@ const SESSION_ERROR_MESSAGES: Record<BattleError, string> = {
     "Please start a new battle.",
 };
 
-const loopland_url = "https://loopland.se";
-
 export default function ResultPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +54,7 @@ export default function ResultPage(): ReactElement {
     if (isGuest) {
       void navigate("/");
     } else {
-      window.location.href = loopland_url;
+      window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "");
     }
   };
 
