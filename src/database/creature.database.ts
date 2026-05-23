@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabase";
-import type { Creature, Level, Type, Move } from "../types/creature.types";
+import type { Creature, Level, Type, Move, CreatureMoveEntry } from "../types/creature.types";
 
-export type JoinedCreatureLevel = Pick<Level, "level" | "xp_required">;
+export type JoinedCreatureLevel = Pick<Level, "id" | "level" | "xp_required">;
 
 export type UserCreatureRow = {
   readonly current_xp: number;
@@ -44,20 +44,52 @@ export async function getCreatureById(
  * Assumes a join table named "Creature_Moves" with columns: creature_id, move_id.
  * Returns move IDs only — MoveButton fetches full move data itself.
  */
+/**
+ * Fetches all moves for a creature with their required level_id.
+ * Returns CreatureMoveEntry[] so callers can determine lock state
+ * by comparing requiredLevelId against the player's current level_id.
+ */
 export async function getMoveIdsByCreatureId(
   creatureId: string | number,
-): Promise<number[] | null> {
+): Promise<CreatureMoveEntry[] | null> {
   const { data, error } = await supabase
     .from("Creature_Moves")
-    .select("move_id")
-    .eq("creature_id", creatureId);
+    .select("move_id, level_id")
+    .eq("creature_id", creatureId)
+    .order("level_id", { ascending: true });
 
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
   }
 
-  return (data ?? []).map((row: { move_id: number }) => row.move_id);
+  return (data ?? []).map(
+    (row: { move_id: number; level_id: number }): CreatureMoveEntry => ({
+      moveId: row.move_id,
+      requiredLevelId: row.level_id,
+    }),
+  );
+}
+
+/**
+ * Resolves a level_id (FK to Levels.id) to its display level number.
+ * Used to show "Lv. N" in the UI without storing the number separately.
+ */
+export async function getLevelById(
+  levelId: number,
+): Promise<Level | null> {
+  const { data, error } = await supabase
+    .from("Levels")
+    .select("id, level, xp_required")
+    .eq("id", levelId)
+    .single();
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
+  return data;
 }
 
 export async function getUserCreature(
@@ -69,7 +101,7 @@ export async function getUserCreature(
       `
       current_xp,
       creature:creature_id ( ${CREATURE_COLUMNS} ),
-      level:level_id ( level, xp_required )
+      level:level_id ( id, level, xp_required )
     `,
     )
     .eq("user_id", userId)
@@ -91,7 +123,7 @@ export async function getUserCreatureById(
       `
       current_xp,
       creature:creature_id ( ${CREATURE_COLUMNS} ),
-      level:level_id ( level, xp_required )
+      level:level_id ( id, level, xp_required )
     `,
     )
     .eq("user_id", userId)

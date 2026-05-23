@@ -57,6 +57,19 @@
   letter-spacing: 0;
 }
 
+/* Level badge — shown inline beside creature name */
+.levelBadgeInline {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+  border-radius: 99rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+  align-self: center;
+}
+
 /* SC 2.5.5 — touch target ≥ 44 × 44 px */
 .closeButton {
   background: none;
@@ -104,7 +117,7 @@
 
 /* Items that should be centred within the stretch body */
 .sprite,
-.creatureName {
+.nameRow {
   align-self: center;
 }
 
@@ -118,7 +131,16 @@
   image-rendering: crisp-edges;
 }
 
-/* ── Creature name ───────────────────────────────────────────── */
+/* ── Creature name + level ───────────────────────────────────── */
+
+/* Flex row so name and level badge sit side by side, centred */
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 
 .creatureName {
   font-size: 1.25rem;
@@ -310,6 +332,45 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/*
+ * Each move row wraps MoveButton + optional LOCKED label.
+ * position: relative lets the locked label overlay the button.
+ */
+.moveRow {
+  position: relative;
+}
+
+/*
+ * Suppresses all pointer interaction on moves shown in info context.
+ * Applied to both locked and unlocked moves so neither shows hover/active
+ * effects — unlocked moves look correct but give no false clickability cue.
+ * pointer-events: none on the wrapper means the <button> inside never
+ * receives mouseenter, mousedown, or click, so MoveButton's own :hover
+ * and :active CSS never fires. cursor: default removes the hand cursor.
+ */
+.infoMoveWrapper {
+  pointer-events: none;
+  cursor: default;
+}
+
+/*
+ * LOCKED overlay — centered over the entire move button.
+ * pointer-events: none so it doesn't block the (disabled) button underneath.
+ * Black text is readable on both the greyed-out normal and fire button colours.
+ */
+.lockedLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-black);
+  pointer-events: none;
 }
 
 /* ── Loading skeleton ────────────────────────────────────────── */

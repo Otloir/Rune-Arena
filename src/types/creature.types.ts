@@ -45,3 +45,12 @@ export type Level = {
   readonly level: number;
   readonly xp_required: number;
 };
+
+/**
+ * A move ID paired with the level_id required to unlock it.
+ * level_id is the FK to Levels.id, NOT the display level number.
+ */
+export type CreatureMoveEntry = {
+  readonly moveId: number;
+  readonly requiredLevelId: number;
+};

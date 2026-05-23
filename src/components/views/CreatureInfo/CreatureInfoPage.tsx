@@ -1,7 +1,12 @@
 import { useEffect, useId, useRef } from "react";
 import type { FC } from "react";
 import type { Creature } from "../../../types/creature.types";
-import { useAsyncData, useCreatureMoveIds, useCreatureTypes } from "../../../hooks/useCreature";
+import {
+  useAsyncData,
+  useCreatureMoveIds,
+  useCreatureTypes,
+  useCreatureById,
+} from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import MoveButton from "../../atoms/buttons/MoveButton";
 import styles from "./CreatureInfoPage.module.css";
@@ -36,6 +41,17 @@ interface CreatureInfoPageProps {
    * it from Supabase (which always returns the base stat, not live HP).
    */
   readonly maxHp?: number;
+  /**
+   * The player's user ID — used to fetch the creature's current level
+   * from User_Creature_Levels.
+   */
+  readonly userId: string | number;
+  /**
+   * The player's current level_id (FK to Levels.id) for this creature.
+   * When provided directly (e.g. from battle state) we skip the DB fetch.
+   * Used for move lock comparisons — requiredLevelId <= playerLevelId means unlocked.
+   */
+  readonly creatureLevelId?: number;
 }
 
 interface StatCellProps {
@@ -86,6 +102,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   isBattleView = false,
   currentHp,
   maxHp: maxHpProp,
+  userId,
+  creatureLevelId: creatureLevelIdProp,
 }): React.ReactElement | null => {
   const uid = useId();
   const titleId = `creature-info-title-${uid}`;
@@ -93,6 +111,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+  // ── Creature base data ──
   const {
     data: creature,
     loading: creatureLoading,
@@ -102,18 +121,43 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     isOpen,
   );
 
-  const { moveIds, loading: movesLoading } = useCreatureMoveIds(
+  // ── Move entries (with required level_id per move) ──
+  const { moveEntries, loading: movesLoading } = useCreatureMoveIds(
     isOpen ? creatureId : null,
     isOpen,
   );
 
-  // Only fetch types in selection view — not needed in battle view
+  // ── Types (selection view only) ──
   const { types } = useCreatureTypes(
     isOpen && !isBattleView ? creatureId : null,
     isOpen && !isBattleView,
   );
 
-  const loading = creatureLoading || movesLoading;
+  /*
+   * Level resolution:
+   * If the parent passes creatureLevelId directly (FK to Levels.id), use it
+   * and skip the fetch. Otherwise fetch via useCreatureById.
+   * We always call the hook (Rules of Hooks) but gate its result on whether
+   * we actually need it.
+   */
+  const needsLevelFetch = isOpen && creatureLevelIdProp === undefined;
+  const {
+    level: fetchedLevelNumber,
+    levelId: fetchedLevelId,
+    loading: levelLoading,
+  } = useCreatureById(userId, creatureId);
+
+  const resolvedLevelNumber: number =
+    creatureLevelIdProp !== undefined
+      ? fetchedLevelNumber  // still show the number from fetch; prop only affects locking
+      : (fetchedLevelNumber ?? 1);
+
+  const resolvedLevelId: number | null =
+    creatureLevelIdProp !== undefined
+      ? creatureLevelIdProp
+      : (fetchedLevelId ?? null);
+
+  const loading = creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
 
   // SC 2.1.1 — move keyboard focus to close button when modal opens
   useEffect((): (() => void) | void => {
@@ -261,13 +305,22 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 className={styles.sprite}
               />
 
-              <h3 className={styles.creatureName}>{creature.name}</h3>
+              {/* Name + level badge side by side */}
+              <div className={styles.nameRow}>
+                <h3 className={styles.creatureName}>{creature.name}</h3>
+                {!loading && (
+                  <span
+                    className={styles.levelBadgeInline}
+                    aria-label={`Level ${resolvedLevelNumber}`}
+                  >
+                    Lv.{resolvedLevelNumber}
+                  </span>
+                )}
+              </div>
 
               {/*
                * Type badges — selection view only, between name and description.
-               * Each badge uses a CSS custom property for its colour, derived
-               * from the type name and matching the variables in index.css
-               * (e.g. --type-fire-1, --type-grass-1, --type-water-1 …).
+               * Colour comes from --type-{name}-1 CSS vars in index.css.
                */}
               {!isBattleView && types.length > 0 && (
                 <div className={styles.typeBadges} aria-label="Creature types">
@@ -290,18 +343,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
               {/*
                * SC 3.3.5 — contextual help: description gives the player
                * lore/context about the creature before committing to it.
-               * Only shown in selection view where it's relevant.
                */}
               {!isBattleView && creature.description && (
                 <p className={styles.description}>{creature.description}</p>
               )}
 
-              {/*
-               * HP block.
-               * <div> not <section> — avoids inheriting the lobbyPage
-               * `.lobbyPage section` rule (display:flex / align-items:center)
-               * which would override our grid and block layouts.
-               */}
+              {/* HP block — <div> avoids LobbyPage's .lobbyPage section override */}
               <div className={styles.hpSection} aria-label="Health">
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
@@ -350,11 +397,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 )}
               </div>
 
-              {/*
-               * Stats grid — <div> for the same reason as hpSection above.
-               * data-cols drives grid-template-columns via an attribute
-               * selector in the CSS (avoids :has() browser-support issues).
-               */}
+              {/* Stats grid */}
               <div
                 className={styles.statsGrid}
                 aria-label="Creature statistics"
@@ -376,8 +419,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 )}
               </div>
 
-              {/* Moves — <div> for same reason */}
-              {moveIds.length > 0 && (
+              {/* Moves */}
+              {moveEntries.length > 0 && (
                 <div
                   className={styles.movesSection}
                   aria-label="Available moves"
@@ -386,21 +429,39 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     {isBattleView ? "Moves" : "Available Moves"}
                   </h4>
                   <div className={styles.movesList}>
-                    {moveIds.map((moveId: number): React.ReactElement => (
-                      <MoveButton
-                        key={moveId}
-                        moveId={moveId}
-                        /*
-                         * Info-only context — button is disabled so onSelect
-                         * is never called, but the prop is required by the
-                         * MoveButton interface.
-                         */
-                        onSelect={(): void => undefined}
-                        disabled
-                        shape="rounded"
-                        shadow
-                      />
-                    ))}
+                    {moveEntries.map(({ moveId, requiredLevelId }) => {
+                      /*
+                       * Lock check: compare level_id FK to FK.
+                       * requiredLevelId is the Levels.id needed to unlock.
+                       * resolvedLevelId is the player's current Levels.id.
+                       * Higher id = higher level (ordered ascending in DB).
+                       */
+                      const isUnlocked =
+                        resolvedLevelId !== null &&
+                        requiredLevelId <= resolvedLevelId;
+
+                      return (
+                        <div key={moveId} className={styles.moveRow}>
+                          <div className={styles.infoMoveWrapper}>
+                            <MoveButton
+                              moveId={moveId}
+                              onSelect={(): void => undefined}
+                              disabled={!isUnlocked}
+                              shape="rounded"
+                              shadow
+                            />
+                          </div>
+                          {!isUnlocked && (
+                            <span
+                              className={styles.lockedLabel}
+                              aria-label={`Move locked until level ${requiredLevelId}`}
+                            >
+                              LOCKED
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
