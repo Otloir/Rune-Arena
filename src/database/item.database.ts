@@ -1,10 +1,11 @@
 import { supabase } from "../lib/supabase";
 import type { Item as ItemType } from "../types/item.types";
-
+import { purchaseItem } from "./user.database";
+import type { PurchaseError } from "./user.database";
+export type BuyResult = "success" | "insufficient_funds" | "error";
 interface UserItemsRow {
   item: ItemType[] | ItemType | null;
 }
-
 // Get all items from the database
 export async function getItems(): Promise<ItemType[] | null> {
   const { data, error } = await supabase
@@ -16,8 +17,6 @@ export async function getItems(): Promise<ItemType[] | null> {
   }
   return data;
 }
-
-// Get items a specific user has, grouped by item so duplicates show as quantity
 export async function getUserItems(
   userId: string | number,
 ): Promise<ItemType[] | null> {
@@ -32,7 +31,6 @@ export async function getUserItems(
     return null;
   }
   if (!data) return [];
-
   // Flatten joined rows into a flat list of items
   const flatItems = data
     .map((row: UserItemsRow) => {
@@ -40,7 +38,6 @@ export async function getUserItems(
       return item;
     })
     .filter((item): item is ItemType => Boolean(item));
-
   // Group items by id and count how many the user has of each
   const grouped = flatItems.reduce<Record<number, ItemType>>((acc, item) => {
     if (acc[item.id]) {
@@ -50,26 +47,22 @@ export async function getUserItems(
     }
     return acc;
   }, {});
-
-  // Convert the grouped object back into an array
   return Object.values(grouped);
 }
 
-// Add an item to a user's inventory
 export async function buyItem(
   userId: string,
   itemId: number,
-): Promise<boolean> {
-  const { error } = await supabase
-    .from("User_Items")
-    .insert({ user_id: userId, item_id: itemId });
-  if (error) {
-    console.error("Supabase error:", error.message);
-    return false;
+): Promise<BuyResult> {
+  try {
+    await purchaseItem(Number(userId), itemId);
+    return "success";
+  } catch (err) {
+    const reason = err as PurchaseError;
+    if (reason === "insufficient_funds") return "insufficient_funds";
+    return "error";
   }
-  return true;
 }
-
 // Remove one instance of an item from a user's inventory.
 export async function consumeUserItem(
   userId: string,
@@ -81,7 +74,6 @@ export async function consumeUserItem(
     .eq("user_id", userId)
     .eq("item_id", itemId)
     .limit(1);
-
   if (selectError) {
     console.error(
       "Supabase select error while consuming item:",
@@ -89,18 +81,19 @@ export async function consumeUserItem(
     );
     return false;
   }
-
   if (!rows || (Array.isArray(rows) && rows.length === 0)) {
     return false;
   }
-
-  const rowId = Array.isArray(rows) ? (rows[0] as any).id : (rows as any).id;
-
+  interface UserItemRowId {
+    readonly id: number;
+  }
+  const rowId = Array.isArray(rows)
+    ? (rows[0] as UserItemRowId).id
+    : (rows as UserItemRowId).id;
   const { error: delError } = await supabase
     .from("User_Items")
     .delete()
     .eq("id", rowId);
-
   if (delError) {
     console.error(
       "Supabase delete error while consuming item:",
@@ -108,6 +101,5 @@ export async function consumeUserItem(
     );
     return false;
   }
-
   return true;
 }

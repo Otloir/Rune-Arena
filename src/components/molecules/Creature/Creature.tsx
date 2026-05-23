@@ -17,7 +17,6 @@ export default function Creature({
   isAttacking = false,
   isHit = false,
 }: CreatureProps) {
-  // Get the specific creature for this user
   const { creature, loading, error } = useCreatureById(userId, creatureId);
 
   if (loading)
