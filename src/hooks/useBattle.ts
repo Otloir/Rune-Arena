@@ -125,17 +125,19 @@ async function calculateDamage(
   defenderTypes: number[],
   map: Map<number, Map<number, number>>,
 ): Promise<DamageResult> {
-  let dmg = applyDefense(move.damage, defender.defense ?? 0);
-
+  // Defense is intentionally NOT applied here — callers handle it so that
+  // stat boosts (items) can be factored in before the single reduction.
+  let dmg = move.damage;
+ 
   const multiplier = getTypeMultiplier(map, move.move_type_id, defenderTypes);
-
+ 
   let message: string | null = null;
-
+ 
   if (multiplier > 1) message = "It's super effective!";
   else if (multiplier < 1) message = "It's not very effective...";
-
+ 
   dmg = Math.max(1, Math.floor(dmg * multiplier));
-
+ 
   return { damage: dmg, message };
 }
 
@@ -281,52 +283,42 @@ export function useBattle({
 
   const damageOpponent = useCallback(
     async (move: MoveWithType): Promise<boolean> => {
-      if (!isReady || !opponentCreature || !effectivenessMap) {
-        return false;
-      }
-
+      if (!isReady || !opponentCreature || !effectivenessMap) return false;
+  
       const attackerName = playerCreature?.name ?? "Your creature";
       const moveName = move.name;
-
+  
       if (!attackHits(move.chance ?? 100, opponentCreature.evade ?? 0)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
         return true;
       }
-
+  
       const result = await calculateDamage(
         move,
         opponentCreature,
         opponentTypeIds,
         effectivenessMap,
       );
-
+  
+      // Apply defense once — opponent has no boosts
+      const finalDamage = applyDefense(result.damage, opponentCreature.defense ?? 0);
+  
       const currentHp = opponentHp ?? opponentCreature.hp;
-      const newHp = Math.max(0, currentHp - result.damage);
-
+      const newHp = Math.max(0, currentHp - finalDamage);
+  
       setOpponentHp(newHp);
-
-      log(`${attackerName} used ${moveName} for ${result.damage} damage!`);
-
-      if (result.message) {
-        log(result.message);
-      }
-
-      // Enemy defeated
+      log(`${attackerName} used ${moveName} for ${finalDamage} damage!`);
+      if (result.message) log(result.message);
+  
       if (newHp <= 0) {
-        const awarded = await awardXpToCreature(
-          playerUserId,
-          playerCreatureId,
-          100,
-        );
-
+        const awarded = await awardXpToCreature(playerUserId, playerCreatureId, 100);
         if (awarded) {
           setXpGained(100);
           log(`${attackerName} gained 100 XP!`);
         }
-
         return false;
       }
-
+  
       return true;
     },
     [
@@ -349,42 +341,38 @@ export function useBattle({
   const damagePlayer = useCallback(
     async (move: MoveWithType): Promise<void> => {
       if (!isReady || !playerCreature || !effectivenessMap) return;
-
+  
       const attackerName = opponentCreature?.name ?? "The opponent";
       const moveName = move.name;
-
-      // Calculate effective evade with stat boosts
+  
       const baseEvade = playerCreature.evade ?? 0;
       const evadeBoostAmount = Math.floor(
         (baseEvade * playerStatBoosts.evadeBoost) / 100,
       );
       const effectiveEvade = baseEvade + evadeBoostAmount;
-
+  
       if (!attackHits(move.chance ?? 100, effectiveEvade)) {
         log(`${attackerName} used ${moveName}, but it missed!`);
         return;
       }
-
+  
       const result = await calculateDamage(
         move,
         playerCreature,
         playerTypeIds,
         effectivenessMap,
       );
-
-      // Calculate effective defense with stat boosts
+  
+      // Apply defense exactly once, with item boost included
       const baseDefense = playerCreature.defense ?? 0;
       const defenseBoostAmount = Math.floor(
         (baseDefense * playerStatBoosts.defenseBoost) / 100,
       );
       const effectiveDefense = baseDefense + defenseBoostAmount;
-
-      // Apply the boosted defense to the damage
-      const boostedDamage = applyDefense(result.damage, effectiveDefense);
-
-      setPlayerHp((p) => Math.max(0, (p ?? playerCreature.hp) - boostedDamage));
-
-      log(`${attackerName} used ${moveName} for ${boostedDamage} damage!`);
+      const finalDamage = applyDefense(result.damage, effectiveDefense);
+  
+      setPlayerHp((p) => Math.max(0, (p ?? playerCreature.hp) - finalDamage));
+      log(`${attackerName} used ${moveName} for ${finalDamage} damage!`);
       if (result.message) log(result.message);
     },
     [
