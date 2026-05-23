@@ -127,7 +127,7 @@
   /* Fonts */
   --sans: "Press Start 2P", system-ui;
 
-  /* Type scale (mobile default) */
+  /* Font sizes */
   --fs-xs: 0.75rem; /* captions */
   --fs-sm: 0.875rem; /* small text */
   --fs-md: 1rem; /* body text */
