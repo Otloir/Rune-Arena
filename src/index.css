@@ -20,6 +20,7 @@
   --bg: #7d756b;
   --arena-bg: #d6b481;
   --carousel-slide-bg: #ead9bb;
+  --carousel-property-bg: #dbc7a7;
   --carousel-panel-bg: #a39482;
   --result-page-bg: #7d766d;
   --coin-container-bg: #fef9c2;
@@ -126,9 +127,19 @@
   /* Fonts */
   --sans: "Press Start 2P", system-ui;
 
+  /* Type scale (mobile default) */
+  --fs-xs: 0.75rem; /* captions */
+  --fs-sm: 0.875rem; /* small text */
+  --fs-md: 1rem; /* body text */
+  --fs-lg: 1.125rem; /* lead / slightly larger */
+  --fs-xl: 1.25rem; /* subtitles */
+  --fs-2xl: 1.5rem; /* section headings */
+  --fs-3xl: 2.25rem; /* page title */
+
   /* Global typography */
-  font: 1.125rem/145% var(--sans);
-  font-size: 1rem;
+  font-family: var(--sans);
+  font-size: var(--fs-md);
+  line-height: 1.45;
   letter-spacing: 0.01125rem;
 
   color: var(--text);
@@ -143,9 +154,23 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (min-width: 48rem) {
+  :root {
+    --fs-md: 1.0625rem;
+    --fs-lg: 1.1875rem;
+    --fs-xl: 1.3125rem;
+    --fs-2xl: 1.75rem;
+    --fs-3xl: 2.5rem;
+  }
+}
+
 @media (min-width: 64rem) {
   :root {
-    font-size: 1.125rem;
+    --fs-md: 1.125rem;
+    --fs-lg: 1.25rem;
+    --fs-xl: 1.5rem;
+    --fs-2xl: 1.875rem;
+    --fs-3xl: 3.5rem;
   }
 }
 
@@ -178,29 +203,29 @@ h3 {
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: var(--fs-3xl);
   letter-spacing: -0.0675rem;
   margin: 1.25rem 0;
 }
 
 @media (min-width: 64rem) {
   h1 {
-    font-size: 3.5rem;
     letter-spacing: -0.105rem;
     margin: 2rem 0;
   }
 }
 
 h2 {
-  font-size: 1.25rem;
-  line-height: 118%;
+  font-size: var(--fs-2xl);
+  line-height: 1.18;
   letter-spacing: -0.015rem;
   margin: 0 0 0.5rem;
 }
 
 @media (min-width: 64rem) {
   h2 {
-    font-size: 1.5rem;
+    /* on desktop, keep the same variable but desktop override increases it */
+    font-size: var(--fs-2xl);
   }
 }
 

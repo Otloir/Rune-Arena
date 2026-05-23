@@ -1,0 +1,393 @@
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
+import styles from "./Tutorial.module.css";
+
+import healthIcon from "./../../../assets/icons/health_icon.svg";
+import evadeIcon from "./../../../assets/icons/evade_icon.svg";
+import defenceIcon from "./../../../assets/icons/defence_icon.svg";
+import speedIcon from "./../../../assets/icons/speed_icon.svg";
+import closeIcon from "./../../../assets/icons/close_icon.svg";
+import arrowUpIcon from "./../../../assets/icons/arrow_up_icon.svg";
+
+interface TextCarouselProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface TextEntry {
+  tag: "h3" | "p";
+  text: string;
+}
+
+interface PropertyEntry {
+  tag: "property";
+  name: string;
+  description: string;
+  icon: string;
+  colorVar: string;
+}
+
+type SlideEntry = TextEntry | PropertyEntry;
+
+interface Slide {
+  accName: string;
+  title: string;
+  content: SlideEntry[];
+}
+
+const infoSlides: Slide[] = [
+  {
+    accName: "How to play",
+    title: "How to Play",
+    content: [
+      { tag: "h3", text: "What is RuneArena?" },
+      {
+        tag: "p",
+        text: "RuneArena is a turn-based creature-fighting game: 1v1 battles where you match your creature against a single opponent. Win fights to earn RC (RuneCoins), XP, and Stamps*.",
+      },
+      { tag: "h3", text: "Battle" },
+      {
+        tag: "p",
+        text: "Battles are played in turns. On your turn you choose one of your creature's available moves or use an item from your Bag. Moves may deal damage, while items may apply effects, or alter stats. The first side to reduce their opponent's HP to 0 wins.",
+      },
+      {
+        tag: "p",
+        text: "Status boosts from items last for the duration of the current match only. Use items strategically — they are consumed on use.",
+      },
+      {
+        tag: "p",
+        text: "* Stamps are only available if you're logged into your account on loopland.se.",
+      },
+    ],
+  },
+  {
+    accName: "Levels",
+    title: "Levels",
+    content: [
+      { tag: "h3", text: "How do you level up?" },
+      {
+        tag: "p",
+        text: "You earn XP by winning battles and completing matches. When a creature reaches the XP threshold for the next level it levels up, which unlocks new moves to use during battles!",
+      },
+      { tag: "h3", text: "Max Level" },
+      {
+        tag: "p",
+        text: "Each creature can currently only reach level 4.",
+      },
+    ],
+  },
+  {
+    accName: "Properties",
+    title: "Properties",
+    content: [
+      { tag: "h3", text: "What are Properties?" },
+      {
+        tag: "p",
+        text: "Properties are your creature's core stats. Every creature has different base values, and you can boost them temporarily during battle with items from the Store.",
+      },
+      {
+        tag: "property",
+        name: "Health",
+        description:
+          "How much damage your creature can take before it faints. ",
+        icon: healthIcon,
+        colorVar: "--health",
+      },
+      {
+        tag: "property",
+        name: "Evade",
+        description:
+          "The chance to avoid an incoming attack. Higher evade makes it more likely an enemy attack will miss.",
+        icon: evadeIcon,
+        colorVar: "--evade",
+      },
+      {
+        tag: "property",
+        name: "Defence",
+        description: "Reduces the damage taken from enemy attacks.",
+        icon: defenceIcon,
+        colorVar: "--defense",
+      },
+      {
+        tag: "property",
+        name: "Speed",
+        description: "Determines which creature acts first each turn.",
+        icon: speedIcon,
+        colorVar: "--speed",
+      },
+    ],
+  },
+  {
+    accName: "Types",
+    title: "Types",
+    content: [
+      { tag: "h3", text: "Type Effectiveness" },
+      {
+        tag: "p",
+        text: "Each creature belongs to a type that affects how much damage it deals and receives. For example, Grass is strong against Water, but weak to Fire. Normal type is neutral against all other types.",
+      },
+      { tag: "h3", text: "Type Chart" },
+      {
+        tag: "p",
+        text: "Picking the right type matchup can turn the tide of any fight. Here is a Type Chart to help with that:",
+      },
+    ],
+  },
+  {
+    accName: "Store",
+    title: "Store",
+    content: [
+      { tag: "h3", text: "Items" },
+      {
+        tag: "p",
+        text: "The store sells items that can give your creature an edge in battle. Some boost your stats, others restore HP when you're in critical condition. Each item costs a different amount of RC.",
+      },
+      { tag: "h3", text: "Bag" },
+      {
+        tag: "p",
+        text: "Items you purchase are stored in your Bag. You can only use them during battle, and each item is consumed on use — so spend wisely!",
+      },
+    ],
+  },
+];
+
+function highlightKeywords(text: string): ReactNode {
+  if (!text) return text;
+  const parts: ReactNode[] = [];
+  const regex =
+    /\b(XP|RC|Stamps?|Stamp|HP|Health|Evade|Speed|Defence|Defense|Fire|Grass|Normal|Water)\b/gi;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    const idx = match.index;
+    if (idx > lastIndex) parts.push(text.slice(lastIndex, idx));
+    const token = match[1];
+    const key = token.toLowerCase();
+    let cls = styles.keywordStamp;
+    if (key === "xp") cls = styles.keywordXp;
+    else if (key === "rc") cls = styles.keywordRc;
+    else if (key === "hp" || key === "health") cls = styles.keywordHp;
+    else if (key === "evade") cls = styles.keywordEvade;
+    else if (key === "speed") cls = styles.keywordSpeed;
+    else if (key === "defence" || key === "defense")
+      cls = styles.keywordDefence;
+    else if (key === "fire") cls = styles.keywordFire;
+    else if (key === "grass") cls = styles.keywordGrass;
+    else if (key === "water") cls = styles.keywordWater;
+    else if (key === "normal") cls = styles.keywordNormal;
+
+    parts.push(
+      <span key={`${idx}-${token}`} className={cls}>
+        {match[0]}
+      </span>,
+    );
+    lastIndex = idx + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
+export default function Tutorial({
+  isOpen,
+  onClose,
+}: TextCarouselProps): ReactElement | null {
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const dialogElement = dialogRef.current;
+      if (!dialogElement) return;
+
+      const focusableElements = Array.from(
+        dialogElement.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogElement.focus();
+        return;
+      }
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const previousSlide = () => setActiveSlideIndex((i) => Math.max(0, i - 1));
+
+  const nextSlide = () =>
+    setActiveSlideIndex((i) => Math.min(infoSlides.length - 1, i + 1));
+
+  return (
+    <div
+      className={styles.textCarouselOverlay}
+      onClick={onClose}
+      role="presentation"
+    >
+      <section
+        ref={dialogRef}
+        className={styles.textCarouselPanel}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="How to play"
+        tabIndex={-1}
+      >
+        <button
+          ref={closeButtonRef}
+          className={styles.textCarouselClose}
+          onClick={onClose}
+          aria-label="Close tutorial"
+        >
+          <img
+            src={closeIcon}
+            alt=""
+            aria-hidden="true"
+            className={styles.closeIcon}
+          />
+        </button>
+
+        <div className={styles.textCarouselViewport}>
+          <div
+            className={styles.textCarouselTrack}
+            style={{ transform: `translateX(-${activeSlideIndex * 100}%)` }}
+          >
+            {infoSlides.map((slide) => (
+              <article
+                key={slide.accName}
+                className={styles.textCarouselSlide}
+                data-accname={slide.accName}
+              >
+                <h2>{slide.title}</h2>
+
+                {slide.content.map((entry, index) => {
+                  if (entry.tag === "property") {
+                    return (
+                      <div
+                        key={`${slide.accName}-${index}`}
+                        className={styles.propertyRow}
+                      >
+                        <span
+                          className={styles.propertyIconWrapper}
+                          style={
+                            {
+                              "--stat-color": `var(${entry.colorVar})`,
+                            } as React.CSSProperties
+                          }
+                        >
+                          <img
+                            src={entry.icon}
+                            alt={entry.name}
+                            className={styles.propertyIcon}
+                          />
+                        </span>
+                        <div className={styles.propertyText}>
+                          <span
+                            className={styles.propertyName}
+                            style={{ color: `var(${entry.colorVar})` }}
+                          >
+                            {entry.name}
+                          </span>
+                          <p className={styles.propertyDesc}>
+                            {highlightKeywords(entry.description)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (entry.tag === "h3") {
+                    return (
+                      <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
+                    );
+                  }
+
+                  if (entry.tag === "p") {
+                    return (
+                      <p key={`${slide.accName}-${index}`}>
+                        {highlightKeywords(entry.text)}
+                      </p>
+                    );
+                  }
+
+                  return null;
+                })}
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.textCarouselControls}>
+          <button
+            className={styles.textCarouselNavButton}
+            onClick={previousSlide}
+            disabled={activeSlideIndex === 0}
+            aria-label="Previous slide"
+          >
+            <img
+              src={arrowUpIcon}
+              alt=""
+              aria-hidden="true"
+              className={styles.navArrowLeft}
+            />
+          </button>
+
+          <span className={styles.textCarouselIndicator} aria-live="polite">
+            {activeSlideIndex + 1} / {infoSlides.length}
+          </span>
+
+          <button
+            className={styles.textCarouselNavButton}
+            onClick={nextSlide}
+            disabled={activeSlideIndex === infoSlides.length - 1}
+            aria-label="Next slide"
+          >
+            <img
+              src={arrowUpIcon}
+              alt=""
+              aria-hidden="true"
+              className={styles.navArrowRight}
+            />
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}

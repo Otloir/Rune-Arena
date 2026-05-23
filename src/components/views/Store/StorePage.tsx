@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../atoms/buttons/Button";
 import ItemList from "../../molecules/itemList/ItemList";
 import InventoryPage from "../Inventory/InventoryPage";
-import TextCarousel from "../Turtorial/Turtorial";
+import Tutorial from "../Tutorial/Tutorial";
 import styles from "./StorePage.module.css";
 import IconButton from "../../atoms/buttons/IconButton";
 import informationIcon from "../../../assets/icons/information_icon.svg";
@@ -46,7 +46,7 @@ export default function StorePage() {
         onClose={closeInventory}
         userId={userId}
       />
-      <TextCarousel isOpen={isInfoOpen} onClose={closeInfo} />
+      <Tutorial isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
         <div className={styles.fixedInformationBar}>
           {/* TODO: make dynamic based on the user's actual balance */}

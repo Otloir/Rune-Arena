@@ -1,0 +1,322 @@
+.textCarouselOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--overlay-dark-heavy);
+  backdrop-filter: blur(0.5rem);
+}
+
+.textCarouselPanel {
+  position: relative;
+  width: 100vw;
+  height: 92vh;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 0.0625rem solid var(--shadow-white-15);
+  background: var(--carousel-panel-bg);
+  box-shadow: 0 1.5rem 5rem var(--overlay-dark-light);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Close button ── */
+.textCarouselClose {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 62.4375rem;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.closeIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(400%)
+    hue-rotate(180deg);
+}
+
+/* ── Viewport & track ── */
+.textCarouselViewport {
+  flex: 1;
+  overflow: hidden;
+  margin-top: 0.75rem;
+}
+
+.textCarouselTrack {
+  display: flex;
+  height: 100%;
+  transition: transform 0.45s ease;
+  will-change: transform;
+}
+
+/* ── Slide ── */
+.textCarouselSlide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  margin: 0;
+  padding: 2rem 1rem 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  background: var(--carousel-slide-bg);
+  color: var(--text-primary);
+  text-align: center;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.textCarouselSlide h2,
+.textCarouselSlide h4,
+.textCarouselSlide p {
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+  max-width: 90%;
+}
+
+/* Make h3-equivalent headings a bit larger */
+.textCarouselSlide h4 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+
+/* Slightly darker body text for improved contrast */
+.textCarouselSlide p {
+  font-size: var(--fs-md);
+}
+
+/* ── Property rows ── */
+.propertyRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 90%;
+  max-width: 28rem;
+  text-align: left;
+  background: var(--carousel-property-bg);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+}
+
+.propertyIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+}
+
+.propertyIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) saturate(100%);
+}
+
+/* Per-stat color filters */
+.propertyRow:has([style*="--health"]) .propertyIcon {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(96%) saturate(6000%)
+    hue-rotate(345deg) brightness(1.05);
+}
+
+.propertyRow:has([style*="--evade"]) .propertyIcon {
+  filter: brightness(0) saturate(100%) invert(55%) sepia(90%) saturate(800%)
+    hue-rotate(10deg) brightness(1.1);
+}
+
+.propertyRow:has([style*="--defense"]) .propertyIcon {
+  filter: brightness(0) saturate(100%) invert(36%) sepia(90%) saturate(2000%)
+    hue-rotate(210deg) brightness(1);
+}
+
+.propertyRow:has([style*="--speed"]) .propertyIcon {
+  /* --speed: #f1be35 → yellow */
+  filter: brightness(0) saturate(100%) invert(80%) sepia(60%) saturate(600%)
+    hue-rotate(10deg) brightness(1.05);
+}
+
+.propertyText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: var(--fs-md);
+  line-height: 1.35;
+}
+
+.propertyName {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.propertyDesc {
+  font-size: calc(var(--fs-sm) * 1);
+  line-height: 1.45;
+  color: var(--text-tertiary);
+  margin: 0 !important;
+}
+
+/* Keyword colours inside tutorial text */
+.keywordXp {
+  color: var(--xp-bar);
+  font-weight: 700;
+}
+
+.keywordRc {
+  color: var(--coin-text);
+  font-weight: 700;
+}
+
+.keywordStamp {
+  color: var(--color-victory);
+  font-weight: 700;
+}
+
+.keywordHp {
+  color: var(--health);
+  font-weight: 700;
+}
+
+.keywordEvade {
+  color: var(--evade);
+  font-weight: 700;
+}
+
+.keywordSpeed {
+  color: var(--speed);
+  font-weight: 700;
+}
+
+.keywordDefence {
+  color: var(--defense);
+  font-weight: 700;
+}
+
+.keywordFire {
+  color: var(--type-fire-1);
+  font-weight: 700;
+}
+
+.keywordGrass {
+  color: var(--type-grass-1);
+  font-weight: 700;
+}
+
+.keywordWater {
+  color: var(--type-water-1);
+  font-weight: 700;
+}
+
+.keywordNormal {
+  color: var(--type-normal-1);
+  font-weight: 700;
+}
+
+/* Additional keyword colors */
+.keywordHp {
+  color: var(--health);
+  font-weight: 700;
+}
+
+.keywordEvade {
+  color: var(--evade);
+  font-weight: 700;
+}
+
+.keywordSpeed {
+  color: var(--speed);
+  font-weight: 700;
+}
+
+.keywordDefence {
+  color: var(--defense);
+  font-weight: 700;
+}
+
+.keywordFire {
+  color: var(--type-fire-1);
+  font-weight: 700;
+}
+
+.keywordGrass {
+  color: var(--type-grass-1);
+  font-weight: 700;
+}
+
+.keywordWater {
+  color: var(--type-water-1);
+  font-weight: 700;
+}
+
+/* ── Controls ── */
+.textCarouselControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.75rem 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.textCarouselNavButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 62.4375rem;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.textCarouselNavButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Arrow icons — rotate the same up-arrow SVG for left/right */
+.navArrowLeft,
+.navArrowRight {
+  width: 1.5rem;
+  height: 1.5rem;
+  image-rendering: pixelated;
+  filter: brightness(0) saturate(100%) invert(20%) sepia(10%) saturate(400%)
+    hue-rotate(180deg);
+}
+
+.navArrowLeft {
+  transform: rotate(-90deg);
+}
+
+.navArrowRight {
+  transform: rotate(90deg);
+}
+
+.textCarouselIndicator {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  color: var(--text-primary);
+  min-width: 4rem;
+  text-align: center;
+}
