@@ -120,34 +120,15 @@
   height: 2.5rem;
   flex-shrink: 0;
   border-radius: 0.5rem;
-}
-
-.propertyIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  filter: brightness(0) saturate(100%);
-}
-
-/* Per-stat color filters */
-.propertyRow:has([style*="--health"]) .propertyIcon {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(96%) saturate(6000%)
-    hue-rotate(345deg) brightness(1.05);
-}
-
-.propertyRow:has([style*="--evade"]) .propertyIcon {
-  filter: brightness(0) saturate(100%) invert(55%) sepia(90%) saturate(800%)
-    hue-rotate(10deg) brightness(1.1);
-}
-
-.propertyRow:has([style*="--defense"]) .propertyIcon {
-  filter: brightness(0) saturate(100%) invert(36%) sepia(90%) saturate(2000%)
-    hue-rotate(210deg) brightness(1);
-}
-
-.propertyRow:has([style*="--speed"]) .propertyIcon {
-  /* --speed: #f1be35 → yellow */
-  filter: brightness(0) saturate(100%) invert(80%) sepia(60%) saturate(600%)
-    hue-rotate(10deg) brightness(1.05);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.5rem 1.5rem;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 1.5rem 1.5rem;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 1.5rem 1.5rem;
 }
 
 .propertyText {
@@ -170,6 +151,18 @@
   line-height: 1.45;
   color: var(--text-tertiary);
   margin: 0 !important;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .typeChartImage {

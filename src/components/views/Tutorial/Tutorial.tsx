@@ -320,15 +320,15 @@ export default function Tutorial({
                           className={styles.propertyIconWrapper}
                           style={
                             {
-                              "--stat-color": `var(${entry.colorVar})`,
+                              backgroundColor: `var(${entry.colorVar})`,
+                              WebkitMaskImage: `url(${entry.icon})`,
+                              maskImage: `url(${entry.icon})`,
                             } as React.CSSProperties
                           }
                         >
-                          <img
-                            src={entry.icon}
-                            alt={entry.name}
-                            className={styles.propertyIcon}
-                          />
+                          <span className={styles.visuallyHidden}>
+                            {entry.name}
+                          </span>
                         </span>
                         <div className={styles.propertyText}>
                           <span
