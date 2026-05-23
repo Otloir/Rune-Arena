@@ -4,6 +4,7 @@ import { useAsyncData } from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import type { Creature } from "../../../types/creature.types";
 import CreatureInfoPage from "../../views/CreatureInfo/CreatureInfoPage";
+import IconButton from "./IconButton";
 import styles from "./CreatureButton.module.css";
 import defenseIcon from "./../../../assets/icons/defence_icon.svg";
 import healthIcon from "./../../../assets/icons/health_icon.svg";
@@ -204,23 +205,22 @@ const CreatureButton: FC<CreatureButtonProps> = ({
         </button>
 
         {/* SC 2.5.5: min 44×44px | SC 3.3.5: descriptive aria-label */}
-        <button
-          type="button"
-          className={styles.infoButton}
-          onClick={(e): void => {
-            e.stopPropagation();
-            setInfoOpen(true);
-          }}
-          aria-label={`View detailed information for ${creature.name}`}
-          aria-haspopup="dialog"
+        <div
+          className={styles.infoButtonWrapper}
+          onClick={(e): void => e.stopPropagation()}
         >
-          <img
-            src={informationIcon}
-            alt=""
-            aria-hidden="true"
-            className={styles.infoIcon}
+          <IconButton
+            iconSrc={informationIcon}
+            iconAlt=""
+            label={`View detailed information for ${creature.name}`}
+            onClick={(): void => setInfoOpen(true)}
+            aria-haspopup="dialog"
+            variant="neutral"
+            shape="circle"
+            size="md"
+            className={styles.infoButton}
           />
-        </button>
+        </div>
       </div>
     </>
   );

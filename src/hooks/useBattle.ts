@@ -121,12 +121,10 @@ type DamageResult = {
 
 async function calculateDamage(
   move: MoveWithType,
-  defender: Creature,
   defenderTypes: number[],
   map: Map<number, Map<number, number>>,
 ): Promise<DamageResult> {
-  // Defense is intentionally NOT applied here — callers handle it so that
-  // stat boosts (items) can be factored in before the single reduction.
+  // Defense is applied by each caller so stat boosts can be factored in.
   let dmg = move.damage;
  
   const multiplier = getTypeMultiplier(map, move.move_type_id, defenderTypes);
@@ -295,7 +293,6 @@ export function useBattle({
   
       const result = await calculateDamage(
         move,
-        opponentCreature,
         opponentTypeIds,
         effectivenessMap,
       );
@@ -356,7 +353,6 @@ export function useBattle({
   
       const result = await calculateDamage(
         move,
-        playerCreature,
         playerTypeIds,
         effectivenessMap,
       );

@@ -189,64 +189,28 @@
 
 /* ── Info button ─────────────────────────────────────────────
  *
- * Absolutely positioned inside .cardWrapper (which is relative).
- * The button sits in the top-right corner of the card.
- * It is a sibling of .card in the DOM, not a child, keeping
- * the HTML valid (no nested interactive elements).
+ * IconButton handles its own sizing, colours, and focus ring.
+ * We only need to position it absolutely in the card corner.
+ * The wrapper is the positioning context; IconButton fills it.
  *
- * SC 2.5.5 — minimum touch target 44 × 44 px.
+ * SC 2.5.5 — IconButton's md size is 44×44px by default.
  */
-.infoButton {
+.infoButtonWrapper {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
   z-index: 2;
+}
 
-  width: 2.75rem;
-  height: 2.75rem;
-  min-width: 44px;
-  min-height: 44px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-
-  background: rgba(172, 120, 40, 0.88);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  cursor: pointer;
-
-  transition:
-    background-color 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+.infoButton {
+  /* Override IconButton's default neutral bg to match the gold Figma style */
+  background-color: rgba(172, 120, 40, 0.88) !important;
+  color: var(--color-white) !important;
 }
 
 .infoButton:hover {
-  background: rgba(172, 120, 40, 1);
-  transform: scale(1.08);
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
-}
-
-.infoButton:active {
-  transform: scale(0.94);
-}
-
-/* SC 2.1.1 — visible keyboard focus ring */
-.infoButton:focus-visible {
-  outline: 3px solid var(--btn-cta-bg);
-  outline-offset: 3px;
-}
-
-/* ── Info icon ── */
-.infoIcon {
-  width: 1.125rem;
-  height: 1.125rem;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  pointer-events: none;
-  display: block;
+  background-color: rgba(172, 120, 40, 1) !important;
+  /* No extra box-shadow — removed per review */
 }
 
 /* ── Desktop ─────────────────────────────────────────────────

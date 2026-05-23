@@ -168,6 +168,16 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     return (): void => window.clearTimeout(id);
   }, [isOpen]);
 
+  // Prevent page scroll behind the modal on mobile
+  useEffect((): (() => void) | void => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return (): void => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
   // SC 2.1.1 — focus trap + Escape key handler
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
