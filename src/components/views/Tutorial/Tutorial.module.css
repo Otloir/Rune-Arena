@@ -174,6 +174,13 @@
   margin: 0 !important;
 }
 
+.typeChartImage {
+  width: min(100%, 42rem);
+  height: auto;
+  display: block;
+  margin: 0.75rem auto 0;
+}
+
 /* Keyword colours inside tutorial text */
 .keywordXp {
   color: var(--xp-bar);
@@ -227,42 +234,6 @@
 
 .keywordNormal {
   color: var(--type-normal-1);
-  font-weight: 700;
-}
-
-/* Additional keyword colors */
-.keywordHp {
-  color: var(--health);
-  font-weight: 700;
-}
-
-.keywordEvade {
-  color: var(--evade);
-  font-weight: 700;
-}
-
-.keywordSpeed {
-  color: var(--speed);
-  font-weight: 700;
-}
-
-.keywordDefence {
-  color: var(--defense);
-  font-weight: 700;
-}
-
-.keywordFire {
-  color: var(--type-fire-1);
-  font-weight: 700;
-}
-
-.keywordGrass {
-  color: var(--type-grass-1);
-  font-weight: 700;
-}
-
-.keywordWater {
-  color: var(--type-water-1);
   font-weight: 700;
 }
 

@@ -13,6 +13,7 @@ import defenceIcon from "./../../../assets/icons/defence_icon.svg";
 import speedIcon from "./../../../assets/icons/speed_icon.svg";
 import closeIcon from "./../../../assets/icons/close_icon.svg";
 import arrowUpIcon from "./../../../assets/icons/arrow_up_icon.svg";
+import typeChartImage from "./../../../assets/images/Type Chart.png";
 
 interface TextCarouselProps {
   isOpen: boolean;
@@ -32,7 +33,13 @@ interface PropertyEntry {
   colorVar: string;
 }
 
-type SlideEntry = TextEntry | PropertyEntry;
+interface ImageEntry {
+  tag: "image";
+  src: string;
+  alt: string;
+}
+
+type SlideEntry = TextEntry | PropertyEntry | ImageEntry;
 
 interface Slide {
   accName: string;
@@ -135,6 +142,11 @@ const infoSlides: Slide[] = [
       {
         tag: "p",
         text: "Picking the right type matchup can turn the tide of any fight. Here is a Type Chart to help with that:",
+      },
+      {
+        tag: "image",
+        src: typeChartImage,
+        alt: "Type chart showing the effectiveness between creature types",
       },
     ],
   },
@@ -336,6 +348,17 @@ export default function Tutorial({
                   if (entry.tag === "h3") {
                     return (
                       <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
+                    );
+                  }
+
+                  if (entry.tag === "image") {
+                    return (
+                      <img
+                        key={`${slide.accName}-${index}`}
+                        src={entry.src}
+                        alt={entry.alt}
+                        className={styles.typeChartImage}
+                      />
                     );
                   }
 
