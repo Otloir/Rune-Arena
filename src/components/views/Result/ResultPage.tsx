@@ -56,7 +56,7 @@ export default function ResultPage(): ReactElement {
     if (isGuest) {
       void navigate("/");
     } else {
-      window.location.href = loopland_url;
+      window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "");
     }
   };
 
