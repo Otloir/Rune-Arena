@@ -4,9 +4,9 @@ import type { Creature, Level, Type, Move } from "../types/creature.types";
 export type JoinedCreatureLevel = Pick<Level, "level" | "xp_required">;
 
 export type UserCreatureRow = {
-  current_xp: number;
-  creature: Creature | Creature[];
-  level: JoinedCreatureLevel | JoinedCreatureLevel[];
+  readonly current_xp: number;
+  readonly creature: Creature | Creature[];
+  readonly level: JoinedCreatureLevel | JoinedCreatureLevel[];
 };
 
 /** Shared column selection for the Creatures table (includes new `description` column). */
@@ -148,6 +148,11 @@ export async function awardXpToCreature(
     return null;
   }
 
+  /*
+   * Supabase JS v2 returns `any[]` without codegen — the assertion here
+   * is intentional and documented. If you add Supabase type generation
+   * (`supabase gen types`) this cast can be removed.
+   */
   const row = rows[0] as { current_xp: number; level_id: number };
 
   const { data: levels, error: levelsError } = await supabase

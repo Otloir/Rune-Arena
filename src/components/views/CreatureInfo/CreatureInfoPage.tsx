@@ -32,8 +32,8 @@ interface CreatureInfoPageProps {
   readonly currentHp?: number;
   /**
    * Max HP — only used when `isBattleView` is true.
-   * Pass the value from battle state so the modal never has to
-   * re-derive it from a Supabase fetch (which always returns base stats).
+   * Pass the value from battle state so the modal never re-derives
+   * it from Supabase (which always returns the base stat, not live HP).
    */
   readonly maxHp?: number;
 }
@@ -43,10 +43,11 @@ interface StatCellProps {
   readonly color: string;
   readonly label: string;
   readonly value: number;
+  /** Gives the cell a blue tint — used for the centre stat in battle view. */
   readonly highlighted?: boolean;
 }
 
-/* ─────────────────────────── StatCell ─────────────────────────── */
+/* ─────────────────────────── StatCell ──────────────────────── */
 
 const StatCell: FC<StatCellProps> = ({
   icon,
@@ -54,7 +55,7 @@ const StatCell: FC<StatCellProps> = ({
   label,
   value,
   highlighted = false,
-}) => (
+}): React.ReactElement => (
   <div
     className={[
       styles.statCell,
@@ -76,7 +77,7 @@ const StatCell: FC<StatCellProps> = ({
   </div>
 );
 
-/* ─────────────────────────── CreatureInfoPage ─────────────────────────── */
+/* ─────────────────────────── CreatureInfoPage ───────────────── */
 
 const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   creatureId,
@@ -85,7 +86,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   isBattleView = false,
   currentHp,
   maxHp: maxHpProp,
-}) => {
+}): React.ReactElement | null => {
   const uid = useId();
   const titleId = `creature-info-title-${uid}`;
 
@@ -108,15 +109,17 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const loading = creatureLoading || movesLoading;
 
-  // SC 2.1.1 — move focus to close button when modal opens
-  useEffect(() => {
+  // SC 2.1.1 — move keyboard focus to close button when modal opens
+  useEffect((): (() => void) | void => {
     if (!isOpen) return;
-    const id = window.setTimeout(() => closeButtonRef.current?.focus(), 50);
+    const id = window.setTimeout((): void => {
+      closeButtonRef.current?.focus();
+    }, 50);
     return (): void => window.clearTimeout(id);
   }, [isOpen]);
 
-  // SC 2.1.1 — focus trap + Escape key
-  useEffect(() => {
+  // SC 2.1.1 — focus trap + Escape key handler
+  useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -165,24 +168,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   /*
    * HP resolution:
-   *   - Battle view: use the props passed from the arena (live values).
-   *     Never trust creature.hp here — it's always the Supabase base stat.
-   *   - Selection view: creature.hp from the DB is correct (always full).
+   *   Battle view  → use props from arena (live values). Never trust
+   *                  creature.hp; it is always the Supabase base stat.
+   *   Selection view → creature.hp from the DB is correct (always full).
    */
-  const resolvedMaxHp = isBattleView
+  const resolvedMaxHp: number = isBattleView
     ? (maxHpProp ?? creature?.hp ?? 0)
     : (creature?.hp ?? 0);
 
-  const resolvedCurrentHp = isBattleView
+  const resolvedCurrentHp: number = isBattleView
     ? (currentHp ?? resolvedMaxHp)
     : resolvedMaxHp;
 
-  const hpPercent =
+  const hpPercent: number =
     resolvedMaxHp > 0
       ? Math.max(0, Math.min(100, (resolvedCurrentHp / resolvedMaxHp) * 100))
       : 100;
 
-  const hpBarColor =
+  const hpBarColor: string =
     hpPercent > 50
       ? "var(--hp-bar)"
       : hpPercent > 25
@@ -207,6 +210,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
           <h2 className={styles.title} id={titleId}>
             {isBattleView ? "Creature Details" : "Creature Information"}
           </h2>
+          {/* SC 2.5.5 — 44×44 px minimum touch target enforced in CSS */}
           <button
             ref={closeButtonRef}
             type="button"
@@ -221,6 +225,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
         {/* ── Scrollable body ── */}
         <div className={styles.body}>
 
+          {/* Loading skeleton */}
           {loading && (
             <div
               role="status"
@@ -234,12 +239,14 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
             </div>
           )}
 
+          {/* Error */}
           {creatureError && !loading && (
             <p role="alert" className={styles.errorState}>
               Failed to load creature information. Please try again.
             </p>
           )}
 
+          {/* Content */}
           {creature && !loading && (
             <>
               <img
@@ -250,13 +257,22 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
               <h3 className={styles.creatureName}>{creature.name}</h3>
 
-              {/* Description — selection view only (SC 3.3.5: contextual help) */}
+              {/*
+               * SC 3.3.5 — contextual help: description gives the player
+               * lore/context about the creature before committing to it.
+               * Only shown in selection view where it's relevant.
+               */}
               {!isBattleView && creature.description && (
                 <p className={styles.description}>{creature.description}</p>
               )}
 
-              {/* HP section */}
-              <section className={styles.hpSection} aria-label="Health">
+              {/*
+               * HP block.
+               * <div> not <section> — avoids inheriting the lobbyPage
+               * `.lobbyPage section` rule (display:flex / align-items:center)
+               * which would override our grid and block layouts.
+               */}
+              <div className={styles.hpSection} aria-label="Health">
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
                     <span
@@ -302,10 +318,14 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     />
                   </div>
                 )}
-              </section>
+              </div>
 
-              {/* Stats grid */}
-              <section
+              {/*
+               * Stats grid — <div> for the same reason as hpSection above.
+               * data-cols drives grid-template-columns via an attribute
+               * selector in the CSS (avoids :has() browser-support issues).
+               */}
+              <div
                 className={styles.statsGrid}
                 aria-label="Creature statistics"
                 data-cols={isBattleView ? "3" : "2"}
@@ -324,11 +344,11 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     <StatCell icon={speedIcon}   color="var(--speed)"   label="Speed"   value={creature.speed} />
                   </>
                 )}
-              </section>
+              </div>
 
-              {/* Moves */}
+              {/* Moves — <div> for same reason */}
               {moveIds.length > 0 && (
-                <section
+                <div
                   className={styles.movesSection}
                   aria-label="Available moves"
                 >
@@ -336,10 +356,15 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     {isBattleView ? "Moves" : "Available Moves"}
                   </h4>
                   <div className={styles.movesList}>
-                    {moveIds.map((moveId) => (
+                    {moveIds.map((moveId: number): React.ReactElement => (
                       <MoveButton
                         key={moveId}
                         moveId={moveId}
+                        /*
+                         * Info-only context — button is disabled so onSelect
+                         * is never called, but the prop is required by the
+                         * MoveButton interface.
+                         */
                         onSelect={(): void => undefined}
                         disabled
                         shape="rounded"
@@ -347,7 +372,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                       />
                     ))}
                   </div>
-                </section>
+                </div>
               )}
             </>
           )}
