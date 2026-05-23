@@ -7,6 +7,7 @@ import {
   getUserCreature,
   getUserCreatureById,
   getMoveIdsByCreatureId,
+  getTypesByCreatureId,
 } from "../database/creature.database";
 
 // Hook that handles loading/error state for any async fetch.
@@ -233,4 +234,55 @@ export function useMoves(): { moves: Move[] } {
   }, []);
 
   return { moves };
+}
+
+/**
+ * Fetches the types belonging to a creature (e.g. Fire, Grass).
+ * Only fires when `enabled` is true, so callers can defer until needed.
+ */
+export function useCreatureTypes(
+  creatureId: Creature["id"] | null,
+  enabled: boolean,
+): {
+  readonly types: readonly Type[];
+  readonly loading: boolean;
+  readonly error: string | null;
+} {
+  const [types, setTypes] = useState<readonly Type[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect((): (() => void) | void => {
+    if (!enabled || !creatureId) {
+      setTypes([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getTypesByCreatureId(creatureId!);
+        if (cancelled) return;
+        setTypes(result ?? []);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load types");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+  }, [creatureId, enabled]);
+
+  return { types, loading, error };
 }

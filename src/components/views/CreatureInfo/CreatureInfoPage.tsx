@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { FC } from "react";
 import type { Creature } from "../../../types/creature.types";
-import { useAsyncData, useCreatureMoveIds } from "../../../hooks/useCreature";
+import { useAsyncData, useCreatureMoveIds, useCreatureTypes } from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import MoveButton from "../../atoms/buttons/MoveButton";
 import styles from "./CreatureInfoPage.module.css";
@@ -105,6 +105,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   const { moveIds, loading: movesLoading } = useCreatureMoveIds(
     isOpen ? creatureId : null,
     isOpen,
+  );
+
+  // Only fetch types in selection view — not needed in battle view
+  const { types } = useCreatureTypes(
+    isOpen && !isBattleView ? creatureId : null,
+    isOpen && !isBattleView,
   );
 
   const loading = creatureLoading || movesLoading;
@@ -256,6 +262,30 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
               />
 
               <h3 className={styles.creatureName}>{creature.name}</h3>
+
+              {/*
+               * Type badges — selection view only, between name and description.
+               * Each badge uses a CSS custom property for its colour, derived
+               * from the type name and matching the variables in index.css
+               * (e.g. --type-fire-1, --type-grass-1, --type-water-1 …).
+               */}
+              {!isBattleView && types.length > 0 && (
+                <div className={styles.typeBadges} aria-label="Creature types">
+                  {types.map((type) => (
+                    <span
+                      key={type.id}
+                      className={styles.typeBadge}
+                      style={{
+                        background: `var(--type-${type.name.toLowerCase()}-1, var(--type-normal-1))`,
+                        boxShadow: `0 0.125rem 0 var(--type-${type.name.toLowerCase()}-shadow, var(--type-normal-shadow))`,
+                      }}
+                      aria-label={`${type.name} type`}
+                    >
+                      {type.name}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/*
                * SC 3.3.5 — contextual help: description gives the player

@@ -129,6 +129,32 @@
   letter-spacing: 0;
 }
 
+/* ── Type badges ─────────────────────────────────────────────── */
+
+/*
+ * Sits between the creature name and description in selection view.
+ * Colours come from the type-specific CSS vars in index.css
+ * (--type-fire-1, --type-grass-1, etc.), falling back to normal.
+ */
+.typeBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.typeBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 99rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  /* background and box-shadow set inline from type CSS vars */
+}
+
 /* ── Description ─────────────────────────────────────────────── */
 
 .description {

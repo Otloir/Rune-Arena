@@ -117,6 +117,31 @@ export async function getTypes(): Promise<Type[] | null> {
   return data;
 }
 
+/**
+ * Fetches all types for a creature via the Creature_Types join table.
+ * Assumes columns: creature_id, type_id — with Types joined.
+ */
+export async function getTypesByCreatureId(
+  creatureId: string | number,
+): Promise<Type[] | null> {
+  const { data, error } = await supabase
+    .from("Creature_Types")
+    .select("type:type_id ( id, name )")
+    .eq("creature_id", creatureId);
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
+  // Supabase returns the joined relation as `type` — unwrap and filter nulls
+  return (data ?? [])
+    .map((row: { type: Type | Type[] }) =>
+      Array.isArray(row.type) ? row.type[0] : row.type,
+    )
+    .filter((t): t is Type => t !== null && t !== undefined);
+}
+
 export async function getMoves(): Promise<Move[] | null> {
   const { data, error } = await supabase
     .from("Moves")
