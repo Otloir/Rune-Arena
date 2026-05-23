@@ -15,6 +15,7 @@
   --text-light: #f3f4f6;
   --coin-text: #d08700;
   --guest-text: #73d0ed;
+  --stamp: #6f00d0;
 
   /* ─── Background Colors ─── */
   --bg: #7d756b;
@@ -65,7 +66,7 @@
   /* ─── Creature Properties ─── */
   --evade: #fb7c20;
   --defense: #2b7fff;
-  --speed: #e2a702;
+  --speed: #10b20d;
   --health: #fb2c36;
 
   /* ─── Move Type Colors ─── */

@@ -13,7 +13,7 @@ import defenceIcon from "./../../../assets/icons/defence_icon.svg";
 import speedIcon from "./../../../assets/icons/speed_icon.svg";
 import closeIcon from "./../../../assets/icons/close_icon.svg";
 import arrowUpIcon from "./../../../assets/icons/arrow_up_icon.svg";
-import typeChartImage from "./../../../assets/images/Type Chart.png";
+import typeChartImage from "./../../../assets/images/type_chart.svg";
 
 interface TextCarouselProps {
   isOpen: boolean;
@@ -157,7 +157,7 @@ const infoSlides: Slide[] = [
       { tag: "h3", text: "Items" },
       {
         tag: "p",
-        text: "The store sells items that can give your creature an edge in battle. Some boost your stats, others restore HP when you're in critical condition. Each item costs a different amount of RC.",
+        text: "The store sells items that can give your creature an edge in battle. Some boost your creatures stats, others restore HP when you're in critical condition. Each item costs a different amount of RC.",
       },
       { tag: "h3", text: "Bag" },
       {
@@ -172,7 +172,7 @@ function highlightKeywords(text: string): ReactNode {
   if (!text) return text;
   const parts: ReactNode[] = [];
   const regex =
-    /\b(XP|RC|Stamps?|Stamp|HP|Health|Evade|Speed|Defence|Defense|Fire|Grass|Normal|Water)\b/gi;
+    /\b(XP|RC|Stamps?|loopland.se?|Stamp|HP|Health|Evade|Speed|Defence|Defense|Fire|Grass|Normal|Water)\b/gi;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = regex.exec(text)) !== null) {

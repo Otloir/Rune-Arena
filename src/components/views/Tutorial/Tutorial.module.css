@@ -184,7 +184,7 @@
 }
 
 .keywordStamp {
-  color: var(--color-victory);
+  color: var(--stamp);
   font-weight: 700;
 }
 
