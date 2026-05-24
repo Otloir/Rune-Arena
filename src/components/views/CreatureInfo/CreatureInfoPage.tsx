@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { FC } from "react";
 import type { Creature } from "../../../types/creature.types";
+import type { StatBoosts } from "../../../types/battleEffects.types";
 import {
   useAsyncData,
   useCreatureMoveIds,
@@ -18,40 +19,15 @@ import evadeIcon from "../../../assets/icons/evade_icon.svg";
 /* ─────────────────────────── Types ─────────────────────────── */
 
 interface CreatureInfoPageProps {
-  /** The creature whose info to display. */
   readonly creatureId: Creature["id"];
-  /** Whether the modal is currently open. */
   readonly isOpen: boolean;
-  /** Called when the user dismisses the modal. */
   readonly onClose: () => void;
-  /**
-   * `true`  → "battle" layout: live HP bar shown, description hidden.
-   * `false` → "selection" layout: max HP shown, description visible.
-   * Defaults to `false`.
-   */
   readonly isBattleView?: boolean;
-  /**
-   * Current (live) HP — only used when `isBattleView` is true.
-   * Must be kept in sync by the arena/battle parent.
-   */
   readonly currentHp?: number;
-  /**
-   * Max HP — only used when `isBattleView` is true.
-   * Pass the value from battle state so the modal never re-derives
-   * it from Supabase (which always returns the base stat, not live HP).
-   */
   readonly maxHp?: number;
-  /**
-   * The player's user ID — used to fetch the creature's current level
-   * from User_Creature_Levels.
-   */
   readonly userId: string | number;
-  /**
-   * The player's current level_id (FK to Levels.id) for this creature.
-   * When provided directly (e.g. from battle state) we skip the DB fetch.
-   * Used for move lock comparisons — requiredLevelId <= playerLevelId means unlocked.
-   */
   readonly creatureLevelId?: number;
+  readonly statBoosts?: StatBoosts;
 }
 
 interface StatCellProps {
@@ -59,8 +35,8 @@ interface StatCellProps {
   readonly color: string;
   readonly label: string;
   readonly value: number;
-  /** Gives the cell a blue tint — used for the centre stat in battle view. */
   readonly highlighted?: boolean;
+  readonly boosted?: boolean;
 }
 
 /* ─────────────────────────── StatCell ──────────────────────── */
@@ -71,13 +47,14 @@ const StatCell: FC<StatCellProps> = ({
   label,
   value,
   highlighted = false,
+  boosted = false,
 }): React.ReactElement => (
   <div
     className={[
       styles.statCell,
       highlighted ? styles.statCellHighlighted : "",
     ].join(" ")}
-    aria-label={`${label}: ${value}`}
+    aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
   >
     <span
       className={styles.statIcon}
@@ -89,7 +66,11 @@ const StatCell: FC<StatCellProps> = ({
       }}
     />
     <span className={styles.statLabel}>{label}</span>
-    <span className={styles.statValue}>{value}</span>
+    <span
+      className={[styles.statValue, boosted ? styles.statValueBoosted : ""].join(" ")}
+    >
+      {value}
+    </span>
   </div>
 );
 
@@ -104,6 +85,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   maxHp: maxHpProp,
   userId,
   creatureLevelId: creatureLevelIdProp,
+  statBoosts,
 }): React.ReactElement | null => {
   const uid = useId();
   const titleId = `creature-info-title-${uid}`;
@@ -133,13 +115,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     isOpen && !isBattleView,
   );
 
-  /*
-   * Level resolution:
-   * If the parent passes creatureLevelId directly (FK to Levels.id), use it
-   * and skip the fetch. Otherwise fetch via useCreatureById.
-   * We always call the hook (Rules of Hooks) but gate its result on whether
-   * we actually need it.
-   */
   const needsLevelFetch = isOpen && creatureLevelIdProp === undefined;
   const {
     level: fetchedLevelNumber,
@@ -149,7 +124,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const resolvedLevelNumber: number =
     creatureLevelIdProp !== undefined
-      ? fetchedLevelNumber  // still show the number from fetch; prop only affects locking
+      ? fetchedLevelNumber 
       : (fetchedLevelNumber ?? 1);
 
   const resolvedLevelId: number | null =
@@ -159,7 +134,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const loading = creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
 
-  // SC 2.1.1 — move keyboard focus to close button when modal opens
+
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
     const id = window.setTimeout((): void => {
@@ -226,12 +201,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   if (!isOpen) return null;
 
-  /*
-   * HP resolution:
-   *   Battle view  → use props from arena (live values). Never trust
-   *                  creature.hp; it is always the Supabase base stat.
-   *   Selection view → creature.hp from the DB is correct (always full).
-   */
   const resolvedMaxHp: number = isBattleView
     ? (maxHpProp ?? creature?.hp ?? 0)
     : (creature?.hp ?? 0);
@@ -270,7 +239,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
           <h2 className={styles.title} id={titleId}>
             {isBattleView ? "Creature Details" : "Creature Information"}
           </h2>
-          {/* SC 2.5.5 — 44×44 px minimum touch target enforced in CSS */}
           <button
             ref={closeButtonRef}
             type="button"
@@ -329,8 +297,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
               </div>
 
               {/*
-               * Type badges — selection view only, between name and description.
-               * Colour comes from --type-{name}-1 CSS vars in index.css.
+               * Type badges
                */}
               {!isBattleView && types.length > 0 && (
                 <div className={styles.typeBadges} aria-label="Creature types">
@@ -350,10 +317,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 </div>
               )}
 
-              {/*
-               * SC 3.3.5 — contextual help: description gives the player
-               * lore/context about the creature before committing to it.
-               */}
               {!isBattleView && creature.description && (
                 <p className={styles.description}>{creature.description}</p>
               )}
@@ -414,11 +377,42 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 data-cols={isBattleView ? "3" : "2"}
               >
                 {isBattleView ? (
-                  <>
-                    <StatCell icon={evadeIcon}   color="var(--evade)"   label="Evade"   value={creature.evade} />
-                    <StatCell icon={defenseIcon} color="var(--defense)" label="Defense" value={creature.defense} highlighted />
-                    <StatCell icon={speedIcon}   color="var(--speed)"   label="Speed"   value={creature.speed} />
-                  </>
+
+                  (() => {
+                    const evadeBoost = statBoosts?.evadeBoost ?? 0;
+                    const defenseBoost = statBoosts?.defenseBoost ?? 0;
+
+                    const effectiveEvade = creature.evade + evadeBoost;
+                    const effectiveDefense = creature.defense + Math.floor(
+                      (creature.defense * defenseBoost) / 100,
+                    );
+
+                    return (
+                      <>
+                        <StatCell
+                          icon={evadeIcon}
+                          color="var(--evade)"
+                          label="Evade"
+                          value={effectiveEvade}
+                          boosted={evadeBoost > 0}
+                        />
+                        <StatCell
+                          icon={defenseIcon}
+                          color="var(--defense)"
+                          label="Defense"
+                          value={effectiveDefense}
+                          highlighted
+                          boosted={defenseBoost > 0}
+                        />
+                        <StatCell
+                          icon={speedIcon}
+                          color="var(--speed)"
+                          label="Speed"
+                          value={creature.speed}
+                        />
+                      </>
+                    );
+                  })()
                 ) : (
                   <>
                     <StatCell icon={healthIcon}  color="var(--health)"  label="Max HP"  value={resolvedMaxHp} />
@@ -440,12 +434,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                   </h4>
                   <div className={styles.movesList}>
                     {moveEntries.map(({ moveId, requiredLevelId }) => {
-                      /*
-                       * Lock check: compare level_id FK to FK.
-                       * requiredLevelId is the Levels.id needed to unlock.
-                       * resolvedLevelId is the player's current Levels.id.
-                       * Higher id = higher level (ordered ascending in DB).
-                       */
+
                       const isUnlocked =
                         resolvedLevelId !== null &&
                         requiredLevelId <= resolvedLevelId;

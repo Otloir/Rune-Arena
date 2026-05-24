@@ -8,17 +8,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  /*
-   * fadeIn: smoothly reveals the dark overlay backdrop.
-   * Without it the overlay snaps in abruptly, which is jarring on mobile
-   * where the modal takes up most of the screen.
-   */
   animation: fadeIn 0.2s ease-out;
-  /*
-   * Prevent the page behind from scrolling when the modal is open on mobile.
-   * touch-action: none blocks all touch scroll gestures on the overlay itself.
-   * The modal body (.body) re-enables scrolling for its own content.
-   */
   touch-action: none;
   overscroll-behavior: contain;
 }
@@ -42,13 +32,7 @@
   box-shadow:
     0 0.5rem 2rem var(--shadow-black-22),
     0 0.125rem 0.5rem var(--shadow-black-08);
-  /*
-   * slideUp: the modal gently rises into view.
-   * Gives the user a clear signal that a new layer has appeared,
-   * distinguishing it from the page content beneath.
-   */
   animation: slideUp 0.25s ease-out;
-  /* Re-enable touch events inside the modal (overridden from overlay) */
   touch-action: auto;
 }
 
@@ -89,7 +73,6 @@
   align-self: center;
 }
 
-/* SC 2.5.5 — touch target ≥ 2.75rem (44px equivalent) */
 .closeButton {
   background: none;
   border: none;
@@ -97,7 +80,6 @@
   cursor: pointer;
   color: var(--text-primary);
   padding: 0;
-  /* 2.75rem ≈ 44px at default font size — satisfies SC 2.5.5 without px */
   width: 2.75rem;
   height: 2.75rem;
   display: flex;
@@ -117,11 +99,6 @@
 
 /* ── Scrollable body ─────────────────────────────────────────── */
 
-/*
- * align-items: stretch lets children (grid, HP section, moves list)
- * expand to the full modal width.
- * overscroll-behavior: contain keeps scroll from leaking to the page.
- */
 .body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -240,11 +217,6 @@
   flex-shrink: 0;
 }
 
-/*
- * HP value: sized to match the surrounding text rather than flex to
- * a large display size. 1.5rem was causing it to dwarf everything else
- * on mobile. Using 1rem keeps it in proportion with the rest of the card.
- */
 .hpValue {
   font-size: 1rem;
   font-weight: 700;
@@ -321,6 +293,10 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+}
+
+.statValueBoosted {
+  color: var(--color-success);
 }
 
 /* ── Moves section ───────────────────────────────────────────── */
@@ -404,10 +380,6 @@
   animation: shimmer 1.4s infinite;
 }
 
-/*
- * shimmer: animates the skeleton loading placeholders with a moving
- * highlight, giving users feedback that content is being fetched.
- */
 @keyframes shimmer {
   to { background-position: -200% 0; }
 }

@@ -1,13 +1,9 @@
 /* ── Card wrapper ─────────────────────────────────────────────
- *
- * Sits between the parent flex container and the card+infoButton
- * pair. Must mirror .card's sizing at every breakpoint so it
- * doesn't disturb the LobbyPage flex layout.
  */
 .cardWrapper {
-  position: relative; /* positioning context for .infoButton */
+  position: relative;
   display: block;
-  width: 100%;        /* matches .card on mobile */
+  width: 100%;      
 }
 
 /* ── Card ───────────────────────────────────────────────────── */
@@ -188,12 +184,7 @@
 }
 
 /* ── Info button ─────────────────────────────────────────────
- *
- * IconButton handles its own sizing, colours, and focus ring.
- * We only need to position it absolutely in the card corner.
- * The wrapper is the positioning context; IconButton fills it.
- *
- * SC 2.5.5 — IconButton's md size is 44×44px by default.
+
  */
 .infoButtonWrapper {
   position: absolute;
@@ -203,21 +194,15 @@
 }
 
 .infoButton {
-  /* Override IconButton's default neutral bg to match the gold Figma style */
   background-color: rgba(172, 120, 40, 0.88) !important;
   color: var(--color-white) !important;
 }
 
 .infoButton:hover {
   background-color: rgba(172, 120, 40, 1) !important;
-  /* No extra box-shadow — removed per review */
 }
 
 /* ── Desktop ─────────────────────────────────────────────────
- *
- * LobbyPage switches .creatureSelectButtons to flex-direction: row
- * at 1024 px and each .card becomes width: 30vw.
- * .cardWrapper must match exactly so it doesn't add extra width.
  */
 @media (min-width: 1024px) {
   .cardWrapper {

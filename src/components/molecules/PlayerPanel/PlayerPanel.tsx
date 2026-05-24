@@ -6,27 +6,22 @@ import CreatureInfoPage from "../../views/CreatureInfo/CreatureInfoPage";
 import styles from "./PlayerPanel.module.css";
 import type { MoveWithType } from "../../../types/move.types";
 import type { Creature } from "../../../types/creature.types";
+import type { StatBoosts } from "../../../types/battleEffects.types";
 import bagIcon from "../../../assets/icons/bag_icon.svg";
 
 interface PlayerPanelProps {
   readonly creatureId: number;
   readonly creatureLevel: number;
-  /**
-   * The player's current level_id (FK to Levels.id) — passed to the info
-   * modal for move lock/unlock comparisons.
-   */
   readonly creatureLevelId: number | null;
   readonly onMoveSelect: (move: MoveWithType) => void;
   readonly disabled: boolean;
   readonly battleLog: string[];
   readonly playerCreature: Creature | null;
   readonly onOpenInventory?: () => void;
-  /** Current (live) HP of the player's creature — forwarded to the info modal. */
   readonly currentHp?: number;
-  /** Max HP of the player's creature — forwarded to the info modal. */
   readonly maxHp?: number;
-  /** The logged-in user's ID — forwarded to the info modal. */
   readonly userId: string | number;
+  readonly statBoosts?: StatBoosts;
 }
 
 export default function PlayerPanel({
@@ -41,6 +36,7 @@ export default function PlayerPanel({
   currentHp,
   maxHp,
   userId,
+  statBoosts,
 }: PlayerPanelProps): ReactElement {
   const logScrollRef = useRef<HTMLDivElement | null>(null);
   const [statsOpen, setStatsOpen] = useState<boolean>(false);
@@ -64,6 +60,7 @@ export default function PlayerPanel({
           currentHp={currentHp ?? playerCreature.hp}
           maxHp={maxHp ?? playerCreature.hp}
           creatureLevelId={creatureLevelId ?? undefined}
+          statBoosts={statBoosts}
         />
       )}
 
