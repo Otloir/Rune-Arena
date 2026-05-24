@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { Creature, Move, Type, Level, CreatureMoveEntry } from "../types/creature.types";
 import {
   getCreatures,
+  getCreatureById,
   getTypes,
   getMoves,
   getUserCreature,
@@ -11,6 +12,8 @@ import {
   getLevelById,
 } from "../database/creature.database";
 
+// Hook that handles loading/error state for any async fetch.
+// The `enabled` flag lets callers defer fetching (e.g. until a modal opens).
 export function useAsyncData<FetchedData>(
   fetcher: () => Promise<FetchedData | null>,
   enabled: boolean,
@@ -56,9 +59,11 @@ export function useAsyncData<FetchedData>(
 
     load();
 
+    // Cleanup: ignore stale responses if creatureId or enabled changes mid-flight
     return (): void => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
 
   return { data, loading, error };
@@ -76,6 +81,30 @@ export function useCreature(): { creatures: Creature[] } {
   }, []);
 
   return { creatures };
+}
+
+/**
+ * Fetches a single creature's base stats directly from the Creatures table,
+ * with no user context. Use this for NPC/opponent creatures that have no
+ * entry in User_Creature_Levels. Returns the same Creature shape as
+ * useCreatureById but without level, XP, or user-specific data.
+ */
+export function useCreatureBase(
+  creatureId: string | number | null,
+): {
+  readonly creature: Creature | null;
+  readonly loading: boolean;
+  readonly error: string | null;
+} {
+  const { data, loading, error } = useAsyncData(
+    () =>
+      creatureId !== null
+        ? getCreatureById(String(creatureId))
+        : Promise.resolve(null),
+    creatureId !== null,
+  );
+
+  return { creature: data ?? null, loading, error };
 }
 
 export function useUserCreature(userId: number | string): {
@@ -158,6 +187,10 @@ export function useCreatureById(
   };
 }
 
+/**
+ * Fetches all moves for a creature paired with their required level_id.
+ * Only fires when `enabled` is true (e.g. when the info modal is open).
+ */
 export function useCreatureMoveIds(
   creatureId: Creature["id"] | null,
   enabled: boolean,
@@ -205,6 +238,11 @@ export function useCreatureMoveIds(
   return { moveEntries, loading, error };
 }
 
+/**
+ * Resolves a level_id (FK to Levels.id) to the full Level row,
+ * giving access to the display level number and xp_required.
+ * Only fires when `enabled` is true.
+ */
 export function useLevelById(
   levelId: number | null,
   enabled: boolean,
@@ -280,6 +318,10 @@ export function useMoves(): { moves: Move[] } {
   return { moves };
 }
 
+/**
+ * Fetches the types belonging to a creature (e.g. Fire, Grass).
+ * Only fires when `enabled` is true, so callers can defer until needed.
+ */
 export function useCreatureTypes(
   creatureId: Creature["id"] | null,
   enabled: boolean,

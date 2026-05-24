@@ -434,7 +434,7 @@ export function useBattle({
 
   
   const applyItemEffect = useCallback(
-    (item: Item): void => {
+    (item: Item): StatBoosts => {
       const { property, propvalue } = item;
       const propLower = property.toLowerCase().trim();
   
@@ -450,18 +450,20 @@ export function useBattle({
         log(
           `${playerCreature?.name ?? "Your creature"} recovered ${healed} HP!`,
         );
-        return;
+        // HP items don't affect stat boosts — return current boosts unchanged
+        return playerStatBoosts;
       }
   
       if (propLower === "evade") {
-        setPlayerStatBoosts((prev) => ({
-          ...prev,
-          evadeBoost: prev.evadeBoost + propvalue,
-        }));
+        const next: StatBoosts = {
+          ...playerStatBoosts,
+          evadeBoost: playerStatBoosts.evadeBoost + propvalue,
+        };
+        setPlayerStatBoosts(next);
         log(
           `${playerCreature?.name ?? "Your creature"}'s evade increased by ${propvalue}!`,
         );
-        return;
+        return next;
       }
   
       const boostMap: Record<string, keyof StatBoosts> = {
@@ -471,18 +473,21 @@ export function useBattle({
   
       const boostKey = boostMap[propLower];
       if (boostKey) {
-        setPlayerStatBoosts((prev) => ({
-          ...prev,
-          [boostKey]: prev[boostKey] + propvalue,
-        }));
+        const next: StatBoosts = {
+          ...playerStatBoosts,
+          [boostKey]: playerStatBoosts[boostKey] + propvalue,
+        };
+        setPlayerStatBoosts(next);
         log(
           `${playerCreature?.name ?? "Your creature"}'s ${property} increased by ${propvalue}%!`,
         );
-      } else {
-        log(`Used ${item.name}... (effect unknown)`);
+        return next;
       }
+  
+      log(`Used ${item.name}... (effect unknown)`);
+      return playerStatBoosts;
     },
-    [playerHp, playerCreature, log],
+    [playerHp, playerCreature, playerStatBoosts, log],
   );
 
   // =========================
@@ -508,20 +513,49 @@ export function useBattle({
   const handlePlayerUseItem = useCallback(
     async (item: Item): Promise<void> => {
       if (turnOwner !== "player" || isProcessing) return;
-
+  
       setIsProcessing(true);
       await new Promise((r) => setTimeout(r, 300));
-
-      // Apply the item's effect
-      applyItemEffect(item);
-
-      // Using an item consumes the player's turn
+  
+      // Capture effective speed BEFORE the item is applied
+      const baseSpeed = playerCreature?.speed ?? 0;
+      const opponentSpeed = opponentCreature?.speed ?? 0;
+      const speedBeforeItem =
+        baseSpeed + Math.floor((baseSpeed * playerStatBoosts.speedBoost) / 100);
+      const wasAlreadyFaster = speedBeforeItem > opponentSpeed;
+  
+      // Apply the item effect and get the new boosts synchronously
+      const newBoosts = applyItemEffect(item);
+  
+      // Compute effective speed AFTER the item
+      const speedAfterItem =
+        baseSpeed + Math.floor((baseSpeed * newBoosts.speedBoost) / 100);
+      const isNowFaster = speedAfterItem > opponentSpeed;
+  
       await new Promise((r) => setTimeout(r, 300));
-      setTurnOwner("opponent");
+  
+      /*
+      * Only log the "now faster" message when this specific item caused
+      * the player to become faster — not if they were already faster before,
+      * and not on repeat uses once the advantage is already established.
+      */
+      if (isNowFaster && !wasAlreadyFaster) {
+        log(
+          `${playerCreature?.name ?? "Your creature"} is now faster and goes first!`,
+        );
+      }
+  
+      if (isNowFaster) {
+        setTurnOwner("player");
+      } else {
+        setTurnOwner("opponent");
+      }
+  
       setIsProcessing(false);
     },
-    [turnOwner, isProcessing, applyItemEffect],
+    [turnOwner, isProcessing, applyItemEffect, playerCreature, opponentCreature, playerStatBoosts, log],
   );
+ 
 
   // =========================
   // RETURN

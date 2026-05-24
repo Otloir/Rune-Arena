@@ -1,13 +1,13 @@
-import { useCreatureById } from "../../../hooks/useCreature";
+import { useCreatureById, useCreatureBase } from "../../../hooks/useCreature";
 import platformImage from "../../../assets/images/platform.png";
 import styles from "./Creature.module.css";
 
 interface CreatureProps {
-  userId: string | number;
-  creatureId: string | number;
-  role: "player" | "opponent";
-  isAttacking?: boolean;
-  isHit?: boolean;
+  readonly userId: string | number;
+  readonly creatureId: string | number;
+  readonly role: "player" | "opponent";
+  readonly isAttacking?: boolean;
+  readonly isHit?: boolean;
 }
 
 export default function Creature({
@@ -16,8 +16,14 @@ export default function Creature({
   role,
   isAttacking = false,
   isHit = false,
-}: CreatureProps) {
-  const { creature, loading, error } = useCreatureById(userId, creatureId);
+}: CreatureProps): React.ReactElement {
+  const playerResult = useCreatureById(userId, creatureId);
+  const opponentResult = useCreatureBase(creatureId);
+
+  // Rules of Hooks: both hooks always called, we pick the right result after
+  const { creature, loading, error } =
+    role === "opponent" ? opponentResult : playerResult;
+
 
   if (loading)
     return <section className={styles.creatureContainer}>Loading...</section>;

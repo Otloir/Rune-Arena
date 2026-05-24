@@ -18,36 +18,37 @@ export default function ArenaPage(): ReactElement {
   const playerOneUserId: string | undefined = state?.playerOneUserId;
   const playerOneCreatureId: string | undefined = state?.playerOneCreatureId;
   const transaction: TransactionResponse | null = state?.transaction ?? null;
+
   const [playerTwoCreatureId, setPlayerTwoCreatureId] = useState<
-  number | null
+    number | null
   >(null);
 
+  /*
+   * Hook must be called before any conditional returns to satisfy
+   * the Rules of Hooks. We guard inside the effect instead.
+   */
+  useEffect((): void => {
+    async function pickRandomCreature(): Promise<void> {
+      const creatures = await getCreatures();
+      if (!creatures || creatures.length === 0) return;
+
+      const randomIndex = Math.floor(Math.random() * creatures.length);
+      const randomCreature = creatures[randomIndex];
+      setPlayerTwoCreatureId(Number(randomCreature.id));
+    }
+
+    pickRandomCreature();
+  }, []);
+
+  // Guard moved after all hooks
   if (!playerOneUserId || !playerOneCreatureId) {
     return <Navigate to="/" replace />;
   }
 
-  useEffect(() => {
-  async function pickRandomCreature(): Promise<void> {
-    const creatures = await getCreatures();
-
-    if (!creatures || creatures.length === 0) return;
-
-    const randomIndex = Math.floor(Math.random() * creatures.length);
-    const randomCreature = creatures[randomIndex];
-
-    setPlayerTwoCreatureId(Number(randomCreature.id));
-  }
-
-  
-  pickRandomCreature();
-}, []);
-
-if (playerTwoCreatureId === null) {
+  if (playerTwoCreatureId === null) {
     return <div>Loading arena...</div>;
   }
 
-  // TODO: make more dynamic later
-  // player 1 = the user, player 2 = opponent
   return (
     <BattleArena
       playerOneId={playerOneUserId}
