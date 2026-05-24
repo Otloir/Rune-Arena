@@ -124,7 +124,6 @@ async function calculateDamage(
   defenderTypes: number[],
   map: Map<number, Map<number, number>>,
 ): Promise<DamageResult> {
-  // Defense is applied by each caller so stat boosts can be factored in.
   let dmg = move.damage;
  
   const multiplier = getTypeMultiplier(map, move.move_type_id, defenderTypes);
@@ -517,28 +516,20 @@ export function useBattle({
       setIsProcessing(true);
       await new Promise((r) => setTimeout(r, 300));
   
-      // Capture effective speed BEFORE the item is applied
       const baseSpeed = playerCreature?.speed ?? 0;
       const opponentSpeed = opponentCreature?.speed ?? 0;
       const speedBeforeItem =
         baseSpeed + Math.floor((baseSpeed * playerStatBoosts.speedBoost) / 100);
       const wasAlreadyFaster = speedBeforeItem > opponentSpeed;
   
-      // Apply the item effect and get the new boosts synchronously
       const newBoosts = applyItemEffect(item);
   
-      // Compute effective speed AFTER the item
       const speedAfterItem =
         baseSpeed + Math.floor((baseSpeed * newBoosts.speedBoost) / 100);
       const isNowFaster = speedAfterItem > opponentSpeed;
   
       await new Promise((r) => setTimeout(r, 300));
   
-      /*
-      * Only log the "now faster" message when this specific item caused
-      * the player to become faster — not if they were already faster before,
-      * and not on repeat uses once the advantage is already established.
-      */
       if (isNowFaster && !wasAlreadyFaster) {
         log(
           `${playerCreature?.name ?? "Your creature"} is now faster and goes first!`,

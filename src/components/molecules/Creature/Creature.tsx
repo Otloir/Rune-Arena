@@ -19,8 +19,6 @@ export default function Creature({
 }: CreatureProps): React.ReactElement {
   const playerResult = useCreatureById(userId, creatureId);
   const opponentResult = useCreatureBase(creatureId);
-
-  // Rules of Hooks: both hooks always called, we pick the right result after
   const { creature, loading, error } =
     role === "opponent" ? opponentResult : playerResult;
 
