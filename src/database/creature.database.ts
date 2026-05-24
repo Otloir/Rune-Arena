@@ -9,7 +9,6 @@ export type UserCreatureRow = {
   readonly level: JoinedCreatureLevel | JoinedCreatureLevel[];
 };
 
-/** Shared column selection for the Creatures table (includes new `description` column). */
 const CREATURE_COLUMNS =
   "id, name, front_img, back_img, evade, speed, defense, hp, description";
 
@@ -39,16 +38,6 @@ export async function getCreatureById(
   return data;
 }
 
-/**
- * Fetches all moves available to a creature via the Creature_Moves join table.
- * Assumes a join table named "Creature_Moves" with columns: creature_id, move_id.
- * Returns move IDs only — MoveButton fetches full move data itself.
- */
-/**
- * Fetches all moves for a creature with their required level_id.
- * Returns CreatureMoveEntry[] so callers can determine lock state
- * by comparing requiredLevelId against the player's current level_id.
- */
 export async function getMoveIdsByCreatureId(
   creatureId: string | number,
 ): Promise<CreatureMoveEntry[] | null> {
@@ -71,10 +60,6 @@ export async function getMoveIdsByCreatureId(
   );
 }
 
-/**
- * Resolves a level_id (FK to Levels.id) to its display level number.
- * Used to show "Lv. N" in the UI without storing the number separately.
- */
 export async function getLevelById(
   levelId: number,
 ): Promise<Level | null> {
@@ -149,10 +134,6 @@ export async function getTypes(): Promise<Type[] | null> {
   return data;
 }
 
-/**
- * Fetches all types for a creature via the Creature_Types join table.
- * Assumes columns: creature_id, type_id — with Types joined.
- */
 export async function getTypesByCreatureId(
   creatureId: string | number,
 ): Promise<Type[] | null> {
@@ -166,7 +147,6 @@ export async function getTypesByCreatureId(
     return null;
   }
 
-  // Supabase returns the joined relation as `type` — unwrap and filter nulls
   return (data ?? [])
     .map((row: { type: Type | Type[] }) =>
       Array.isArray(row.type) ? row.type[0] : row.type,
@@ -205,11 +185,6 @@ export async function awardXpToCreature(
     return null;
   }
 
-  /*
-   * Supabase JS v2 returns `any[]` without codegen — the assertion here
-   * is intentional and documented. If you add Supabase type generation
-   * (`supabase gen types`) this cast can be removed.
-   */
   const row = rows[0] as { current_xp: number; level_id: number };
 
   const { data: levels, error: levelsError } = await supabase

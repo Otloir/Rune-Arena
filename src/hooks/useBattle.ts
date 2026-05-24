@@ -297,7 +297,6 @@ export function useBattle({
         effectivenessMap,
       );
   
-      // Apply defense once — opponent has no boosts
       const finalDamage = applyDefense(result.damage, opponentCreature.defense ?? 0);
   
       const currentHp = opponentHp ?? opponentCreature.hp;
@@ -342,7 +341,6 @@ export function useBattle({
       const attackerName = opponentCreature?.name ?? "The opponent";
       const moveName = move.name;
   
-      // Evade boost is flat points — add directly, same unit as base evade
       const effectiveEvade =
         (playerCreature.evade ?? 0) + playerStatBoosts.evadeBoost;
   
@@ -357,7 +355,6 @@ export function useBattle({
         effectivenessMap,
       );
   
-      // Defense boost is percentage-based — scales off base stat
       const baseDefense = playerCreature.defense ?? 0;
       const defenseBoostAmount = Math.floor(
         (baseDefense * playerStatBoosts.defenseBoost) / 100,
@@ -457,8 +454,6 @@ export function useBattle({
       }
   
       if (propLower === "evade") {
-        // propvalue is added as flat evade points, matching the unit
-        // used by attackHits() which subtracts evade directly from move chance.
         setPlayerStatBoosts((prev) => ({
           ...prev,
           evadeBoost: prev.evadeBoost + propvalue,

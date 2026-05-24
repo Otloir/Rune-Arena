@@ -8,12 +8,7 @@ export type Creature = {
   readonly speed: number;
   readonly defense: number;
   readonly hp: number;
-  /** Lore / flavour text stored in the Supabase `description` column. */
   readonly description?: string;
-  /**
-   * IDs of moves this creature can use.
-   * Populated when the creature is fetched with move data joined.
-   */
   readonly move_ids?: readonly number[];
 };
 
@@ -46,10 +41,6 @@ export type Level = {
   readonly xp_required: number;
 };
 
-/**
- * A move ID paired with the level_id required to unlock it.
- * level_id is the FK to Levels.id, NOT the display level number.
- */
 export type CreatureMoveEntry = {
   readonly moveId: number;
   readonly requiredLevelId: number;
