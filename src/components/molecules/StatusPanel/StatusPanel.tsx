@@ -40,7 +40,7 @@ export default function StatusPanel({
     >
       <div className={styles.statusBarInfo}>
         <span>{creature.name}</span>
-        <span>Lv. {level}</span>
+        <span>Lv.{level}</span>
       </div>
 
       <Bars current={currentXp} max={xpRequired} variant="xp" aria="xp bar" />

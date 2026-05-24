@@ -3,7 +3,7 @@
   flex-direction: column;
   background-color: var(--status-panel-bg);
   color: var(--color-black);
-  width: 6.5rem;
+  width: 12rem;
   padding: 0.3125rem;
   gap: 0.25rem;
   border-radius: 0.625rem;
@@ -16,13 +16,12 @@
   justify-content: space-between;
   align-items: center;
   font-variant: small-caps;
-  font-size: clamp(0.65rem, 2.2vw, 0.85rem);
   line-height: 1;
 }
 .statusBarInfo span {
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  padding-right: 0.5rem;
+  font-size: var(--fs-xs);
 }
 .statusBarInfo span:last-child {
   font-size: clamp(0.6rem, 2vw, 0.8rem);
@@ -32,9 +31,9 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 641px) {
   .statusBarContainer {
-    width: 8rem;
+    width: 14rem;
   }
 
   .statusBarInfo {
@@ -44,7 +43,7 @@
 
 @media (min-width: 1024px) {
   .statusBarContainer {
-    width: 10rem;
+    width: 12rem;
   }
 
   .statusBarInfo {
