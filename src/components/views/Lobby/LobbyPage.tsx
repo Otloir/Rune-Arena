@@ -177,21 +177,9 @@ export default function LobbyPage() {
               }}
             >
               <div className={styles.creatureSelectButtons}>
-                <CreatureButton
-                  creatureId="1"
-                  onSelect={() => handleCreatureSelect("1")}
-                  selected={selectedCreatureId === "1"}
-                />
-                <CreatureButton
-                  creatureId="2"
-                  onSelect={() => handleCreatureSelect("2")}
-                  selected={selectedCreatureId === "2"}
-                />
-                <CreatureButton
-                  creatureId="3"
-                  onSelect={() => handleCreatureSelect("3")}
-                  selected={selectedCreatureId === "3"}
-                />
+                <CreatureButton creatureId="1" userId={userId} onSelect={() => handleCreatureSelect("1")} selected={selectedCreatureId === "1"} />
+                <CreatureButton creatureId="2" userId={userId} onSelect={() => handleCreatureSelect("2")} selected={selectedCreatureId === "2"} />
+                <CreatureButton creatureId="3" userId={userId} onSelect={() => handleCreatureSelect("3")} selected={selectedCreatureId === "3"} />
               </div>
               {chargeError && <p>Payment failed: {chargeError}</p>}
               <Button

@@ -32,6 +32,7 @@ export default function BattleArena({
   const {
     creature: playerOneCreature,
     level: playerOneLevel,
+    levelId: playerOneLevelId,
     loading: playerOneLoading,
     error: playerOneError,
   } = useCreatureById(playerOneId, playerOneCreatureId);
@@ -62,6 +63,7 @@ export default function BattleArena({
     handlePlayerMove,
     xpGained,
     handlePlayerUseItem,
+    playerStatBoosts,
   } = useBattle({
     playerCreature: playerOneCreature,
     opponentCreature: playerTwoCreature,
@@ -391,17 +393,16 @@ export default function BattleArena({
           <PlayerPanel
             creatureId={Number(playerOneCreatureId)}
             creatureLevel={playerOneLevel}
+            creatureLevelId={playerOneLevelId}
             onMoveSelect={handlePlayerMove}
-            disabled={
-              turnOwner !== "player" ||
-              isProcessing ||
-              battleOver
-            }
+            disabled={turnOwner !== "player" || isProcessing || battleOver}
             battleLog={battleLog}
             playerCreature={playerOneCreature}
-            onOpenInventory={(): void =>
-              setIsInventoryOpen(true)
-            }
+            onOpenInventory={(): void => setIsInventoryOpen(true)}
+            currentHp={playerHp}
+            maxHp={playerOneCreature.hp}
+            userId={playerOneId}    
+            statBoosts={playerStatBoosts}
           />
         </div>
       </div>

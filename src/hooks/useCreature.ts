@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import type { Creature, Move, Type } from "../types/creature.types";
+import type { Creature, Move, Type, Level, CreatureMoveEntry } from "../types/creature.types";
 import {
   getCreatures,
   getTypes,
   getMoves,
   getUserCreature,
   getUserCreatureById,
+  getMoveIdsByCreatureId,
+  getTypesByCreatureId,
+  getLevelById,
 } from "../database/creature.database";
 
-// Hook that handles loading/error state for any async fetch.
-// FetchedData is a placeholder for the data type gets passed in
 export function useAsyncData<FetchedData>(
   fetcher: () => Promise<FetchedData | null>,
   enabled: boolean,
@@ -30,12 +31,15 @@ export function useAsyncData<FetchedData>(
       return;
     }
 
+    let cancelled = false;
+
     async function load(): Promise<void> {
       setLoading(true);
       setError(null);
       setData(null);
       try {
         const result = await fetcher();
+        if (cancelled) return;
         if (!result) {
           setError("No data found");
           return;
@@ -43,13 +47,18 @@ export function useAsyncData<FetchedData>(
         setData(result);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
     load();
+
+    return (): void => {
+      cancelled = true;
+    };
   }, [enabled]);
 
   return { data, loading, error };
@@ -72,6 +81,7 @@ export function useCreature(): { creatures: Creature[] } {
 export function useUserCreature(userId: number | string): {
   creature: Creature | null;
   level: number;
+  levelId: number | null;
   currentXp: number;
   xpRequired: number;
   loading: boolean;
@@ -97,6 +107,7 @@ export function useUserCreature(userId: number | string): {
   return {
     creature: creatureData ?? null,
     level: levelData?.level ?? 1,
+    levelId: levelData?.id ?? null,
     currentXp: data?.current_xp ?? 0,
     xpRequired: levelData?.xp_required ?? 500,
     loading,
@@ -104,9 +115,13 @@ export function useUserCreature(userId: number | string): {
   };
 }
 
-export function useCreatureById(userId: string | number, creatureId: number | string): {
+export function useCreatureById(
+  userId: string | number,
+  creatureId: number | string,
+): {
   creature: Creature | null;
   level: number;
+  levelId: number | null;
   currentXp: number;
   xpRequired: number;
   loading: boolean;
@@ -135,11 +150,106 @@ export function useCreatureById(userId: string | number, creatureId: number | st
   return {
     creature: creatureData ?? null,
     level: levelData?.level ?? 1,
+    levelId: levelData?.id ?? null,
     currentXp: data?.current_xp ?? 0,
     xpRequired: levelData?.xp_required ?? 500,
     loading,
     error,
   };
+}
+
+export function useCreatureMoveIds(
+  creatureId: Creature["id"] | null,
+  enabled: boolean,
+): {
+  readonly moveEntries: readonly CreatureMoveEntry[];
+  readonly loading: boolean;
+  readonly error: string | null;
+} {
+  const [moveEntries, setMoveEntries] = useState<readonly CreatureMoveEntry[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect((): (() => void) | void => {
+    if (!enabled || !creatureId) {
+      setMoveEntries([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const entries = await getMoveIdsByCreatureId(creatureId!);
+        if (cancelled) return;
+        setMoveEntries(entries ?? []);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load moves");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+  }, [creatureId, enabled]);
+
+  return { moveEntries, loading, error };
+}
+
+export function useLevelById(
+  levelId: number | null,
+  enabled: boolean,
+): {
+  readonly level: Level | null;
+  readonly loading: boolean;
+  readonly error: string | null;
+} {
+  const [level, setLevel] = useState<Level | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect((): (() => void) | void => {
+    if (!enabled || levelId === null) {
+      setLevel(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getLevelById(levelId!);
+        if (cancelled) return;
+        setLevel(result);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load level");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+  }, [levelId, enabled]);
+
+  return { level, loading, error };
 }
 
 export function useType(): { types: Type[] } {
@@ -168,4 +278,51 @@ export function useMoves(): { moves: Move[] } {
   }, []);
 
   return { moves };
+}
+
+export function useCreatureTypes(
+  creatureId: Creature["id"] | null,
+  enabled: boolean,
+): {
+  readonly types: readonly Type[];
+  readonly loading: boolean;
+  readonly error: string | null;
+} {
+  const [types, setTypes] = useState<readonly Type[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect((): (() => void) | void => {
+    if (!enabled || !creatureId) {
+      setTypes([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getTypesByCreatureId(creatureId!);
+        if (cancelled) return;
+        setTypes(result ?? []);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load types");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+  }, [creatureId, enabled]);
+
+  return { types, loading, error };
 }

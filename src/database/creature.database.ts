@@ -1,18 +1,21 @@
 import { supabase } from "../lib/supabase";
-import type { Creature, Level, Type, Move } from "../types/creature.types";
+import type { Creature, Level, Type, Move, CreatureMoveEntry } from "../types/creature.types";
 
-export type JoinedCreatureLevel = Pick<Level, "level" | "xp_required">;
+export type JoinedCreatureLevel = Pick<Level, "id" | "level" | "xp_required">;
 
 export type UserCreatureRow = {
-  current_xp: number;
-  creature: Creature | Creature[];
-  level: JoinedCreatureLevel | JoinedCreatureLevel[];
+  readonly current_xp: number;
+  readonly creature: Creature | Creature[];
+  readonly level: JoinedCreatureLevel | JoinedCreatureLevel[];
 };
+
+const CREATURE_COLUMNS =
+  "id, name, front_img, back_img, evade, speed, defense, hp, description";
 
 export async function getCreatures(): Promise<Creature[] | null> {
   const { data, error } = await supabase
     .from("Creatures")
-    .select("id, name, front_img, back_img, evade, speed, defense, hp");
+    .select(CREATURE_COLUMNS);
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
@@ -25,13 +28,52 @@ export async function getCreatureById(
 ): Promise<Creature | null> {
   const { data, error } = await supabase
     .from("Creatures")
-    .select("id, name, front_img, back_img, evade, speed, defense, hp")
+    .select(CREATURE_COLUMNS)
     .eq("id", creatureId)
     .single();
   if (error) {
     console.error("Supabase error:", error.message);
     return null;
   }
+  return data;
+}
+
+export async function getMoveIdsByCreatureId(
+  creatureId: string | number,
+): Promise<CreatureMoveEntry[] | null> {
+  const { data, error } = await supabase
+    .from("Creature_Moves")
+    .select("move_id, level_id")
+    .eq("creature_id", creatureId)
+    .order("level_id", { ascending: true });
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
+  return (data ?? []).map(
+    (row: { move_id: number; level_id: number }): CreatureMoveEntry => ({
+      moveId: row.move_id,
+      requiredLevelId: row.level_id,
+    }),
+  );
+}
+
+export async function getLevelById(
+  levelId: number,
+): Promise<Level | null> {
+  const { data, error } = await supabase
+    .from("Levels")
+    .select("id, level, xp_required")
+    .eq("id", levelId)
+    .single();
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
   return data;
 }
 
@@ -43,8 +85,8 @@ export async function getUserCreature(
     .select(
       `
       current_xp,
-      creature:creature_id ( id, name, front_img, back_img, evade, speed, defense, hp ),
-      level:level_id ( level, xp_required )
+      creature:creature_id ( ${CREATURE_COLUMNS} ),
+      level:level_id ( id, level, xp_required )
     `,
     )
     .eq("user_id", userId)
@@ -65,8 +107,8 @@ export async function getUserCreatureById(
     .select(
       `
       current_xp,
-      creature:creature_id ( id, name, front_img, back_img, evade, speed, defense, hp ),
-      level:level_id ( level, xp_required )
+      creature:creature_id ( ${CREATURE_COLUMNS} ),
+      level:level_id ( id, level, xp_required )
     `,
     )
     .eq("user_id", userId)
@@ -90,6 +132,26 @@ export async function getTypes(): Promise<Type[] | null> {
     return null;
   }
   return data;
+}
+
+export async function getTypesByCreatureId(
+  creatureId: string | number,
+): Promise<Type[] | null> {
+  const { data, error } = await supabase
+    .from("Creature_Types")
+    .select("type:type_id ( id, name )")
+    .eq("creature_id", creatureId);
+
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return null;
+  }
+
+  return (data ?? [])
+    .map((row: { type: Type | Type[] }) =>
+      Array.isArray(row.type) ? row.type[0] : row.type,
+    )
+    .filter((t): t is Type => t !== null && t !== undefined);
 }
 
 export async function getMoves(): Promise<Move[] | null> {

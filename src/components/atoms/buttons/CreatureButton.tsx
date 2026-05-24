@@ -1,31 +1,40 @@
+import { useState } from "react";
 import type { FC } from "react";
 import { useAsyncData } from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import type { Creature } from "../../../types/creature.types";
+import CreatureInfoPage from "../../views/CreatureInfo/CreatureInfoPage";
+import IconButton from "./IconButton";
 import styles from "./CreatureButton.module.css";
-import defense from "./../../../assets/icons/defence_icon.svg";
-import health from "./../../../assets/icons/health_icon.svg";
-import speed from "./../../../assets/icons/speed_icon.svg";
-import evade from "./../../../assets/icons/evade_icon.svg";
-import sword from "./../../../assets/icons/sword_icon.svg";
+import defenseIcon from "./../../../assets/icons/defence_icon.svg";
+import healthIcon from "./../../../assets/icons/health_icon.svg";
+import speedIcon from "./../../../assets/icons/speed_icon.svg";
+import evadeIcon from "./../../../assets/icons/evade_icon.svg";
+import swordIcon from "./../../../assets/icons/sword_icon.svg";
+import informationIcon from "./../../../assets/icons/information_icon.svg";
 
 interface CreatureButtonProps {
-  creatureId: Creature["id"];
-  onSelect: (creature: Creature) => void;
-  selected?: boolean;
-  disabled?: boolean;
-  shape?: "rounded" | "pill";
-  shadow?: boolean;
+  readonly creatureId: Creature["id"];
+  readonly onSelect: (creature: Creature) => void;
+  /** The logged-in user's ID — needed to fetch level for the info modal. */
+  readonly userId: string | number;
+  readonly selected?: boolean;
+  readonly disabled?: boolean;
+  readonly shape?: "rounded" | "pill";
+  readonly shadow?: boolean;
 }
 
 const CreatureButton: FC<CreatureButtonProps> = ({
   creatureId,
   onSelect,
+  userId,
   selected = false,
   disabled = false,
   shape = "rounded",
   shadow = false,
 }) => {
+  const [infoOpen, setInfoOpen] = useState<boolean>(false);
+
   const {
     data: creature,
     loading,
@@ -34,171 +43,186 @@ const CreatureButton: FC<CreatureButtonProps> = ({
 
   if (loading)
     return (
-      <button
-        type="button"
-        className={[
-          styles.card,
-          styles[shape],
-          styles.loadingPlaceholder,
-          shadow ? styles.withShadow : "",
-        ].join(" ")}
-        disabled
-        aria-busy="true"
-        aria-label="Loading creature"
-      />
+      <div className={styles.cardWrapper}>
+        <button
+          type="button"
+          className={[
+            styles.card,
+            styles[shape],
+            styles.loadingPlaceholder,
+            shadow ? styles.withShadow : "",
+          ].join(" ")}
+          disabled
+          aria-busy="true"
+          aria-label="Loading creature"
+        />
+      </div>
     );
 
   if (error)
     return (
-      <button
-        type="button"
-        className={[
-          styles.card,
-          styles[shape],
-          shadow ? styles.withShadow : "",
-        ].join(" ")}
-        disabled
-        aria-label={error}
-      >
-        {error}
-      </button>
+      <div className={styles.cardWrapper}>
+        <button
+          type="button"
+          className={[styles.card, styles[shape], shadow ? styles.withShadow : ""].join(" ")}
+          disabled
+          aria-label={error}
+        >
+          {error}
+        </button>
+      </div>
     );
 
   if (!creature)
     return (
-      <button
-        type="button"
-        className={[
-          styles.card,
-          styles[shape],
-          shadow ? styles.withShadow : "",
-        ].join(" ")}
-        disabled
-        aria-label="Creature unavailable"
-      >
-        Creature unavailable.
-      </button>
+      <div className={styles.cardWrapper}>
+        <button
+          type="button"
+          className={[styles.card, styles[shape], shadow ? styles.withShadow : ""].join(" ")}
+          disabled
+          aria-label="Creature unavailable"
+        >
+          Creature unavailable.
+        </button>
+      </div>
     );
 
   return (
-    <button
-      type="button"
-      className={[
-        styles.card,
-        styles[shape],
-        selected ? styles.selected : "",
-        shadow ? styles.withShadow : "",
-      ].join(" ")}
-      onClick={() => onSelect(creature)}
-      disabled={disabled}
-      aria-pressed={selected}
-      aria-label={`${selected ? "Selected: " : "Select "}${creature.name}, HP ${creature.hp}, Attack ${creature.evade}, Defense ${creature.defense}, Speed ${creature.speed}`}
-    >
-      {selected && (
-        <div className={styles.selectedBadge} aria-hidden="true">
-          Selected
-        </div>
-      )}
-      <img
-        src={creature.front_img}
-        alt={creature.name}
-        className={styles.sprite}
+    <>
+      <CreatureInfoPage
+        creatureId={creatureId}
+        userId={userId}
+        isOpen={infoOpen}
+        onClose={(): void => setInfoOpen(false)}
+        isBattleView={false}
       />
-      <h3 className={styles.name}>{creature.name}</h3>
-      <div className={styles.hpRow}>
-        <span className={styles.hpLabel}>
-          <span className={styles.heartIcon} aria-hidden="true">
-            <span
-              className={styles.propertieIcon}
-              aria-hidden="true"
-              style={{
-                WebkitMaskImage: `url(${health})`,
-                maskImage: `url(${health})`,
-                backgroundColor: "var(--health)",
-              }}
-            />
-          </span>{" "}
-          Health
-        </span>
-        <span
-          className={styles.hpValue}
-          aria-label={`${creature.hp} of ${creature.hp} HP`}
+
+      <div className={styles.cardWrapper}>
+        <button
+          type="button"
+          className={[
+            styles.card,
+            styles[shape],
+            selected ? styles.selected : "",
+            shadow ? styles.withShadow : "",
+          ].join(" ")}
+          onClick={(): void => onSelect(creature)}
+          disabled={disabled}
+          aria-pressed={selected}
+          aria-label={`${selected ? "Selected: " : "Select "}${creature.name}, HP ${creature.hp}, Evade ${creature.evade}, Defense ${creature.defense}, Speed ${creature.speed}`}
         >
-          {creature.hp}/{creature.hp}
-        </span>
-      </div>
-      <div
-        className={styles.hpBar}
-        role="progressbar"
-        aria-valuenow={creature.hp}
-        aria-valuemin={0}
-        aria-valuemax={creature.hp}
-        aria-label="HP bar"
-      >
-        <div className={styles.hpFill} style={{ width: "100%" }} />
-      </div>
-      <div className={styles.stats} aria-label="Creature stats">
-        <span className={styles.stat} aria-label={`Evade: ${creature.evade}`}>
-          <span className={styles.statIcon} aria-hidden="true">
+          {selected && (
+            <div className={styles.selectedBadge} aria-hidden="true">
+              Selected
+            </div>
+          )}
+          <img
+            src={creature.front_img}
+            alt={creature.name}
+            className={styles.sprite}
+          />
+          <h3 className={styles.name}>{creature.name}</h3>
+          <div className={styles.hpRow}>
+            <span className={styles.hpLabel}>
+              <span
+                className={styles.propertieIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${healthIcon})`,
+                  maskImage: `url(${healthIcon})`,
+                  backgroundColor: "var(--health)",
+                }}
+              />{" "}
+              Health
+            </span>
             <span
-              className={styles.propertieIcon}
-              aria-hidden="true"
-              style={{
-                WebkitMaskImage: `url(${sword})`,
-                maskImage: `url(${sword})`,
-                backgroundColor: "var(--evade)",
-              }}
-            />
-          </span>{" "}
-          {creature.evade}
-        </span>
-        <span
-          className={styles.stat}
-          aria-label={`Defense: ${creature.defense}`}
+              className={styles.hpValue}
+              aria-label={`${creature.hp} of ${creature.hp} HP`}
+            >
+              {creature.hp}/{creature.hp}
+            </span>
+          </div>
+          <div
+            className={styles.hpBar}
+            role="progressbar"
+            aria-valuenow={creature.hp}
+            aria-valuemin={0}
+            aria-valuemax={creature.hp}
+            aria-label="HP bar"
+          >
+            <div className={styles.hpFill} style={{ width: "100%" }} />
+          </div>
+          <div className={styles.stats} aria-label="Creature stats">
+            <span className={styles.stat} aria-label={`Attack: ${creature.evade}`}>
+              <span
+                className={styles.propertieIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${swordIcon})`,
+                  maskImage: `url(${swordIcon})`,
+                  backgroundColor: "var(--evade)",
+                }}
+              />{" "}
+              {creature.evade}
+            </span>
+            <span className={styles.stat} aria-label={`Defense: ${creature.defense}`}>
+              <span
+                className={styles.propertieIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${defenseIcon})`,
+                  maskImage: `url(${defenseIcon})`,
+                  backgroundColor: "var(--defense)",
+                }}
+              />{" "}
+              {creature.defense}
+            </span>
+            <span className={styles.stat} aria-label={`Speed: ${creature.speed}`}>
+              <span
+                className={styles.propertieIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${speedIcon})`,
+                  maskImage: `url(${speedIcon})`,
+                  backgroundColor: "var(--speed)",
+                }}
+              />{" "}
+              {creature.speed}
+            </span>
+            <span className={styles.stat} aria-label={`Evade: ${creature.evade}`}>
+              <span
+                className={styles.propertieIcon}
+                aria-hidden="true"
+                style={{
+                  WebkitMaskImage: `url(${evadeIcon})`,
+                  maskImage: `url(${evadeIcon})`,
+                  backgroundColor: "var(--evade)",
+                }}
+              />{" "}
+              {creature.evade}
+            </span>
+          </div>
+        </button>
+
+        {/* SC 2.5.5: min 44×44px | SC 3.3.5: descriptive aria-label */}
+        <div
+          className={styles.infoButtonWrapper}
+          onClick={(e): void => e.stopPropagation()}
         >
-          <span className={styles.statIcon} aria-hidden="true">
-            <span
-              className={styles.propertieIcon}
-              aria-hidden="true"
-              style={{
-                WebkitMaskImage: `url(${defense})`,
-                maskImage: `url(${defense})`,
-                backgroundColor: "var(--defense)",
-              }}
-            />
-          </span>{" "}
-          {creature.defense}
-        </span>
-        <span className={styles.stat} aria-label={`Speed: ${creature.speed}`}>
-          <span className={styles.statIcon} aria-hidden="true">
-            <span
-              className={styles.propertieIcon}
-              aria-hidden="true"
-              style={{
-                WebkitMaskImage: `url(${speed})`,
-                maskImage: `url(${speed})`,
-                backgroundColor: "var(--speed)",
-              }}
-            />
-          </span>{" "}
-          {creature.speed}
-        </span>
-        <span className={styles.stat} aria-label={`Evade: ${creature.evade}`}>
-          <span className={styles.statIcon} aria-hidden="true">
-            <span
-              className={styles.propertieIcon}
-              aria-hidden="true"
-              style={{
-                WebkitMaskImage: `url(${evade})`,
-                maskImage: `url(${evade})`,
-                backgroundColor: "var(--evade)",
-              }}
-            />
-          </span>{" "}
-          {creature.evade}
-        </span>
+          <IconButton
+            iconSrc={informationIcon}
+            iconAlt=""
+            label={`View detailed information for ${creature.name}`}
+            onClick={(): void => setInfoOpen(true)}
+            aria-haspopup="dialog"
+            variant="neutral"
+            shape="circle"
+            size="md"
+            className={styles.infoButton}
+          />
+        </div>
       </div>
-    </button>
+    </>
   );
 };
 
