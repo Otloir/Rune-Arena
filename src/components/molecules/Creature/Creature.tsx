@@ -1,5 +1,5 @@
 import { useCreatureById } from "../../../hooks/useCreature";
-import platformImage from "../../../assets/images/platform.png";
+import platformImage from "../../../assets/images/platform.svg";
 import styles from "./Creature.module.css";
 
 interface CreatureProps {
