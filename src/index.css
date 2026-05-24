@@ -20,6 +20,7 @@
   /* ─── Background Colors ─── */
   --bg: #7d756b;
   --arena-bg: #d6b481;
+  --battle-arena-bg: #edeec7;
   --carousel-slide-bg: #ead9bb;
   --carousel-property-bg: #dfcdb1;
   --carousel-panel-bg: #a39482;
@@ -30,6 +31,7 @@
   --shop-container: var(--surface);
   --status-panel-bg: var(--surface);
   --modal-bg: var(--surface);
+  --reward-bg: #d4b27b;
 
   /* ─── Button Colors (unified) ─── */
   --btn-action-bg: #90c6ef;
@@ -120,10 +122,6 @@
   /* ─── Loading Placeholders ─── */
   --placeholder-1: #e2e5f0;
   --placeholder-2: #eceff5;
-
-  /* ─── Additional Component Colors ─── */
-  --battle-arena-bg: #c7eee1;
-  --reward-bg: #d4b27b;
 
   /* Fonts */
   --sans: "Press Start 2P", system-ui;
