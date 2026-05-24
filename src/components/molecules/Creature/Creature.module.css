@@ -10,7 +10,7 @@
 }
 
 .creatureSprite {
-  width: 4rem;
+  width: 6rem;
   height: auto;
   position: absolute;
   z-index: 1;
@@ -77,8 +77,24 @@
 
 .platform {
   width: 10rem;
-  height: 3rem;
+  height: 10rem;
   position: relative;
+}
+
+@media (min-width: 768px) {
+  .creatureContainer {
+    width: 20rem;
+  }
+
+  .creatureSprite {
+    width: 8rem;
+    padding-bottom: 7rem;
+  }
+
+  .platform {
+    width: 16rem;
+    height: 16rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -87,12 +103,12 @@
   }
 
   .creatureSprite {
-    width: 6rem;
+    width: 9rem;
     padding-bottom: 8rem;
   }
 
   .platform {
-    width: 16rem;
-    height: 4rem;
+    width: 18rem;
+    height: 18rem;
   }
 }
