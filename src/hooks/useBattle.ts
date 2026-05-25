@@ -419,7 +419,7 @@ export function useBattle({
 
     const run = async (): Promise<void> => {
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 1500));
       await executeOpponentTurn(opponentMoveIds);
       setIsProcessing(false);
     };
@@ -498,7 +498,7 @@ export function useBattle({
       if (turnOwner !== "player" || isProcessing) return;
 
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 1200));
       const opponentAlive = await damageOpponent(move);
 
       if (opponentAlive) {
@@ -514,7 +514,7 @@ export function useBattle({
       if (turnOwner !== "player" || isProcessing) return;
   
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 1500));
   
       const baseSpeed = playerCreature?.speed ?? 0;
       const opponentSpeed = opponentCreature?.speed ?? 0;
@@ -528,7 +528,7 @@ export function useBattle({
         baseSpeed + Math.floor((baseSpeed * newBoosts.speedBoost) / 100);
       const isNowFaster = speedAfterItem > opponentSpeed;
   
-      await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 1200));
   
       if (isNowFaster && !wasAlreadyFaster) {
         log(
