@@ -37,13 +37,13 @@
 .player {
   display: flex;
   flex-direction: row-reverse;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
 }
 
 .opponent {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
 }
 
