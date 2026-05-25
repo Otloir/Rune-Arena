@@ -48,7 +48,7 @@ export default function ResultPage(): ReactElement {
   const opponentName: string = state?.opponentCreatureName ?? "The opponent";
   const xpGained: number = state?.xpGained ?? 0;
   const stamp: StampReward | null = state?.stamp ?? null;
-  const isGuest: boolean = state?.isGuest ?? true;
+  //const isGuest: boolean = state?.isGuest ?? true;
 
   /*
   const handleBack = (): void => {
