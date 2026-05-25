@@ -167,7 +167,11 @@ export default function ResultPage(): ReactElement {
         <Button
           type="button"
           variant="neutral"
-          onClick={handleBack}
+          onClick={
+            isGuest
+              ? handleBack
+              : () => window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "")
+          }
           aria-label={isGuest ? "Return to lobby" : "Return to Tivoli"}
           className={styles.secondaryButton}
         >
