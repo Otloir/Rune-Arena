@@ -48,15 +48,16 @@ export default function ResultPage(): ReactElement {
   const opponentName: string = state?.opponentCreatureName ?? "The opponent";
   const xpGained: number = state?.xpGained ?? 0;
   const stamp: StampReward | null = state?.stamp ?? null;
-  const isGuest: boolean = state?.isGuest ?? true;
+  //const isGuest: boolean = state?.isGuest ?? true;
 
+  /*
   const handleBack = (): void => {
     if (isGuest) {
       void navigate("/");
     } else {
       window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "");
     }
-  };
+  };*/
 
   const [newBalance, setNewBalance] = useState<number | null>(null);
 
@@ -163,27 +164,13 @@ export default function ResultPage(): ReactElement {
         >
           +{xpGained} XP
         </p>
-
-        <Button
-          type="button"
-          variant="neutral"
-          onClick={
-            isGuest
-              ? handleBack
-              : () => window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "")
-          }
-          aria-label={isGuest ? "Return to lobby" : "Return to Tivoli"}
-          className={styles.secondaryButton}
-        >
-          {isGuest ? "Back to Lobby" : "Back to Tivoli"}
-        </Button>
-              <button
-                onClick={() =>
+        <button
+            onClick={() =>
                   window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "")
                 }
-              >
-                Back to Loopland
-            </button>
+        >
+          Back to Loopland
+        </button>
       </section>
     </main>
   );
