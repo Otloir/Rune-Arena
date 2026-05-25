@@ -124,8 +124,8 @@
     flex-direction: row;
     border-radius: 1.25rem 1.25rem 0 0;
     gap: 1rem;
-    height: min(40vh, 22rem);
-    max-height: min(40vh, 22rem);
+    height: min(48vh, 28rem);
+    max-height: min(48vh, 28rem);
   }
 
   .actionPanelMovesContainer{
@@ -150,5 +150,11 @@
   .actionPanel {
     flex: 1.2;
     justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .controlsPanel {
+    height: min(55vh, 34rem);
   }
 }

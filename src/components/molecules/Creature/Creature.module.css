@@ -3,17 +3,30 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 12rem;
-  width: 10rem;
+  /* responsive sizing (inlined) */
+  width: clamp(8rem, 13vw, 20rem);
+  height: calc(clamp(8rem, 13vw, 20rem) * 1.1);
   max-width: 100%;
+  position: relative;
+  overflow: hidden; /* prevent sprite/platform from spilling outside */
+}
+
+.creatureStack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end; /* keep platform at bottom */
+  justify-content: center;
 }
 
 .creatureSprite {
-  width: 6rem;
+  width: clamp(4.5rem, 7.5vw, 9rem);
+  max-width: 100%;
   height: auto;
   position: absolute;
   z-index: 2;
-  padding-bottom: 5rem;
+  bottom: calc(clamp(1.8rem, 3.5vw, 5rem) - clamp(0.3rem, 0.8vw, 0.7rem));
   transition: transform 0.3s ease-out;
 }
 
@@ -75,37 +88,48 @@
 }
 
 .platform {
-  width: 10rem;
-  position: relative;
-  z-index: 0;
+  width: 100%;
+  /* slightly larger than container to allow visual padding */
+  max-width: calc(clamp(8rem, 13vw, 20rem) * 1.05);
+  height: 4rem;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 641px) {
   .creatureContainer {
-    width: 20rem;
+    width: clamp(12rem, 12vw, 22rem);
+    height: calc(clamp(12rem, 12vw, 22rem) * 1.1);
+    margin-top: -1rem;
   }
 
   .creatureSprite {
-    width: 8rem;
-    padding-bottom: 7rem;
+    width: clamp(6.5rem, 6.5vw, 10rem);
+    bottom: calc(clamp(2.8rem, 3.5vw, 6rem) - 0.5rem);
   }
 
   .platform {
-    width: 16rem;
+    max-width: calc(clamp(12rem, 12vw, 22rem) * 1.05);
+    height: 5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .creatureContainer {
     width: 20rem;
+    height: 20rem;
   }
 
   .creatureSprite {
-    width: 8rem;
-    padding-bottom: 8rem;
+    width: 9rem;
+    bottom: calc(5rem - 0.6rem);
   }
 
   .platform {
-    width: 16rem;
+    max-width: calc(20rem * 1.05);
+    height: 9rem;
   }
 }

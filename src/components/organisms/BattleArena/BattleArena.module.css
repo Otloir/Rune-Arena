@@ -2,6 +2,7 @@
   padding: 3rem 1rem 0 1rem;
   background-color: var(--battle-arena-bg);
   height: 100vh;
+  position: relative;
 }
 
 .arenaContainer {
@@ -15,16 +16,20 @@
   justify-content: space-around;
   flex-direction: column;
   height: 60%;
-  gap: clamp(1rem, 1vh, 2rem);
+  gap: clamp(1rem, 6vh, 2rem);
 }
 
 .player {
   display: flex;
   flex-direction: row-reverse;
+  align-items: flex-end; /* align status bar with creature stack */
+  gap: 0.5rem;
 }
 
 .opponent {
   display: flex;
+  align-items: flex-end; /* align status bar with creature stack */
+  gap: 0.5rem;
 }
 
 .playerContainer,
@@ -42,8 +47,20 @@
   align-items: center;
 }
 
+/* Ensure status bar sits inline with creature and doesn't shift vertically */
+.player .statusBarContainer,
+.opponent .statusBarContainer {
+  align-self: flex-end;
+  margin: 0 0.5rem;
+}
+
+/* Prevent creature container from shrinking inside flex layouts */
+.player .creatureContainer,
+.opponent .creatureContainer {
+  flex: 0 0 auto;
+}
+
 .controlsWrapper {
-  max-height: 45vh;
   position: absolute;
   left: 0;
   right: 0;
@@ -75,17 +92,21 @@
   }
   .arenaContainer {
     justify-content: space-between;
-    .battleView {
-      gap: clamp(2rem, 12vh, 6rem);
-    }
+  }
+  .battleView {
+    gap: clamp(1.5rem, 10vh, 4rem);
   }
 }
 
 @media (min-width: 1024px) {
   .battleView {
-    gap: clamp(3rem, 15vh, 8rem);
+    gap: clamp(2rem, 12vh, 6rem);
   }
   .arena {
     padding: 6rem 1rem 0 1rem;
+  }
+  .controlsWrapper {
+    position: static;
+    max-height: none;
   }
 }
