@@ -73,7 +73,14 @@ export default function StorePage(): ReactElement {
             }
             aria-live="polite"
           >
-            <span>{balance === null ? "…" : `${balance} RC`}</span>
+            {balance === null ? (
+              <span>…</span>
+            ) : (
+              <>
+                <span className={styles.balanceValue}>{balance}</span>
+                <span className={styles.balanceCurrency}>RC</span>
+              </>
+            )}
           </div>
           <Button
             onClick={openInventory}
