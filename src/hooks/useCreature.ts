@@ -96,15 +96,49 @@ export function useCreatureBase(
   readonly loading: boolean;
   readonly error: string | null;
 } {
-  const { data, loading, error } = useAsyncData(
-    () =>
-      creatureId !== null
-        ? getCreatureById(String(creatureId))
-        : Promise.resolve(null),
-    creatureId !== null,
-  );
+  const [creature, setCreature] = useState<Creature | null>(null);
+  const [loading, setLoading] = useState<boolean>(creatureId !== null);
+  const [error, setError] = useState<string | null>(null);
 
-  return { creature: data ?? null, loading, error };
+  useEffect((): (() => void) | void => {
+    if (creatureId === null) {
+      setCreature(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      setCreature(null);
+      try {
+        const result = await getCreatureById(String(creatureId));
+        if (cancelled) return;
+        setCreature(result);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load creature");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return (): void => {
+      cancelled = true;
+    };
+    /*
+     * creatureId is in the dependency array so the effect re-runs whenever
+     * the opponent creature changes — useAsyncData only re-runs on `enabled`
+     * flipping, which would miss mid-session creatureId changes.
+     */
+  }, [creatureId]);
+
+  return { creature, loading, error };
 }
 
 export function useUserCreature(userId: number | string): {
