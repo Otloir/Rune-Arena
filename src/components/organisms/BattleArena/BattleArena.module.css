@@ -22,13 +22,13 @@
 .player {
   display: flex;
   flex-direction: row-reverse;
-  align-items: flex-end; /* align status bar with creature stack */
+  align-items: center; /* align status bar with creature stack */
   gap: 0.5rem;
 }
 
 .opponent {
   display: flex;
-  align-items: flex-end; /* align status bar with creature stack */
+  align-items: center; /* align status bar with creature stack */
   gap: 0.5rem;
 }
 
