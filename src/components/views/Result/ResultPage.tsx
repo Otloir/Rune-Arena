@@ -177,6 +177,13 @@ export default function ResultPage(): ReactElement {
         >
           {isGuest ? "Back to Lobby" : "Back to Tivoli"}
         </Button>
+              <button
+                onClick={() =>
+                  window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "")
+                }
+              >
+                Back to Loopland
+            </button>
       </section>
     </main>
   );
