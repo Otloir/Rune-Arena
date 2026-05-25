@@ -166,7 +166,7 @@ export default function ResultPage(): ReactElement {
         </p>
         <button
             onClick={() =>
-                  window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "")
+                  window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "*")
                 }
         >
           Back to Loopland
