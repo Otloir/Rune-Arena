@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   height: 12rem;
   width: 10rem;
   max-width: 100%;
@@ -13,7 +12,7 @@
   width: 6rem;
   height: auto;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   padding-bottom: 5rem;
   transition: transform 0.3s ease-out;
 }
@@ -77,8 +76,8 @@
 
 .platform {
   width: 10rem;
-  height: 10rem;
   position: relative;
+  z-index: 0;
 }
 
 @media (min-width: 768px) {
@@ -93,7 +92,6 @@
 
   .platform {
     width: 16rem;
-    height: 16rem;
   }
 }
 
@@ -103,12 +101,11 @@
   }
 
   .creatureSprite {
-    width: 9rem;
+    width: 8rem;
     padding-bottom: 8rem;
   }
 
   .platform {
-    width: 18rem;
-    height: 18rem;
+    width: 16rem;
   }
 }

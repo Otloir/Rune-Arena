@@ -1,16 +1,18 @@
 .arena {
   background-color: var(--battle-arena-bg);
-  min-height: 100dvh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .arenaContainer {
+  margin: 4rem 1rem 0 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 }
 
 .player {
@@ -24,15 +26,12 @@
 
 .playerContainer,
 .opponentContainer {
-  flex: 1 1 auto;
-  min-height: 0;
   display: flex;
 }
 
 .opponentContainer {
   flex-direction: row-reverse;
   align-items: flex-end;
-  padding-top: 2rem;
 }
 
 .playerContainer {
@@ -41,13 +40,13 @@
 }
 
 .controlsWrapper {
-  flex: 0 0 40vh;
-  height: 40vh;
-  min-height: 18rem;
-  max-height: 26rem;
-
-  padding: 0 1rem;
+  height: 45vh;
   overflow: hidden;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
 }
 
 .opponentControlsContainer {
@@ -68,9 +67,26 @@
   color: var(--text-primary);
 }
 
+@media (min-width: 641px) {
+  .arena {
+    overflow: hidden;
+  }
+  .controlsWrapper {
+    height: auto;
+  }
+  .arenaContainer {
+    margin: 5rem 1rem 0 1rem;
+  }
+}
+
 @media (min-width: 1024px) {
   .arena {
-    height: 100vh;
     overflow: hidden;
+  }
+  .controlsWrapper {
+    height: 40vh;
+  }
+  .arenaContainer {
+    margin: 4rem 1rem 0 1rem;
   }
 }
