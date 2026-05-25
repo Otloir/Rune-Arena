@@ -1,14 +1,17 @@
 .arena {
   padding: 3rem 1rem 0 1rem;
   background-color: var(--battle-arena-bg);
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
- 
+
 .arenaContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
 }
 
 .battleView {
@@ -16,43 +19,54 @@
   flex-direction: column;
   justify-content: space-around;
   flex: 1;
-  padding-bottom: 45vh;
+  /*
+   * Reserve space for the controls panel on mobile/tablet.
+   * controlsWrapper is position:absolute so it doesn't participate
+   * in flex layout — we pad the battle view to prevent overlap.
+   */
+  padding-bottom: 22rem;
   gap: clamp(1rem, 6vh, 2rem);
 }
- 
+
+/*
+ * .player/.opponent: the status panel should align with the creature
+ * sprite, not the platform base. align-items: center lines the panel
+ * up with the middle of the creature stack, which sits above the platform.
+ * flex-end was anchoring to the platform bottom.
+ */
 .player {
   display: flex;
   flex-direction: row-reverse;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
 }
- 
+
 .opponent {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
 }
- 
+
 .playerContainer,
 .opponentContainer {
   display: flex;
 }
- 
+
 .opponentContainer {
   flex-direction: row-reverse;
 }
- 
+
 .playerContainer {
   flex-direction: row;
 }
- 
+
 .controlsWrapper {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
 }
- 
+
 .loadingState {
   flex: 1;
   display: flex;
@@ -62,34 +76,38 @@
   font-weight: 700;
   color: var(--text-primary);
 }
- 
-@media (min-width: 641px) {
+
+/* ── Tablet ── */
+@media (min-width: 40rem) {
   .arena {
     overflow: hidden;
     padding: 4rem 1rem 0 1rem;
   }
- 
-  .arenaContainer {
-    justify-content: space-between;
-  }
- 
+
   .battleView {
     padding-bottom: min(48vh, 28rem);
     gap: clamp(1.5rem, 10vh, 4rem);
   }
 }
- 
-@media (min-width: 1024px) {
+
+/* ── Desktop ── */
+@media (min-width: 64rem) {
   .arena {
-    padding: 6rem 1rem 0 1rem;
+    padding: 6rem 2rem 2rem 2rem;
+    overflow: auto;
   }
- 
+
   .battleView {
+    /*
+     * On desktop controlsWrapper is position:static so the battle view
+     * doesn't need the bottom padding offset anymore.
+     */
     padding-bottom: 0;
-    gap: clamp(2rem, 12vh, 6rem);
+    gap: clamp(2rem, 8vh, 4rem);
   }
- 
+
   .controlsWrapper {
-    position: static;
+    position: static;   /* participates in normal flex flow */
+    margin-top: auto;   /* pushes controls to bottom of arenaContainer */
   }
 }
