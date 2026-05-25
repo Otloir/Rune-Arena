@@ -4,7 +4,7 @@
   height: 100vh;
   position: relative;
 }
-
+ 
 .arenaContainer {
   display: flex;
   flex-direction: column;
@@ -13,68 +13,46 @@
 
 .battleView {
   display: flex;
-  justify-content: space-around;
   flex-direction: column;
-  height: 60%;
+  justify-content: space-around;
+  flex: 1;
+  padding-bottom: 45vh;
   gap: clamp(1rem, 6vh, 2rem);
 }
-
+ 
 .player {
   display: flex;
   flex-direction: row-reverse;
-  align-items: center; /* align status bar with creature stack */
+  align-items: flex-end;
   gap: 0.5rem;
 }
-
+ 
 .opponent {
   display: flex;
-  align-items: center; /* align status bar with creature stack */
+  align-items: flex-end;
   gap: 0.5rem;
 }
-
+ 
 .playerContainer,
 .opponentContainer {
   display: flex;
 }
-
+ 
 .opponentContainer {
   flex-direction: row-reverse;
-  align-items: flex-end;
 }
-
+ 
 .playerContainer {
   flex-direction: row;
-  align-items: center;
 }
-
-/* Ensure status bar sits inline with creature and doesn't shift vertically */
-.player .statusBarContainer,
-.opponent .statusBarContainer {
-  align-self: flex-end;
-  margin: 0 0.5rem;
-}
-
-/* Prevent creature container from shrinking inside flex layouts */
-.player .creatureContainer,
-.opponent .creatureContainer {
-  flex: 0 0 auto;
-}
-
+ 
 .controlsWrapper {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
 }
-
-.opponentControlsContainer {
-  flex: 0 0 auto;
-  padding: 0 1rem 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
+ 
 .loadingState {
   flex: 1;
   display: flex;
@@ -84,29 +62,34 @@
   font-weight: 700;
   color: var(--text-primary);
 }
-
+ 
 @media (min-width: 641px) {
   .arena {
     overflow: hidden;
     padding: 4rem 1rem 0 1rem;
   }
+ 
   .arenaContainer {
     justify-content: space-between;
   }
+ 
   .battleView {
+    padding-bottom: min(48vh, 28rem);
     gap: clamp(1.5rem, 10vh, 4rem);
   }
 }
-
+ 
 @media (min-width: 1024px) {
-  .battleView {
-    gap: clamp(2rem, 12vh, 6rem);
-  }
   .arena {
     padding: 6rem 1rem 0 1rem;
   }
+ 
+  .battleView {
+    padding-bottom: 0;
+    gap: clamp(2rem, 12vh, 6rem);
+  }
+ 
   .controlsWrapper {
     position: static;
-    max-height: none;
   }
 }
