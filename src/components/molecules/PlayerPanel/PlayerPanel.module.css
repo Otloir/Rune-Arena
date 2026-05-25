@@ -106,10 +106,12 @@
 }
 
 .buttonIcon {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 1rem;
+  height: 1rem;
   display: block;
   flex: 0 0 auto;
+  transform: scale(1.35);
+  transform-origin: center;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
