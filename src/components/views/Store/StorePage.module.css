@@ -28,7 +28,7 @@
 
 .userMoneyDisplay {
   padding: 0 0.75rem;
-  min-height: 3.25rem;
+  min-height: 3.1rem;
 
   border-radius: 1rem;
   background-color: var(--coin-container-bg);
@@ -67,6 +67,7 @@
   right: 0.75rem;
 
   display: flex;
+  align-items: center;
   gap: 0.5rem;
 
   max-width: calc(100vw - 1.5rem);
@@ -137,7 +138,7 @@
   }
 
   .userMoneyDisplay {
-    min-height: 3.5rem;
+    min-height: 3.35rem;
     max-width: 12rem;
     padding: 0 1rem;
   }
