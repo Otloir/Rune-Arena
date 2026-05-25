@@ -8,11 +8,6 @@
   background: var(--color-white);
   border-radius: 1.25rem 1.25rem 0 0;
   box-shadow: 0 -0.25rem 1.25rem var(--shadow-black-08);
-  /*
-   * No fixed height on mobile — let content determine height so the
-   * action buttons are never cut off. The arena reserves space via
-   * padding-bottom on .battleView.
-   */
 }
 
 /* ── LOG ── */
@@ -25,7 +20,6 @@
   border-radius: 0.875rem;
   padding: 0.75rem 0.875rem;
   overflow: hidden;
-  /* Fixed height on mobile so it doesn't grow and push buttons off screen */
   height: 5.5rem;
   flex-shrink: 0;
 }
@@ -115,17 +109,17 @@
   mask-size: contain;
 }
 
-/* ── Tablet: side-by-side log + actions, fixed panel height ── */
+/* ── Tablet ── */
 @media (min-width: 40rem) {
   .controlsPanel {
     flex-direction: row;
-    height: min(48vh, 28rem);
+    height: min(38vh, 20rem);
   }
 
   .logPanel {
     flex: 1;
     flex-basis: 0;
-    height: 100%;        /* fills the row height */
+    height: 100%;
   }
 
   .logScroll {
@@ -150,7 +144,6 @@
 /* ── Desktop ── */
 @media (min-width: 64rem) {
   .controlsPanel {
-    height: min(55vh, 34rem);
-    border-radius: 1.25rem;  /* full radius — not anchored to bottom edge */
+    height: min(38vh, 22rem);
   }
 }

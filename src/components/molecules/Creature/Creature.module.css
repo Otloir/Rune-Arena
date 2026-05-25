@@ -1,31 +1,23 @@
-/* The container is in normal flow — its height is set explicitly so it
-   occupies real space and nothing above/below it shifts unexpectedly. */
 .creatureContainer {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  width: 10rem;
   flex-shrink: 0;
 }
 
-/* Stack: sprite floats above the platform via absolute positioning.
-   The platform is in-flow and gives the stack its height. */
 .creatureStack {
-  position: relative;
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
 }
 
 .creatureSprite {
   width: 5.5rem;
   height: auto;
-  position: absolute;
-  /* Push the sprite upward relative to the platform bottom */
-  bottom: 55%;
+  display: block;
+  position: relative;
   z-index: 2;
+  margin-bottom: -2.5rem;
   transition: transform 0.3s ease-out;
 }
 
@@ -42,42 +34,62 @@
 }
 
 @keyframes player {
-  0%   { transform: translateX(0)      translateY(0); }
-  50%  { transform: translateX(2.5rem) translateY(-0.5rem); }
-  100% { transform: translateX(0)      translateY(0); }
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(2rem) translateY(-0.5rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
 }
 
 @keyframes opponent {
-  0%   { transform: translateX(0)       translateY(0); }
-  50%  { transform: translateX(-2.5rem) translateY(2rem); }
-  100% { transform: translateX(0)       translateY(0); }
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-2rem) translateY(0.5rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
 }
 
 @keyframes shake {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(-0.4rem); }
-  40%  { transform: translateX(0.4rem); }
-  60%  { transform: translateX(-0.4rem); }
-  80%  { transform: translateX(0.4rem); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-0.4rem);
+  }
+  40% {
+    transform: translateX(0.4rem);
+  }
+  60% {
+    transform: translateX(-0.4rem);
+  }
+  80% {
+    transform: translateX(0.4rem);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
-/* Platform is in-flow — it gives the stack its rendered height */
 .platform {
   width: 10rem;
   height: auto;
+  display: block;
   position: relative;
   z-index: 1;
-  display: block;
 }
 
-@media (min-width: 641px) {
-  .creatureContainer {
-    width: 16rem;
-  }
-
+@media (min-width: 40rem) {
   .creatureSprite {
     width: 7rem;
+    margin-bottom: -4.75rem;
   }
 
   .platform {
@@ -85,16 +97,13 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .creatureContainer {
-    width: 20rem;
-  }
-
+@media (min-width: 64rem) {
   .creatureSprite {
-    width: 8rem;
+    width: 9rem;
+    margin-bottom: -5.25rem;
   }
 
   .platform {
-    width: 18rem;
+    width: 20rem;
   }
-}   
+}

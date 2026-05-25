@@ -1,17 +1,19 @@
 .arena {
   padding: 3rem 1rem 0 1rem;
   background-color: var(--battle-arena-bg);
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .arenaContainer {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
 }
 
 .battleView {
@@ -19,21 +21,11 @@
   flex-direction: column;
   justify-content: space-around;
   flex: 1;
-  /*
-   * Reserve space for the controls panel on mobile/tablet.
-   * controlsWrapper is position:absolute so it doesn't participate
-   * in flex layout — we pad the battle view to prevent overlap.
-   */
-  padding-bottom: 22rem;
+  min-height: 0;
+  padding-bottom: 20rem;
   gap: clamp(1rem, 6vh, 2rem);
 }
 
-/*
- * .player/.opponent: the status panel should align with the creature
- * sprite, not the platform base. align-items: center lines the panel
- * up with the middle of the creature stack, which sits above the platform.
- * flex-end was anchoring to the platform bottom.
- */
 .player {
   display: flex;
   flex-direction: row-reverse;
@@ -65,6 +57,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 10;
 }
 
 .loadingState {
@@ -80,12 +73,11 @@
 /* ── Tablet ── */
 @media (min-width: 40rem) {
   .arena {
-    overflow: hidden;
     padding: 4rem 1rem 0 1rem;
   }
 
   .battleView {
-    padding-bottom: min(48vh, 28rem);
+    padding-bottom: min(38vh, 20rem);
     gap: clamp(1.5rem, 10vh, 4rem);
   }
 }
@@ -93,21 +85,11 @@
 /* ── Desktop ── */
 @media (min-width: 64rem) {
   .arena {
-    padding: 6rem 2rem 2rem 2rem;
-    overflow: auto;
+    padding: 2rem 2rem 0 2rem;
   }
 
   .battleView {
-    /*
-     * On desktop controlsWrapper is position:static so the battle view
-     * doesn't need the bottom padding offset anymore.
-     */
-    padding-bottom: 0;
-    gap: clamp(2rem, 8vh, 4rem);
-  }
-
-  .controlsWrapper {
-    position: static;   /* participates in normal flex flow */
-    margin-top: auto;   /* pushes controls to bottom of arenaContainer */
+    padding-bottom: min(38vh, 22rem);
+    gap: 0;
   }
 }
