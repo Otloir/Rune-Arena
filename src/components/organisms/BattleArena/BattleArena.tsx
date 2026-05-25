@@ -203,7 +203,10 @@ export default function BattleArena({
       if (battleId === null) return;
 
       endBattle(battleId, 0).catch((reason: unknown): void => {
-        console.warn("[BattleArena] Forfeit endBattle failed silently:", reason);
+        console.warn(
+          "[BattleArena] Forfeit endBattle failed silently:",
+          reason,
+        );
       });
     };
   }, []);
@@ -223,13 +226,12 @@ export default function BattleArena({
 
       const battleId = battleIdRef.current;
 
-      const stamp =
-        transaction?.stamp
-          ? {
-              name: formatStamp(transaction.stamp),
-              imageUrl: transaction.stamp.image_url,
-            }
-          : null;
+      const stamp = transaction?.stamp
+        ? {
+            name: formatStamp(transaction.stamp),
+            imageUrl: transaction.stamp.image_url,
+          }
+        : null;
 
       if (battleId === null) {
         console.warn(
@@ -332,10 +334,7 @@ export default function BattleArena({
 
             await handlePlayerUseItem(item);
 
-            const removed = await consumeUserItem(
-              String(playerOneId),
-              item.id,
-            );
+            const removed = await consumeUserItem(String(playerOneId), item.id);
 
             return removed;
           } catch (err) {
@@ -346,45 +345,45 @@ export default function BattleArena({
       />
 
       <div className={styles.arenaContainer}>
-        {/* Opponent */}
-        <div className={styles.opponentContainer}>
-          <div className={styles.opponent}>
-            <StatusPanel
-              userId={playerTwoId}
-              creatureId={playerTwoCreatureId}
-              currentHp={opponentHp}
-              side="opponent"
-            />
+        <div className={styles.battleView}>
+          {/* Opponent */}
+          <div className={styles.opponentContainer}>
+            <div className={styles.opponent}>
+              <StatusPanel
+                userId={playerTwoId}
+                creatureId={playerTwoCreatureId}
+                currentHp={opponentHp}
+                side="opponent"
+              />
 
-            <Creature
-              userId={playerTwoId}
-              creatureId={playerTwoCreatureId}
-              role="opponent"
-              isAttacking={
-                turnOwner === "opponent" && isProcessing
-              }
-              isHit={opponentIsHit}
-            />
+              <Creature
+                userId={playerTwoId}
+                creatureId={playerTwoCreatureId}
+                role="opponent"
+                isAttacking={turnOwner === "opponent" && isProcessing}
+                isHit={opponentIsHit}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Player */}
-        <div className={styles.playerContainer}>
-          <div className={styles.player}>
-            <StatusPanel
-              userId={playerOneId}
-              creatureId={playerOneCreatureId}
-              currentHp={playerHp}
-              side="player"
-            />
+          {/* Player */}
+          <div className={styles.playerContainer}>
+            <div className={styles.player}>
+              <StatusPanel
+                userId={playerOneId}
+                creatureId={playerOneCreatureId}
+                currentHp={playerHp}
+                side="player"
+              />
 
-            <Creature
-              userId={playerOneId}
-              creatureId={playerOneCreatureId}
-              role="player"
-              isAttacking={turnOwner === "player" && isProcessing}
-              isHit={playerIsHit}
-            />
+              <Creature
+                userId={playerOneId}
+                creatureId={playerOneCreatureId}
+                role="player"
+                isAttacking={turnOwner === "player" && isProcessing}
+                isHit={playerIsHit}
+              />
+            </div>
           </div>
         </div>
 
@@ -401,7 +400,7 @@ export default function BattleArena({
             onOpenInventory={(): void => setIsInventoryOpen(true)}
             currentHp={playerHp}
             maxHp={playerOneCreature.hp}
-            userId={playerOneId}    
+            userId={playerOneId}
             statBoosts={playerStatBoosts}
           />
         </div>

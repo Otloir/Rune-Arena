@@ -21,7 +21,7 @@
     var(--gray-lightest)
   );
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   cursor: not-allowed;
   opacity: 0.75;
@@ -36,13 +36,6 @@
   color: var(--color-error-text);
   font-weight: 700;
   font-size: 0.88rem;
-}
-
-
-@media (min-width: 768px) {
-  .movesPanel {
-    gap: 1rem;
-  }
 }
 
 @media (min-width: 1024px) {

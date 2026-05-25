@@ -88,14 +88,16 @@ export default function PlayerPanel({
 
         {/* Right: moves + action buttons */}
         <div className={styles.actionPanel}>
-          <h3 className={styles.actionTitle}>Choose Move</h3>
-          <div className={styles.movesWrapper}>
-            <MovesPanel
-              creatureId={creatureId}
-              creatureLevel={creatureLevel}
-              onMoveSelect={onMoveSelect}
-              disabled={disabled}
-            />
+          <div className={styles.actionPanelMovesContainer}>
+            <h3 className={styles.actionTitle}>Choose Move</h3>
+            <div className={styles.movesWrapper}>
+              <MovesPanel
+                creatureId={creatureId}
+                creatureLevel={creatureLevel}
+                onMoveSelect={onMoveSelect}
+                disabled={disabled}
+              />
+            </div>
           </div>
           <div
             className={styles.actionButtons}
