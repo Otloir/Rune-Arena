@@ -50,13 +50,14 @@ export default function ResultPage(): ReactElement {
   const stamp: StampReward | null = state?.stamp ?? null;
   const isGuest: boolean = state?.isGuest ?? true;
 
+  /*
   const handleBack = (): void => {
     if (isGuest) {
       void navigate("/");
     } else {
       window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "");
     }
-  };
+  };*/
 
   const [newBalance, setNewBalance] = useState<number | null>(null);
 
