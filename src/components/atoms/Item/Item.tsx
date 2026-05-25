@@ -9,6 +9,7 @@ interface ItemProps {
   readonly onBuy?: () => void | Promise<void>;
   readonly onUse?: () => void | Promise<void>;
   readonly canAfford?: boolean;
+  readonly isInBattle?: boolean;
 }
 const Item: React.FC<ItemProps> = ({
   item,
@@ -18,14 +19,14 @@ const Item: React.FC<ItemProps> = ({
   onBuy,
   onUse,
   canAfford = true,
+  isInBattle = false,
 }) => {
   const {
     item: fetchedItem,
     loading,
     error,
   } = useItem(itemId && !item ? itemId : undefined);
-  const displayItem: ItemType | undefined =
-    item ?? fetchedItem ?? undefined;
+  const displayItem: ItemType | undefined = item ?? fetchedItem ?? undefined;
   if (!item) {
     if (loading) return <div aria-busy="true">Loading item...</div>;
     if (error) return <div role="alert">{error}</div>;
@@ -48,7 +49,9 @@ const Item: React.FC<ItemProps> = ({
         <p className={styles.cardProperty}>
           {displayItem.property} {displayItem.propvalue}
         </p>
-        <p className={styles.cardDescription}>{displayItem.description}</p>
+        {!isInBattle && (
+          <p className={styles.cardDescription}>{displayItem.description}</p>
+        )}
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
@@ -96,7 +99,9 @@ const Item: React.FC<ItemProps> = ({
         <p className={styles.rowProperty}>
           {displayItem.property} {displayItem.propvalue}
         </p>
-        <p className={styles.rowDescription}>{displayItem.description}</p>
+        {!isInBattle && (
+          <p className={styles.rowDescription}>{displayItem.description}</p>
+        )}
       </div>
       {type === "inventory" && onUse && (
         <div className={styles.rowActions}>
