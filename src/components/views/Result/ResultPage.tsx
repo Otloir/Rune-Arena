@@ -118,13 +118,16 @@ export default function ResultPage(): ReactElement {
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        className={styles.visuallyHidden}
+        className="visuallyHidden"
       >
         {playerWon
           ? `${playerName} defeated ${opponentName}. You gained ${xpGained} XP.`
           : `${playerName} was defeated by ${opponentName}.`}
       </div>
-      <section className={styles.content} aria-live="polite">
+      <section
+        className={styles.content}
+        aria-labelledby="result-title"
+      >
         <h1
           ref={headingRef}
           id="result-title"
