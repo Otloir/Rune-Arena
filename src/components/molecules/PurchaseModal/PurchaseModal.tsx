@@ -26,12 +26,13 @@ export default function PurchaseModal({
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     // Focus the close button when the modal opens
-    closeButtonRef.current?.focus();
+    titleRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -91,7 +92,12 @@ export default function PurchaseModal({
         tabIndex={-1}
       >
         <div className={styles.content}>
-          <h2 id={titleId} className={styles.title}>
+          <h2
+            ref={titleRef}
+            id={titleId}
+            className={styles.title}
+            tabIndex={-1}
+          >
             {isSuccess
               ? "Purchase Successful!"
               : isInsufficientFunds
