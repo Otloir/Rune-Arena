@@ -142,7 +142,7 @@ const infoSlides: Slide[] = [
       {
         tag: "image",
         src: typeChartImage,
-        alt: "Type chart showing the effectiveness between creature types",
+        alt: "Type chart showing the effectiveness between creature types: Fire beats grass, Grass beats water, Water beats fire, normal is not strong or effective againsed anything",
       },
     ],
   },
@@ -215,6 +215,26 @@ export default function Tutorial({
   useEffect(() => {
     if (!isOpen) return;
 
+    const getFocusableElements = (root: HTMLElement): HTMLElement[] =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+    const focusFirstDialogElement = (): void => {
+      const dialogElement = dialogRef.current;
+      if (!dialogElement) return;
+      const focusableElements = getFocusableElements(dialogElement);
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+        return;
+      }
+      dialogElement.focus();
+    };
+
+    focusFirstDialogElement();
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -227,11 +247,7 @@ export default function Tutorial({
       const dialogElement = dialogRef.current;
       if (!dialogElement) return;
 
-      const focusableElements = Array.from(
-        dialogElement.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ),
-      );
+      const focusableElements = getFocusableElements(dialogElement);
 
       if (focusableElements.length === 0) {
         event.preventDefault();
@@ -254,8 +270,20 @@ export default function Tutorial({
       }
     };
 
+    const handleFocusIn = (event: FocusEvent): void => {
+      const dialogElement = dialogRef.current;
+      const focusedTarget = event.target;
+      if (!(focusedTarget instanceof Node)) return;
+      if (!dialogElement || dialogElement.contains(focusedTarget)) return;
+      focusFirstDialogElement();
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
