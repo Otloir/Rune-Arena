@@ -25,13 +25,9 @@ export default function PurchaseModal({
   const descId = "purchase-modal-desc";
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-
-    // Focus the close button when the modal opens
-    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -120,7 +116,6 @@ export default function PurchaseModal({
             )}
           </p>
           <button
-            ref={closeButtonRef}
             className={styles.button}
             onClick={onClose}
             aria-label={isSuccess ? "Continue shopping" : "Dismiss error"}

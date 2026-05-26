@@ -26,13 +26,9 @@ export default function InventoryPage({
   const titleId = `inventory-title-${uid}`;
   const descId = `inventory-desc-${uid}`;
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-
-    // focus the close button when the inventory opens
-    closeButtonRef.current?.focus();
 
     const getFocusableElements = (root: HTMLElement): HTMLElement[] =>
       Array.from(

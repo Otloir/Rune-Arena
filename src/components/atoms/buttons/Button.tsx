@@ -1,4 +1,9 @@
-import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import styles from "./Button.module.css";
 
 /*
@@ -56,24 +61,27 @@ function darkenHex(hex: string, amount = 40): string {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
-function Button({
-  onClick,
-  children,
-  disabled = false,
-  variant = "action",
-  size = "md",
-  shape = "rounded",
-  shadow = false,
-  textColor,
-  backgroundColor,
-  className = "",
-  type = "button",
-  loading = false,
-  radius,
-  style,
-  hoverEffect = true,
-  ...nativeProps
-}: ButtonProps): ReactElement {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    onClick,
+    children,
+    disabled = false,
+    variant = "action",
+    size = "md",
+    shape = "rounded",
+    shadow = false,
+    textColor,
+    backgroundColor,
+    className = "",
+    type = "button",
+    loading = false,
+    radius,
+    style,
+    hoverEffect = true,
+    ...nativeProps
+  },
+  ref,
+): ReactElement {
   const isValidBackgroundColor =
     !backgroundColor || /^#[0-9a-fA-F]{6}$/.test(backgroundColor);
 
@@ -87,6 +95,7 @@ function Button({
 
   return (
     <button
+      ref={ref}
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
@@ -120,6 +129,6 @@ function Button({
       )}
     </button>
   );
-}
+});
 
 export default Button;

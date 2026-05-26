@@ -99,7 +99,6 @@ function CreatureInfoPage({
   const descId = `creature-info-desc-${uid}`;
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // ── Creature base data ──
   const {
@@ -139,14 +138,6 @@ function CreatureInfoPage({
 
   const loading =
     creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
-
-  useEffect((): (() => void) | void => {
-    if (!isOpen) return;
-    const id = window.setTimeout((): void => {
-      closeButtonRef.current?.focus();
-    }, 50);
-    return (): void => window.clearTimeout(id);
-  }, [isOpen]);
 
   useEffect((): (() => void) | void => {
     if (!isOpen) return;

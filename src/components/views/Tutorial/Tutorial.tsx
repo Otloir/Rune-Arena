@@ -206,7 +206,6 @@ export default function Tutorial({
 }: TextCarouselProps): ReactElement | null {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const dialogRef = useRef<HTMLElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const uid = useId();
@@ -215,8 +214,6 @@ export default function Tutorial({
 
   useEffect(() => {
     if (!isOpen) return;
-
-    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
