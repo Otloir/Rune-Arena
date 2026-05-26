@@ -26,12 +26,13 @@ export default function PurchaseModal({
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    // Focus the close button when the modal opens
-    closeButtonRef.current?.focus();
+    // Focus the title button when the modal opens
+    titleRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -88,10 +89,15 @@ export default function PurchaseModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descId}
-        tabIndex={-1}
+        tabIndex={0}
       >
         <div className={styles.content}>
-          <h2 id={titleId} className={styles.title}>
+          <h2
+            ref={titleRef}
+            id={titleId}
+            className={styles.title}
+            tabIndex={0}
+          >
             {isSuccess
               ? "Purchase Successful!"
               : isInsufficientFunds

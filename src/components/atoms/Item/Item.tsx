@@ -35,11 +35,19 @@ function Item({
   if (!displayItem) return <div role="status">No item found.</div>;
   const quantity = displayItem.quantity ?? 1;
   const inventoryLabel = `${displayItem.name}. ${displayItem.description}. Effect: ${displayItem.property} ${displayItem.propvalue}. Quantity: ${quantity}.`;
+  const affordabilityHelpId = `affordability-help-${displayItem.id}`;
   if (variant === "card") {
     return (
       <article
         className={styles.card}
-        aria-label={`${displayItem.name} item card`}
+        tabIndex={0}
+        aria-label={
+          `${displayItem.name}. ` +
+          `${displayItem.description}. ` +
+          `Effect: ${displayItem.property} ${displayItem.propvalue}. ` +
+          `Price: ${displayItem.price} RC. ` +
+          `${canAfford ? "Can afford." : "Cannot afford."}`
+        }
       >
         {displayItem.img && (
           <img
@@ -55,6 +63,7 @@ function Item({
         {!isInBattle && (
           <p className={styles.cardDescription}>{displayItem.description}</p>
         )}
+        <>
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
@@ -62,16 +71,31 @@ function Item({
             </span>
             {displayItem.price}
           </span>
+
           {type === "store" && onBuy && (
             <button
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
-              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RC`}
+              disabled={!canAfford}
+              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RuneCoins`}
+              aria-describedby={
+                !canAfford ? affordabilityHelpId : undefined
+              }
             >
-              {"Buy"}
+              Buy
             </button>
           )}
         </div>
+
+      </>
+      {!canAfford && (
+          <span
+            id={affordabilityHelpId}
+            className="visuallyHidden"
+          >
+            Insufficient RC.
+          </span>
+        )}
       </article>
     );
   }
