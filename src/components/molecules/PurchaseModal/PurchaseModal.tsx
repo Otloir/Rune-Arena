@@ -25,7 +25,6 @@ export default function PurchaseModal({
   const descId = "purchase-modal-desc";
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
