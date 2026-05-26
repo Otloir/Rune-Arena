@@ -39,6 +39,7 @@ export default function InventoryPage({
             type="inventory"
             onUseItem={isInBattle && onUseItem ? onUseItem : undefined}
             refreshToggle={refreshToggle}
+            isInBattle={isInBattle}
           />
         </div>
       </div>

@@ -1,20 +1,23 @@
 .creatureContainer {
   display: inline-flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  flex-shrink: 0;
+}
 
-  height: 12rem;
-  width: 10rem;
-  max-width: 100%;
+.creatureStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .creatureSprite {
-  width: 4rem;
+  width: 5.5rem;
   height: auto;
-  position: absolute;
-  z-index: 1;
-  padding-bottom: 5rem;
+  display: block;
+  position: relative;
+  z-index: 2;
+  margin-bottom: -2.5rem;
   transition: transform 0.3s ease-out;
 }
 
@@ -35,7 +38,7 @@
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(2.5rem) translateY(-0.5rem);
+    transform: translateX(2rem) translateY(-0.5rem);
   }
   100% {
     transform: translateX(0) translateY(0);
@@ -47,7 +50,7 @@
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(-2.5rem) translateY(2rem);
+    transform: translateX(-2rem) translateY(0.5rem);
   }
   100% {
     transform: translateX(0) translateY(0);
@@ -77,22 +80,30 @@
 
 .platform {
   width: 10rem;
-  height: 3rem;
+  height: auto;
+  display: block;
   position: relative;
+  z-index: 1;
 }
 
-@media (min-width: 1024px) {
-  .creatureContainer {
-    width: 20rem;
-  }
-
+@media (min-width: 40rem) {
   .creatureSprite {
-    width: 6rem;
-    padding-bottom: 8rem;
+    width: 7rem;
+    margin-bottom: -4.75rem;
   }
 
   .platform {
     width: 16rem;
-    height: 4rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .creatureSprite {
+    width: 9rem;
+    margin-bottom: -5.25rem;
+  }
+
+  .platform {
+    width: 20rem;
   }
 }

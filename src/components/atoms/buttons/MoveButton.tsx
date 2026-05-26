@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { useMove } from "../../../hooks/useMove";
 import type { MoveWithType } from "../../../types/move.types";
 import styles from "./MoveButton.module.css";
@@ -9,7 +9,6 @@ interface MoveButtonProps {
   disabled?: boolean;
   shape?: "rounded" | "pill";
   shadow?: boolean;
-  damageLabel?: ReactNode;
 }
 
 const MoveButton: FC<MoveButtonProps> = ({
@@ -18,7 +17,6 @@ const MoveButton: FC<MoveButtonProps> = ({
   disabled = false,
   shape = "rounded",
   shadow = false,
-  damageLabel = "⚔️",
 }) => {
   const { move, loading, error } = useMove(moveId);
 
@@ -52,9 +50,6 @@ const MoveButton: FC<MoveButtonProps> = ({
           <span className={styles.typeTag}>Unknown</span>
         </div>
         <div className={styles.right}>
-          <span className={styles.moveStat} aria-label="Damage unknown">
-            {damageLabel} --
-          </span>
           <span className={styles.moveStat} aria-label="Accuracy unknown">
             --%
           </span>
@@ -65,8 +60,9 @@ const MoveButton: FC<MoveButtonProps> = ({
 
   const moveTypeName = move.move_type?.name?.toLowerCase() ?? "normal";
   const typeClass =
-    styles[`type${moveTypeName.charAt(0).toUpperCase()}${moveTypeName.slice(1)}`]
-    ?? styles.typeNormal;
+    styles[
+      `type${moveTypeName.charAt(0).toUpperCase()}${moveTypeName.slice(1)}`
+    ] ?? styles.typeNormal;
 
   return (
     <button
@@ -87,9 +83,12 @@ const MoveButton: FC<MoveButtonProps> = ({
       </div>
       <div className={styles.right}>
         <span className={styles.moveStat} aria-label={`Damage: ${move.damage}`}>
-          {damageLabel} {move.damage}
+          {move.damage}
         </span>
-        <span className={styles.moveStat} aria-label={`Accuracy: ${move.chance}%`}>
+        <span
+          className={styles.moveStat}
+          aria-label={`Accuracy: ${move.chance}%`}
+        >
           {move.chance}%
         </span>
       </div>

@@ -1,5 +1,5 @@
 import { useCreatureById, useCreatureBase } from "../../../hooks/useCreature";
-import platformImage from "../../../assets/images/platform.png";
+import platformImage from "../../../assets/images/platform.svg";
 import styles from "./Creature.module.css";
 
 interface CreatureProps {
@@ -46,20 +46,23 @@ export default function Creature({
 
   return (
     <section className={styles.creatureContainer}>
-      <img
-        src={spriteImage}
-        alt={spriteAlt}
-        width="500"
-        height="600"
-        className={`${styles.creatureSprite} ${isAttacking ? (role === "player" ? styles.player : styles.opponent) : ""} ${isHit ? styles.shake : ""}`}
-      />
-      <img
-        src={platformImage}
-        alt="Platform"
-        width="500"
-        height="600"
-        className={styles.platform}
-      />
+      <div className={styles.creatureStack}>
+        <img
+          src={spriteImage}
+          alt={spriteAlt}
+          width="500"
+          height="600"
+          className={`${styles.creatureSprite} ${isAttacking ? (role === "player" ? styles.player : styles.opponent) : ""} ${isHit ? styles.shake : ""}`}
+        />
+
+        <img
+          src={platformImage}
+          alt="Platform"
+          width="500"
+          height="600"
+          className={styles.platform}
+        />
+      </div>
     </section>
   );
 }

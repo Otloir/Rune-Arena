@@ -1,17 +1,13 @@
 .controlsPanel {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
+  gap: 0.5rem;
   flex-shrink: 0;
-  min-height: 16rem;
-  max-height: 22rem;
   padding: 1.25rem;
-  box-sizing: border-box;
   background: var(--color-white);
-  border-radius: 1.25rem;
+  border-radius: 1.25rem 1.25rem 0 0;
   box-shadow: 0 -0.25rem 1.25rem var(--shadow-black-08);
-  overflow: visible;
 }
 
 /* ── LOG ── */
@@ -24,9 +20,8 @@
   border-radius: 0.875rem;
   padding: 0.75rem 0.875rem;
   overflow: hidden;
-  flex: 0 0 6.5rem;
-  min-height: 6.5rem;
-  max-height: 6.5rem;
+  height: 5.5rem;
+  flex-shrink: 0;
 }
 
 .logTitle {
@@ -53,7 +48,7 @@
 
 .logEntry {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-tertiary);
   line-height: 1.4;
   flex-shrink: 0;
@@ -65,9 +60,6 @@
   flex-direction: column;
   gap: 0.5rem;
   min-width: 0;
-  flex: 1 1 auto;
-  min-height: 8rem;
-  overflow: visible;
 }
 
 .actionTitle {
@@ -79,10 +71,8 @@
 }
 
 .movesWrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: visible;
-  padding-bottom: 1rem;
+  display: flex;
+  align-items: stretch;
 }
 
 .actionButtons {
@@ -90,7 +80,6 @@
   flex-direction: row;
   gap: 0.625rem;
   flex-shrink: 0;
-  min-height: 2.75rem;
 }
 
 .actionBtn {
@@ -105,10 +94,12 @@
 }
 
 .buttonIcon {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 1rem;
+  height: 1rem;
   display: block;
   flex: 0 0 auto;
+  transform: scale(1.35);
+  transform-origin: center;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
@@ -118,20 +109,17 @@
   mask-size: contain;
 }
 
-/* ── TABLET + DESKTOP ── */
-@media (min-width: 641px) {
+/* ── Tablet ── */
+@media (min-width: 40rem) {
   .controlsPanel {
     flex-direction: row;
-    border-radius: 1.25rem 1.25rem 0 0;
-    height: min(40vh, 22rem);
-    max-height: min(40vh, 22rem);
+    height: min(38vh, 20rem);
   }
 
   .logPanel {
-    height: 100%;
-    max-height: unset;
     flex: 1;
-    min-height: 0;
+    flex-basis: 0;
+    height: 100%;
   }
 
   .logScroll {
@@ -142,5 +130,21 @@
 
   .actionPanel {
     flex: 1.2;
+    flex-basis: 0;
+    height: 100%;
+    overflow: hidden;
+    padding-bottom: 0.18rem;
+  }
+
+  .movesWrapper {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 64rem) {
+  .controlsPanel {
+    height: min(38vh, 22rem);
   }
 }

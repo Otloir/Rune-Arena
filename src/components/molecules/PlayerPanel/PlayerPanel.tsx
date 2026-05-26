@@ -107,6 +107,7 @@ export default function PlayerPanel({
               aria-label="Open inventory"
               backgroundColor="#DCB8A0"
               textColor="#955D38"
+              size="sm"
               className={styles.actionBtn}
             >
               <span className={styles.buttonLabel}>
@@ -124,6 +125,7 @@ export default function PlayerPanel({
 
             <Button
               variant="neutral"
+              size="sm"
               onClick={(): void => {
                 if (playerCreature) setStatsOpen(true);
               }}

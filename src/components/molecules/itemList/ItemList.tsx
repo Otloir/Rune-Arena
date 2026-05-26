@@ -20,6 +20,7 @@ interface ListProps {
   readonly refreshToggle?: boolean;
   readonly balance?: number;
   readonly onBalanceChange?: () => void;
+  readonly isInBattle?: boolean;
 }
 
 interface ActivePurchase {
@@ -43,11 +44,14 @@ export default function ItemList({
   refreshToggle,
   balance,
   onBalanceChange,
+  isInBattle = false,
 }: ListProps): ReactElement {
   const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [purchaseStatus, setPurchaseStatus] = useState<ActivePurchase | null>(null);
+  const [purchaseStatus, setPurchaseStatus] = useState<ActivePurchase | null>(
+    null,
+  );
   const [inProgressIds, setInProgressIds] = useState<number[]>([]);
 
   const handleBuy = async (item: ItemType): Promise<void> => {
@@ -94,9 +98,7 @@ export default function ItemList({
       try {
         const inventoryChangeEvent = event as CustomEvent;
         if (!userId) return;
-        const changedUserId = String(
-          inventoryChangeEvent.detail?.userId ?? "",
-        );
+        const changedUserId = String(inventoryChangeEvent.detail?.userId ?? "");
         if (changedUserId === String(userId)) {
           loadItems();
         }
@@ -135,7 +137,9 @@ export default function ItemList({
 
     const previousItems = items;
 
-    const itemIndex = items.findIndex((currentItem) => currentItem.id === item.id);
+    const itemIndex = items.findIndex(
+      (currentItem) => currentItem.id === item.id,
+    );
     if (itemIndex !== -1) {
       const updatedItems = items
         .map((i) =>
@@ -204,13 +208,16 @@ export default function ItemList({
           item={item}
           variant={variant}
           type={type}
-          onBuy={type === "store" ? (): Promise<void> => handleBuy(item) : undefined}
+          onBuy={
+            type === "store" ? (): Promise<void> => handleBuy(item) : undefined
+          }
           onUse={
             type === "inventory" && onUseItem
               ? (): Promise<void> => handleUse(item)
               : undefined
           }
           canAfford={balance == null || item.price <= balance}
+          isInBattle={isInBattle}
         />
       ))}
     </div>
