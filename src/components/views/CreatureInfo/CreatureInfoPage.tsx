@@ -245,7 +245,6 @@ function CreatureInfoPage({
             className={styles.closeButton}
             onClick={onClose}
             aria-label="Close creature information"
-            style={{ minWidth: 44, minHeight: 44 }}
           >
             ✕
           </button>
@@ -480,7 +479,6 @@ function CreatureInfoPage({
                         <div key={moveId} className={styles.moveRow}>
                           <div
                             className={styles.infoMoveWrapper}
-                            style={{ minHeight: 44 }}
                           >
                             <MoveButton
                               moveId={moveId}
