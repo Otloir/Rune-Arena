@@ -44,7 +44,7 @@ padding-top: 1rem;
 }
 
 .startButton {
-  width: 50%;
+  width: fit-content;
   align-self: center;
 }
 

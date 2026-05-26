@@ -95,7 +95,7 @@ export default function LobbyPage() {
     ? "Processing payment..."
     : isGuest
       ? "Start"
-      : `Start (€${ENTRY_FEE.toFixed(2)})`;
+      : `Start (€${ENTRY_FEE})`;
 
   return (
     <>
