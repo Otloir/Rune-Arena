@@ -40,7 +40,6 @@ function Item({
     return (
       <article
         className={styles.card}
-        role="group"
         tabIndex={0}
         aria-label={
           `${displayItem.name}. ` +
@@ -83,7 +82,7 @@ function Item({
                 !canAfford ? affordabilityHelpId : undefined
               }
             >
-              {canAfford ? "Buy" : " X "}
+              Buy
             </button>
           )}
         </div>

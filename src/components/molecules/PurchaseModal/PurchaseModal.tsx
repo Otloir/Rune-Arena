@@ -31,7 +31,7 @@ export default function PurchaseModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    // Focus the close button when the modal opens
+    // Focus the title button when the modal opens
     titleRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -89,14 +89,14 @@ export default function PurchaseModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descId}
-        tabIndex={-1}
+        tabIndex={0}
       >
         <div className={styles.content}>
           <h2
             ref={titleRef}
             id={titleId}
             className={styles.title}
-            tabIndex={-1}
+            tabIndex={0}
           >
             {isSuccess
               ? "Purchase Successful!"

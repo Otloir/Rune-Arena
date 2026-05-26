@@ -64,10 +64,8 @@ export default function StorePage(): ReactElement {
       <Tutorial isOpen={isInfoOpen} onClose={closeInfo} />
       <section id="top" className={styles.storePage}>
         <div className={styles.fixedInformationBar}>
-          <div
+          <output
             className={styles.userMoneyDisplay}
-            role="status"
-            tabIndex={0}
             aria-label={
               balance === null
                 ? "Loading balance"
@@ -83,7 +81,7 @@ export default function StorePage(): ReactElement {
                 <span className={styles.balanceCurrency}>RC</span>
               </>
             )}
-          </div>
+          </output>
           <Button
             onClick={openInventory}
             backgroundColor="#DCB8A0"
