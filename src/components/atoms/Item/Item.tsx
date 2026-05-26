@@ -64,12 +64,10 @@ const Item: React.FC<ItemProps> = ({
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
               aria-label={
-                canAfford
-                  ? `Buy ${displayItem.name} for ${displayItem.price} RC`
-                  : `Cannot afford ${displayItem.name}, costs ${displayItem.price} RC`
+                  `Buy ${displayItem.name} for ${displayItem.price} RC`
               }
             >
-              {canAfford ? "Buy" : "Can't afford"}
+              {"Buy"}
             </button>
           )}
         </div>

@@ -134,7 +134,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const loading = creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
 
-
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
     const id = window.setTimeout((): void => {
@@ -143,7 +142,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     return (): void => window.clearTimeout(id);
   }, [isOpen]);
 
-  // Prevent page scroll behind the modal on mobile
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -201,6 +199,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   if (!isOpen) return null;
 
+  
   const resolvedMaxHp: number = isBattleView
     ? (maxHpProp ?? creature?.hp ?? 0)
     : (creature?.hp ?? 0);
@@ -296,9 +295,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 )}
               </div>
 
-              {/*
-               * Type badges
-               */}
+
               {!isBattleView && types.length > 0 && (
                 <div className={styles.typeBadges} aria-label="Creature types">
                   {types.map((type) => (
@@ -377,14 +374,17 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 data-cols={isBattleView ? "3" : "2"}
               >
                 {isBattleView ? (
-
                   (() => {
                     const evadeBoost = statBoosts?.evadeBoost ?? 0;
                     const defenseBoost = statBoosts?.defenseBoost ?? 0;
+                    const speedBoost = statBoosts?.speedBoost ?? 0;
 
                     const effectiveEvade = creature.evade + evadeBoost;
                     const effectiveDefense = creature.defense + Math.floor(
                       (creature.defense * defenseBoost) / 100,
+                    );
+                    const effectiveSpeed = creature.speed + Math.floor(
+                      (creature.speed * speedBoost) / 100,
                     );
 
                     return (
@@ -408,7 +408,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                           icon={speedIcon}
                           color="var(--speed)"
                           label="Speed"
-                          value={creature.speed}
+                          value={effectiveSpeed}
+                          boosted={speedBoost > 0}
                         />
                       </>
                     );
@@ -434,7 +435,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                   </h4>
                   <div className={styles.movesList}>
                     {moveEntries.map(({ moveId, requiredLevelId }) => {
-
                       const isUnlocked =
                         resolvedLevelId !== null &&
                         requiredLevelId <= resolvedLevelId;

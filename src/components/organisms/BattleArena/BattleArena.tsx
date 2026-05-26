@@ -6,7 +6,7 @@ import Creature from "../../molecules/Creature/Creature";
 import styles from "./BattleArena.module.css";
 import PlayerPanel from "../../molecules/PlayerPanel/PlayerPanel";
 import InventoryPage from "../../views/Inventory/InventoryPage";
-import { useCreatureById } from "../../../hooks/useCreature";
+import { useCreatureById, useCreatureBase } from "../../../hooks/useCreature";
 import { useBattle } from "../../../hooks/useBattle";
 import { startBattle, endBattle } from "../../../database/battle.database";
 import type { BattleError } from "../../../database/battle.database";
@@ -41,7 +41,8 @@ export default function BattleArena({
     creature: playerTwoCreature,
     loading: playerTwoLoading,
     error: playerTwoError,
-  } = useCreatureById(playerTwoId, playerTwoCreatureId);
+  } = useCreatureBase(playerTwoCreatureId);
+
 
   const randomizedOpponentLevel = useMemo((): number => {
     if (!playerOneLevel) return 1;
@@ -354,6 +355,7 @@ export default function BattleArena({
                 creatureId={playerTwoCreatureId}
                 currentHp={opponentHp}
                 side="opponent"
+                overrideLevel={randomizedOpponentLevel}
               />
 
               <Creature
