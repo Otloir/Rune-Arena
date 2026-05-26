@@ -17,6 +17,7 @@
   align-items: center;
   font-variant: small-caps;
   line-height: 1;
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
 }
 .statusBarInfo span {
   padding-right: 0.5rem;
