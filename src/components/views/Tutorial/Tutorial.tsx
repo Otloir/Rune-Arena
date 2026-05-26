@@ -450,10 +450,6 @@ export default function Tutorial({
             />
           </button>
 
-          <span className={styles.textCarouselIndicator} aria-live="polite">
-            {activeSlideIndex + 1} / {infoSlides.length}
-          </span>
-
           <button
             className={styles.textCarouselNavButton}
             onClick={nextSlide}
