@@ -49,12 +49,12 @@ export default function ResultPage(): ReactElement {
   const xpGained: number = state?.xpGained ?? 0;
   const stamp: StampReward | null = state?.stamp ?? null;
   const isGuest: boolean = state?.isGuest ?? true;
-
+/*
   const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     headingRef.current?.focus();
-  }, []);
+  }, []);*/
 
   const handleBack = (): void => {
     if (isGuest) {
@@ -129,7 +129,7 @@ export default function ResultPage(): ReactElement {
         aria-labelledby="result-title"
       >
         <h1
-          ref={headingRef}
+          //ref={headingRef}
           id="result-title"
           tabIndex={-1}
           className={`${styles.title} ${playerWon ? styles.victory : styles.defeat}`}
