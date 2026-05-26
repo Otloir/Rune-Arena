@@ -57,6 +57,8 @@ function StatCell({
         styles.statCell,
         highlighted ? styles.statCellHighlighted : "",
       ].join(" ")}
+      role="listitem"
+      tabIndex={0}
       aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
     >
       <span
@@ -68,12 +70,13 @@ function StatCell({
           backgroundColor: color,
         }}
       />
-      <span className={styles.statLabel}>{label}</span>
+      <span className={styles.statLabel} aria-hidden="true">{label}</span>
       <span
         className={[
           styles.statValue,
           boosted ? styles.statValueBoosted : "",
         ].join(" ")}
+        aria-hidden="true"
       >
         {value}
       </span>
@@ -100,20 +103,17 @@ function CreatureInfoPage({
 
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // ── Creature base data ──
   const {
     data: creature,
     loading: creatureLoading,
     error: creatureError,
   } = useAsyncData(() => getCreatureById(String(creatureId)), isOpen);
 
-  // ── Move entries (with required level_id per move) ──
   const { moveEntries, loading: movesLoading } = useCreatureMoveIds(
     isOpen ? creatureId : null,
     isOpen,
   );
 
-  // ── Types (selection view only) ──
   const { types } = useCreatureTypes(
     isOpen && !isBattleView ? creatureId : null,
     isOpen && !isBattleView,
@@ -148,7 +148,6 @@ function CreatureInfoPage({
     };
   }, [isOpen]);
 
-  // SC 2.1.1 — focus trap + Escape key handler
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
@@ -247,9 +246,7 @@ function CreatureInfoPage({
           />
         </div>
 
-        {/* ── Scrollable body ── */}
         <div className={styles.body}>
-          {/* Loading skeleton */}
           {loading && (
             <div
               role="status"
@@ -263,14 +260,12 @@ function CreatureInfoPage({
             </div>
           )}
 
-          {/* Error */}
           {creatureError && !loading && (
             <p role="alert" className={styles.errorState}>
               Failed to load creature information. Please try again.
             </p>
           )}
 
-          {/* Content */}
           {creature && !loading && (
             <>
               <img
@@ -279,13 +274,19 @@ function CreatureInfoPage({
                 className={styles.sprite}
               />
 
-              {/* Name + level badge side by side */}
               <div className={styles.nameRow}>
-                <h3 className={styles.creatureName}>{creature.name}</h3>
+                <h3
+                  className={styles.creatureName}
+                  tabIndex={0}
+                >
+                  {creature.name}
+                </h3>
+
                 {!loading && (
                   <span
                     className={styles.levelBadgeInline}
                     aria-label={`Level ${resolvedLevelNumber}`}
+                    tabIndex={0}
                   >
                     Lv.{resolvedLevelNumber}
                   </span>
@@ -298,6 +299,7 @@ function CreatureInfoPage({
                     <span
                       key={type.id}
                       className={styles.typeBadge}
+                      tabIndex={0}
                       style={{
                         background: `var(--type-${type.name.toLowerCase()}-1, var(--type-normal-1))`,
                         boxShadow: `0 0.125rem 0 var(--type-${type.name.toLowerCase()}-shadow, var(--type-normal-shadow))`,
@@ -311,11 +313,24 @@ function CreatureInfoPage({
               )}
 
               {!isBattleView && creature.description && (
-                <p className={styles.description}>{creature.description}</p>
+                <p
+                  className={styles.description}
+                  tabIndex={0}
+                >
+                  {creature.description}
+                </p>
               )}
 
-              {/* HP block — <div> avoids LobbyPage's .lobbyPage section override */}
-              <div className={styles.hpSection} aria-label="Health">
+              <div
+                className={styles.hpSection}
+                tabIndex={0}
+                role="group"
+                aria-label={
+                  isBattleView
+                    ? `Health: ${resolvedCurrentHp} out of ${resolvedMaxHp} HP`
+                    : `Health: ${resolvedMaxHp} HP`
+                }
+              >
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
                     <span
@@ -363,9 +378,9 @@ function CreatureInfoPage({
                 )}
               </div>
 
-              {/* Stats grid */}
               <div
                 className={styles.statsGrid}
+                role="list"
                 aria-label="Creature statistics"
                 data-cols={isBattleView ? "3" : "2"}
               >
@@ -440,7 +455,6 @@ function CreatureInfoPage({
                 )}
               </div>
 
-              {/* Moves */}
               {moveEntries.length > 0 && (
                 <div
                   className={styles.movesSection}
@@ -455,9 +469,13 @@ function CreatureInfoPage({
                         resolvedLevelId !== null &&
                         requiredLevelId <= resolvedLevelId;
 
+                      const lockHelpId = `lock-help-${uid}-${moveId}`;
+
                       return (
                         <div key={moveId} className={styles.moveRow}>
-                          <div className={styles.infoMoveWrapper}>
+                          <div
+                            className={styles.infoMoveWrapper}
+                          >
                             <MoveButton
                               moveId={moveId}
                               onSelect={(): void => undefined}
@@ -467,12 +485,23 @@ function CreatureInfoPage({
                             />
                           </div>
                           {!isUnlocked && (
-                            <span
-                              className={styles.lockedLabel}
-                              aria-label={`Move locked until level ${requiredLevelId}`}
-                            >
-                              LOCKED
-                            </span>
+                            <>
+
+                              <span
+                                id={lockHelpId}
+                                className={styles.visuallyHidden}
+                              >
+                                This move unlocks at level {requiredLevelId}.
+                                Your creature is currently level {resolvedLevelNumber}.
+                              </span>
+                              <span
+                                className={styles.lockedLabel}
+                                aria-label={`Move locked until level ${requiredLevelId}`}
+                                aria-describedby={lockHelpId}
+                              >
+                                LOCKED
+                              </span>
+                            </>
                           )}
                         </div>
                       );
