@@ -78,7 +78,7 @@
 
   .battleView {
     padding-bottom: min(38vh, 20rem);
-    gap: clamp(1.5rem, 10vh, 4rem);
+    gap: clamp(1rem, 6vh, 4rem);
   }
 }
 

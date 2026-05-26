@@ -96,14 +96,3 @@
     width: 16rem;
   }
 }
-
-@media (min-width: 64rem) {
-  .creatureSprite {
-    width: 9rem;
-    margin-bottom: -5.25rem;
-  }
-
-  .platform {
-    width: 20rem;
-  }
-}
