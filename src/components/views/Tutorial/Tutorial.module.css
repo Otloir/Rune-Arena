@@ -83,15 +83,14 @@
 }
 
 .textCarouselSlide h2,
-.textCarouselSlide h4,
+.textCarouselSlide h3,
 .textCarouselSlide p {
   margin: 0 0 0.25rem;
   color: var(--text-primary);
   max-width: 90%;
 }
 
-/* Make h3-equivalent headings a bit larger */
-.textCarouselSlide h4 {
+.textCarouselSlide h3 {
   font-size: var(--fs-lg);
 }
 
@@ -226,6 +225,11 @@
 .keywordNormal {
   color: var(--type-normal-1);
   font-weight: 700;
+}
+
+.textCarouselSlide[inert] {
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ── Controls ── */

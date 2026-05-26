@@ -206,6 +206,8 @@ export default function Tutorial({
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const dialogRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const uid = useId();
   const descId = `tutorial-desc-${uid}`;
 
@@ -264,6 +266,24 @@ export default function Tutorial({
   const nextSlide = () =>
     setActiveSlideIndex((i) => Math.min(infoSlides.length - 1, i + 1));
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Only trigger if horizontal swipe is dominant and long enough
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) nextSlide();
+      else previousSlide();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   return (
     <div className={styles.textCarouselOverlay} onClick={onClose}>
       <section
@@ -290,82 +310,100 @@ export default function Tutorial({
           />
         </button>
 
-        <div className={styles.textCarouselViewport}>
+        <div
+          className={styles.textCarouselViewport}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div
             className={styles.textCarouselTrack}
             style={{ transform: `translateX(-${activeSlideIndex * 100}%)` }}
           >
-            {infoSlides.map((slide) => (
-              <article
-                key={slide.accName}
-                className={styles.textCarouselSlide}
-                data-accname={slide.accName}
-              >
-                <h2>{slide.title}</h2>
+            {infoSlides.map((slide, index) => {
+              const slideTitleId = `tutorial-slide-${index}-title`;
 
-                {slide.content.map((entry, index) => {
-                  if (entry.tag === "property") {
-                    return (
-                      <div
-                        key={`${slide.accName}-${index}`}
-                        className={styles.propertyRow}
-                      >
-                        <span
-                          className={styles.propertyIconWrapper}
-                          style={{
-                            backgroundColor: `var(${entry.colorVar})`,
-                            WebkitMaskImage: `url(${entry.icon})`,
-                            maskImage: `url(${entry.icon})`,
-                          }}
+              return (
+                <article
+                  key={slide.accName}
+                  className={styles.textCarouselSlide}
+                  data-accname={slide.accName}
+                  inert={index !== activeSlideIndex ? true : undefined}
+                  aria-roledescription="slide"
+                  aria-labelledby={slideTitleId}
+                >
+                  <h2 id={slideTitleId}>{slide.title}</h2>
+
+                  {slide.content.map((entry, index) => {
+                    if (entry.tag === "property") {
+                      return (
+                        <div
+                          key={`${slide.accName}-${index}`}
+                          className={styles.propertyRow}
                         >
-                          <span className={styles.visuallyHidden}>
-                            {entry.name}
-                          </span>
-                        </span>
-                        <div className={styles.propertyText}>
                           <span
-                            className={styles.propertyName}
-                            style={{ color: `var(${entry.colorVar})` }}
-                          >
-                            {entry.name}
-                          </span>
-                          <p className={styles.propertyDesc}>
-                            {highlightKeywords(entry.description)}
-                          </p>
+                            className={styles.propertyIconWrapper}
+                            style={{
+                              backgroundColor: `var(${entry.colorVar})`,
+                              WebkitMaskImage: `url(${entry.icon})`,
+                              maskImage: `url(${entry.icon})`,
+                            }}
+                            aria-hidden="true"
+                          />
+                          <div className={styles.propertyText}>
+                            <span
+                              className={styles.propertyName}
+                              style={{ color: `var(${entry.colorVar})` }}
+                            >
+                              {entry.name}
+                            </span>
+                            <p className={styles.propertyDesc}>
+                              <span aria-hidden="true">
+                                {highlightKeywords(entry.description)}
+                              </span>
+                              <span className={styles.visuallyHidden}>
+                                {entry.description}
+                              </span>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }
+                      );
+                    }
 
-                  if (entry.tag === "h3") {
-                    return (
-                      <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
-                    );
-                  }
+                    if (entry.tag === "h3") {
+                      return (
+                        <h3 key={`${slide.accName}-${index}`}>{entry.text}</h3>
+                      );
+                    }
 
-                  if (entry.tag === "image") {
-                    return (
-                      <img
-                        key={`${slide.accName}-${index}`}
-                        src={entry.src}
-                        alt={entry.alt}
-                        className={styles.typeChartImage}
-                      />
-                    );
-                  }
+                    if (entry.tag === "image") {
+                      return (
+                        <img
+                          key={`${slide.accName}-${index}`}
+                          src={entry.src}
+                          alt={entry.alt}
+                          className={styles.typeChartImage}
+                        />
+                      );
+                    }
 
-                  if (entry.tag === "p") {
-                    return (
-                      <p key={`${slide.accName}-${index}`}>
-                        {highlightKeywords(entry.text)}
-                      </p>
-                    );
-                  }
+                    if (entry.tag === "p") {
+                      return (
+                        <p key={`${slide.accName}-${index}`}>
+                          <span aria-hidden="true">
+                            {highlightKeywords(entry.text)}
+                          </span>
+                          <span className={styles.visuallyHidden}>
+                            {entry.text}
+                          </span>
+                        </p>
+                      );
+                    }
 
-                  return null;
-                })}
-              </article>
-            ))}
+                    return null;
+                  })}
+                </article>
+              );
+            })}
           </div>
         </div>
 
