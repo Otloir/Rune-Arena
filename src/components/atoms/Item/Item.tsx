@@ -39,7 +39,15 @@ function Item({
     return (
       <article
         className={styles.card}
-        aria-label={`${displayItem.name} item card`}
+        role="group"
+        tabIndex={0}
+        aria-label={
+          `${displayItem.name}. ` +
+          `${displayItem.description}. ` +
+          `Effect: ${displayItem.property} ${displayItem.propvalue}. ` +
+          `Price: ${displayItem.price} RuneCoins. ` +
+          `${canAfford ? "Can afford." : "Cannot afford."}`
+        }
       >
         {displayItem.img && (
           <img
