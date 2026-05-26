@@ -66,6 +66,8 @@ export default function StorePage(): ReactElement {
         <div className={styles.fixedInformationBar}>
           <div
             className={styles.userMoneyDisplay}
+            role="status"
+            tabIndex={0}
             aria-label={
               balance === null
                 ? "Loading balance"

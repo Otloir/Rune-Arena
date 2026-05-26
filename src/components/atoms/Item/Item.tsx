@@ -35,6 +35,7 @@ function Item({
   if (!displayItem) return <div role="status">No item found.</div>;
   const quantity = displayItem.quantity ?? 1;
   const inventoryLabel = `${displayItem.name}. ${displayItem.description}. Effect: ${displayItem.property} ${displayItem.propvalue}. Quantity: ${quantity}.`;
+  const affordabilityHelpId = `affordability-help-${displayItem.id}`;
   if (variant === "card") {
     return (
       <article
@@ -71,13 +72,25 @@ function Item({
             {displayItem.price}
           </span>
           {type === "store" && onBuy && (
-            <button
-              className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
-              onClick={onBuy}
-              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RC`}
-            >
-              {"Buy"}
-            </button>
+            <>
+              <button
+                className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
+                onClick={onBuy}
+                aria-label={`Buy ${displayItem.name} for ${displayItem.price} RC`}
+                disabled={!canAfford}
+                aria-describedby={!canAfford ? affordabilityHelpId : undefined}
+              >
+                {"Buy"}
+              </button>
+              {!canAfford && (
+                <span
+                  id={affordabilityHelpId}
+                  className={styles.visuallyHidden}
+                >
+                  You do not have enough RuneCoins to buy this item.
+                </span>
+              )}
+            </>
           )}
         </div>
       </article>
