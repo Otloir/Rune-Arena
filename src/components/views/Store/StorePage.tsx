@@ -102,9 +102,7 @@ export default function StorePage(): ReactElement {
             </span>
           </Button>
           <IconButton
-            hoverEffect={false}
             iconSrc={informationIcon}
-            iconAlt="Information"
             onClick={openInfo}
             label="Open information"
             className={styles.iconButton}

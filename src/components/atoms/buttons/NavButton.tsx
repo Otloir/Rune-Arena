@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
@@ -15,30 +15,31 @@ type ExternalNav = {
 
 type NavTarget = InternalNav | ExternalNav;
 
-type NavButtonProps = Omit<ButtonProps, "onClick"> & NavTarget & {
-  icon?: ReactNode;
-  label?: string;
-};
+type NavButtonProps = Omit<ButtonProps, "onClick"> &
+  NavTarget & {
+    icon?: ReactNode;
+    label?: string;
+  };
 
 const destinations: Record<"menu" | "start", string> = {
-  menu:  "/arena",
+  menu: "/arena",
   start: "/arena/creature-select",
 };
 
 const defaultLabels: Record<"menu" | "start" | "external", string> = {
-  menu:     "Main Menu",
-  start:    "Start Game",
+  menu: "Main Menu",
+  start: "Start Game",
   external: "Back to Site",
 };
 
-const NavButton: FC<NavButtonProps> = ({
+function NavButton({
   to,
   externalUrl,
   children,
   icon,
   label,
   ...rest
-}) => {
+}: NavButtonProps): ReactElement {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -53,11 +54,17 @@ const NavButton: FC<NavButtonProps> = ({
 
   return (
     <Button onClick={handleClick} {...rest}>
-      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+      <span
+        style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+      >
         {icon && (
           <span
             aria-hidden="true"
-            style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             {icon}
           </span>
@@ -66,6 +73,6 @@ const NavButton: FC<NavButtonProps> = ({
       </span>
     </Button>
   );
-};
+}
 
 export default NavButton;

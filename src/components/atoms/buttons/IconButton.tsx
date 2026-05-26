@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { ReactElement } from "react";
 import Button from "./Button";
 import type { ButtonProps } from "./Button";
 
@@ -20,7 +20,7 @@ const iconSizeMap: Record<"sm" | "md" | "lg", string> = {
   lg: "1.75rem",
 };
 
-const IconButton: FC<IconButtonProps> = ({
+function IconButton({
   onClick,
   icon,
   iconSrc,
@@ -36,7 +36,7 @@ const IconButton: FC<IconButtonProps> = ({
   radius,
   iconSize,
   ...nativeProps
-}) => {
+}: IconButtonProps): ReactElement {
   const resolvedIconSize = iconSize ?? iconSizeMap[size];
 
   const buttonShape: ButtonProps["shape"] =
@@ -48,7 +48,6 @@ const IconButton: FC<IconButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      aria-disabled={disabled}
       color={color}
       size={size}
       shape={buttonShape}
@@ -92,6 +91,6 @@ const IconButton: FC<IconButtonProps> = ({
       </span>
     </Button>
   );
-};
+}
 
 export default IconButton;

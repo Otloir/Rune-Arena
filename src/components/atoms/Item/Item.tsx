@@ -1,5 +1,6 @@
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
+import type { ReactElement } from "react";
 import styles from "./Item.module.css";
 interface ItemProps {
   readonly item?: ItemType;
@@ -11,7 +12,7 @@ interface ItemProps {
   readonly canAfford?: boolean;
   readonly isInBattle?: boolean;
 }
-const Item: React.FC<ItemProps> = ({
+function Item({
   item,
   itemId,
   variant = "row",
@@ -20,7 +21,7 @@ const Item: React.FC<ItemProps> = ({
   onUse,
   canAfford = true,
   isInBattle = false,
-}) => {
+}: ItemProps): ReactElement | null {
   const {
     item: fetchedItem,
     loading,
@@ -63,9 +64,7 @@ const Item: React.FC<ItemProps> = ({
             <button
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
-              aria-label={
-                  `Buy ${displayItem.name} for ${displayItem.price} RC`
-              }
+              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RC`}
             >
               {"Buy"}
             </button>
@@ -90,7 +89,7 @@ const Item: React.FC<ItemProps> = ({
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
           {/* Show quantity if available, otherwise default to 1 */}
-          <span className={styles.rowQuantity} aria-label="Quantity owned">
+          <span className={styles.rowQuantity}>
             × {displayItem.quantity ?? 1}
           </span>
         </div>
@@ -114,5 +113,5 @@ const Item: React.FC<ItemProps> = ({
       )}
     </article>
   );
-};
+}
 export default Item;

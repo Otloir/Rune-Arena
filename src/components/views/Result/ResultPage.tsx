@@ -79,7 +79,7 @@ export default function ResultPage(): ReactElement {
 
   if (sessionError) {
     return (
-      <main className={styles.resultPage} aria-label="Battle session error">
+      <main className={styles.resultPage}>
         <section className={styles.content} aria-live="polite">
           <h1 className={`${styles.title} ${styles.defeat}`}>
             Invalid Session
@@ -104,12 +104,8 @@ export default function ResultPage(): ReactElement {
   // ── Normal result screen ─────────────────────────────────────────────────
 
   return (
-    <main className={styles.resultPage} aria-label="Battle result">
-      <section
-        className={styles.content}
-        aria-live="polite"
-        aria-label="Battle outcome details"
-      >
+    <main className={styles.resultPage}>
+      <section className={styles.content} aria-live="polite">
         <h1
           className={`${styles.title} ${playerWon ? styles.victory : styles.defeat}`}
         >
@@ -157,10 +153,7 @@ export default function ResultPage(): ReactElement {
           </section>
         )}
 
-        <p
-          className={styles.xpGained}
-          aria-label={`XP gained: ${xpGained}`}
-        >
+        <p className={styles.xpGained} aria-label={`XP gained: ${xpGained}`}>
           +{xpGained} XP
         </p>
         <Button
@@ -169,7 +162,8 @@ export default function ResultPage(): ReactElement {
           onClick={
             isGuest
               ? handleBack
-              : () => window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "*")
+              : () =>
+                  window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "*")
           }
           aria-label={isGuest ? "Return to lobby" : "Return to Tivoli"}
           className={styles.secondaryButton}

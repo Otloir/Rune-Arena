@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FC } from "react";
+import type { ReactElement } from "react";
 import { useAsyncData } from "../../../hooks/useCreature";
 import { getCreatureById } from "../../../database/creature.database";
 import type { Creature } from "../../../types/creature.types";
@@ -24,7 +24,7 @@ interface CreatureButtonProps {
   readonly shadow?: boolean;
 }
 
-const CreatureButton: FC<CreatureButtonProps> = ({
+function CreatureButton({
   creatureId,
   onSelect,
   userId,
@@ -32,7 +32,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
   disabled = false,
   shape = "rounded",
   shadow = false,
-}) => {
+}: CreatureButtonProps): ReactElement {
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
 
   const {
@@ -135,12 +135,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
               />{" "}
               Health
             </span>
-            <span
-              className={styles.hpValue}
-              aria-label={`${creature.hp} of ${creature.hp} HP`}
-            >
-              {creature.hp}/{creature.hp}
-            </span>
+            <span className={styles.hpValue}>{creature.hp}/{creature.hp}</span>
           </div>
           <div
             className={styles.hpBar}
@@ -153,7 +148,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
             <div className={styles.hpFill} style={{ width: "100%" }} />
           </div>
           <div className={styles.stats} aria-label="Creature stats">
-            <span className={styles.stat} aria-label={`Attack: ${creature.evade}`}>
+            <span className={styles.stat}>
               <span
                 className={styles.propertieIcon}
                 aria-hidden="true"
@@ -165,7 +160,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
               />{" "}
               {creature.evade}
             </span>
-            <span className={styles.stat} aria-label={`Defense: ${creature.defense}`}>
+            <span className={styles.stat}>
               <span
                 className={styles.propertieIcon}
                 aria-hidden="true"
@@ -177,7 +172,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
               />{" "}
               {creature.defense}
             </span>
-            <span className={styles.stat} aria-label={`Speed: ${creature.speed}`}>
+            <span className={styles.stat}>
               <span
                 className={styles.propertieIcon}
                 aria-hidden="true"
@@ -189,7 +184,7 @@ const CreatureButton: FC<CreatureButtonProps> = ({
               />{" "}
               {creature.speed}
             </span>
-            <span className={styles.stat} aria-label={`Evade: ${creature.evade}`}>
+            <span className={styles.stat}>
               <span
                 className={styles.propertieIcon}
                 aria-hidden="true"
@@ -211,7 +206,6 @@ const CreatureButton: FC<CreatureButtonProps> = ({
         >
           <IconButton
             iconSrc={informationIcon}
-            iconAlt=""
             label={`View detailed information for ${creature.name}`}
             onClick={(): void => setInfoOpen(true)}
             aria-haspopup="dialog"
@@ -224,6 +218,6 @@ const CreatureButton: FC<CreatureButtonProps> = ({
       </div>
     </>
   );
-};
+}
 
 export default CreatureButton;

@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { ReactElement } from "react";
 import { useMove } from "../../../hooks/useMove";
 import type { MoveWithType } from "../../../types/move.types";
 import styles from "./MoveButton.module.css";
@@ -11,13 +11,13 @@ interface MoveButtonProps {
   shadow?: boolean;
 }
 
-const MoveButton: FC<MoveButtonProps> = ({
+function MoveButton({
   moveId,
   onSelect,
   disabled = false,
   shape = "rounded",
   shadow = false,
-}) => {
+}: MoveButtonProps): ReactElement {
   const { move, loading, error } = useMove(moveId);
 
   if (loading) {
@@ -94,6 +94,6 @@ const MoveButton: FC<MoveButtonProps> = ({
       </div>
     </button>
   );
-};
+}
 
 export default MoveButton;

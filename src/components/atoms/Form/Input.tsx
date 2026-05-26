@@ -47,7 +47,7 @@ export default function Input({
       {label && (
         <label htmlFor={name || "input"}>
           {label}
-          {required && <span aria-label="required"> *</span>}
+          {required && <span aria-hidden="true"> *</span>}
         </label>
       )}
       <div className={styles.inputWrapper}>

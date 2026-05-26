@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ReactElement,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type ReactNode, useId } from "react";
+import type { ReactElement } from "react";
 import styles from "./Tutorial.module.css";
 
 import healthIcon from "./../../../assets/icons/health_icon.svg";
@@ -211,6 +206,8 @@ export default function Tutorial({
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const dialogRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const uid = useId();
+  const descId = `tutorial-desc-${uid}`;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -268,11 +265,7 @@ export default function Tutorial({
     setActiveSlideIndex((i) => Math.min(infoSlides.length - 1, i + 1));
 
   return (
-    <div
-      className={styles.textCarouselOverlay}
-      onClick={onClose}
-      role="presentation"
-    >
+    <div className={styles.textCarouselOverlay} onClick={onClose}>
       <section
         ref={dialogRef}
         className={styles.textCarouselPanel}
@@ -280,6 +273,7 @@ export default function Tutorial({
         role="dialog"
         aria-modal="true"
         aria-label="How to play"
+        aria-describedby={descId}
         tabIndex={-1}
       >
         <button
@@ -318,13 +312,11 @@ export default function Tutorial({
                       >
                         <span
                           className={styles.propertyIconWrapper}
-                          style={
-                            {
-                              backgroundColor: `var(${entry.colorVar})`,
-                              WebkitMaskImage: `url(${entry.icon})`,
-                              maskImage: `url(${entry.icon})`,
-                            } as React.CSSProperties
-                          }
+                          style={{
+                            backgroundColor: `var(${entry.colorVar})`,
+                            WebkitMaskImage: `url(${entry.icon})`,
+                            maskImage: `url(${entry.icon})`,
+                          }}
                         >
                           <span className={styles.visuallyHidden}>
                             {entry.name}
@@ -410,6 +402,9 @@ export default function Tutorial({
             />
           </button>
         </div>
+        <p id={descId} className={styles.visuallyHidden}>
+          Use Tab and Shift+Tab to navigate controls. Press Escape to close.
+        </p>
       </section>
     </div>
   );

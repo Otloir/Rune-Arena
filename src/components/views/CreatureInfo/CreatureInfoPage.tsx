@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from "react";
-import type { FC } from "react";
+import type { ReactElement } from "react";
 import type { Creature } from "../../../types/creature.types";
 import type { StatBoosts } from "../../../types/battleEffects.types";
 import {
@@ -41,42 +41,47 @@ interface StatCellProps {
 
 /* ─────────────────────────── StatCell ──────────────────────── */
 
-const StatCell: FC<StatCellProps> = ({
+function StatCell({
   icon,
   color,
   label,
   value,
   highlighted = false,
   boosted = false,
-}): React.ReactElement => (
-  <div
-    className={[
-      styles.statCell,
-      highlighted ? styles.statCellHighlighted : "",
-    ].join(" ")}
-    aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
-  >
-    <span
-      className={styles.statIcon}
-      aria-hidden="true"
-      style={{
-        WebkitMaskImage: `url(${icon})`,
-        maskImage: `url(${icon})`,
-        backgroundColor: color,
-      }}
-    />
-    <span className={styles.statLabel}>{label}</span>
-    <span
-      className={[styles.statValue, boosted ? styles.statValueBoosted : ""].join(" ")}
+}: StatCellProps): ReactElement {
+  return (
+    <div
+      className={[
+        styles.statCell,
+        highlighted ? styles.statCellHighlighted : "",
+      ].join(" ")}
+      aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
     >
-      {value}
-    </span>
-  </div>
-);
+      <span
+        className={styles.statIcon}
+        aria-hidden="true"
+        style={{
+          WebkitMaskImage: `url(${icon})`,
+          maskImage: `url(${icon})`,
+          backgroundColor: color,
+        }}
+      />
+      <span className={styles.statLabel}>{label}</span>
+      <span
+        className={[
+          styles.statValue,
+          boosted ? styles.statValueBoosted : "",
+        ].join(" ")}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
 
 /* ─────────────────────────── CreatureInfoPage ───────────────── */
 
-const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
+function CreatureInfoPage({
   creatureId,
   isOpen,
   onClose,
@@ -86,9 +91,10 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   userId,
   creatureLevelId: creatureLevelIdProp,
   statBoosts,
-}): React.ReactElement | null => {
+}: CreatureInfoPageProps): ReactElement | null {
   const uid = useId();
   const titleId = `creature-info-title-${uid}`;
+  const descId = `creature-info-desc-${uid}`;
 
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -98,10 +104,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     data: creature,
     loading: creatureLoading,
     error: creatureError,
-  } = useAsyncData(
-    () => getCreatureById(String(creatureId)),
-    isOpen,
-  );
+  } = useAsyncData(() => getCreatureById(String(creatureId)), isOpen);
 
   // ── Move entries (with required level_id per move) ──
   const { moveEntries, loading: movesLoading } = useCreatureMoveIds(
@@ -124,7 +127,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const resolvedLevelNumber: number =
     creatureLevelIdProp !== undefined
-      ? fetchedLevelNumber 
+      ? fetchedLevelNumber
       : (fetchedLevelNumber ?? 1);
 
   const resolvedLevelId: number | null =
@@ -132,7 +135,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       ? creatureLevelIdProp
       : (fetchedLevelId ?? null);
 
-  const loading = creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
+  const loading =
+    creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
 
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
@@ -162,9 +166,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       }
       if (e.key !== "Tab") return;
 
-      const dialog = overlayRef.current?.querySelector<HTMLElement>(
-        '[role="dialog"]',
-      );
+      const dialog =
+        overlayRef.current?.querySelector<HTMLElement>('[role="dialog"]');
       if (!dialog) return;
 
       const focusable = Array.from(
@@ -199,7 +202,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   if (!isOpen) return null;
 
-  
   const resolvedMaxHp: number = isBattleView
     ? (maxHpProp ?? creature?.hp ?? 0)
     : (creature?.hp ?? 0);
@@ -221,15 +223,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
         : "var(--hp-bar-damage)";
 
   return (
-    <div
-      ref={overlayRef}
-      className={styles.overlay}
-      onClick={onClose}
-    >
+    <div ref={overlayRef} className={styles.overlay} onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={descId}
         className={styles.modal}
         onClick={(e): void => e.stopPropagation()}
       >
@@ -238,6 +237,9 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
           <h2 className={styles.title} id={titleId}>
             {isBattleView ? "Creature Details" : "Creature Information"}
           </h2>
+          <p id={descId} className={styles.visuallyHidden}>
+            Press Escape to close this dialog.
+          </p>
           <button
             ref={closeButtonRef}
             type="button"
@@ -251,7 +253,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
         {/* ── Scrollable body ── */}
         <div className={styles.body}>
-
           {/* Loading skeleton */}
           {loading && (
             <div
@@ -294,7 +295,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                   </span>
                 )}
               </div>
-
 
               {!isBattleView && types.length > 0 && (
                 <div className={styles.typeBadges} aria-label="Creature types">
@@ -380,12 +380,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     const speedBoost = statBoosts?.speedBoost ?? 0;
 
                     const effectiveEvade = creature.evade + evadeBoost;
-                    const effectiveDefense = creature.defense + Math.floor(
-                      (creature.defense * defenseBoost) / 100,
-                    );
-                    const effectiveSpeed = creature.speed + Math.floor(
-                      (creature.speed * speedBoost) / 100,
-                    );
+                    const effectiveDefense =
+                      creature.defense +
+                      Math.floor((creature.defense * defenseBoost) / 100);
+                    const effectiveSpeed =
+                      creature.speed +
+                      Math.floor((creature.speed * speedBoost) / 100);
 
                     return (
                       <>
@@ -416,10 +416,30 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                   })()
                 ) : (
                   <>
-                    <StatCell icon={healthIcon}  color="var(--health)"  label="Max HP"  value={resolvedMaxHp} />
-                    <StatCell icon={evadeIcon}   color="var(--evade)"   label="Evade"   value={creature.evade} />
-                    <StatCell icon={defenseIcon} color="var(--defense)" label="Defense" value={creature.defense} />
-                    <StatCell icon={speedIcon}   color="var(--speed)"   label="Speed"   value={creature.speed} />
+                    <StatCell
+                      icon={healthIcon}
+                      color="var(--health)"
+                      label="Max HP"
+                      value={resolvedMaxHp}
+                    />
+                    <StatCell
+                      icon={evadeIcon}
+                      color="var(--evade)"
+                      label="Evade"
+                      value={creature.evade}
+                    />
+                    <StatCell
+                      icon={defenseIcon}
+                      color="var(--defense)"
+                      label="Defense"
+                      value={creature.defense}
+                    />
+                    <StatCell
+                      icon={speedIcon}
+                      color="var(--speed)"
+                      label="Speed"
+                      value={creature.speed}
+                    />
                   </>
                 )}
               </div>
@@ -470,6 +490,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default CreatureInfoPage;

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useId } from "react";
 import ItemList from "../../molecules/itemList/ItemList";
 import type { Item as ItemType } from "../../../types/item.types";
 import style from "./InventoryPage.module.css";
@@ -19,19 +20,84 @@ export default function InventoryPage({
   onUseItem,
   refreshToggle,
 }: InventoryPageProps) {
+  const uid = useId();
+  const titleId = `inventory-title-${uid}`;
+  const descId = `inventory-desc-${uid}`;
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    // focus the close button when the inventory opens
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const dialogElement = dialogRef.current;
+      if (!dialogElement) return;
+
+      const focusableElements = Array.from(
+        dialogElement.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogElement.focus();
+        return;
+      }
+
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div className={style.overlay} onClick={onClose}>
-      <div className={style.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className={style.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descId}
+        tabIndex={-1}
+      >
         <button
+          ref={closeButtonRef}
           className={style.closeButton}
           onClick={onClose}
           aria-label="Close inventory"
+          type="button"
         >
           ✕
         </button>
-        <h2>Inventory</h2>
+        <h2 id={titleId}>Inventory</h2>
+        <p id={descId} className={style.visuallyHidden}>
+          Press Escape to close this dialog. Use Tab and Shift+Tab to move
+          between controls.
+        </p>
         <div className={style.content}>
           <ItemList
             userId={userId}
@@ -39,7 +105,6 @@ export default function InventoryPage({
             type="inventory"
             onUseItem={isInBattle && onUseItem ? onUseItem : undefined}
             refreshToggle={refreshToggle}
-            isInBattle={isInBattle}
           />
         </div>
       </div>
