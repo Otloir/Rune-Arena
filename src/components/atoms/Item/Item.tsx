@@ -33,6 +33,8 @@ function Item({
     if (error) return <div role="alert">{error}</div>;
   }
   if (!displayItem) return <div role="status">No item found.</div>;
+  const quantity = displayItem.quantity ?? 1;
+  const inventoryLabel = `${displayItem.name}. ${displayItem.description}. Effect: ${displayItem.property} ${displayItem.propvalue}. Quantity: ${quantity}.`;
   if (variant === "card") {
     return (
       <article
@@ -74,10 +76,7 @@ function Item({
     );
   }
   return (
-    <article
-      className={styles.row}
-      aria-label={`${displayItem.name} inventory item`}
-    >
+    <article className={styles.row} tabIndex={0} aria-label={inventoryLabel}>
       {displayItem.img && (
         <img
           src={displayItem.img}
@@ -88,10 +87,7 @@ function Item({
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
-          {/* Show quantity if available, otherwise default to 1 */}
-          <span className={styles.rowQuantity}>
-            × {displayItem.quantity ?? 1}
-          </span>
+          <span className={styles.rowQuantity}>× {quantity}</span>
         </div>
         <p className={styles.rowProperty}>
           {displayItem.property} {displayItem.propvalue}
