@@ -50,11 +50,18 @@ function StatCell({
   boosted = false,
 }: StatCellProps): ReactElement {
   return (
+    // CHANGE 1 — SC 2.1.1: tabindex="0" puts stat cells in the tab order so
+    // keyboard and VoiceOver users can reach them.
+    // role="listitem" pairs with role="list" on the parent grid (CHANGE 3).
+    // The aria-label already carries the full readable announcement
+    // ("Defense: 45 (boosted)"), so no extra inner text is needed.
     <div
       className={[
         styles.statCell,
         highlighted ? styles.statCellHighlighted : "",
       ].join(" ")}
+      role="listitem"
+      tabIndex={0}
       aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
     >
       <span
@@ -66,12 +73,15 @@ function StatCell({
           backgroundColor: color,
         }}
       />
-      <span className={styles.statLabel}>{label}</span>
+      {/* aria-hidden on label + value because the parent aria-label already
+          provides the full announcement — avoids double-reading. */}
+      <span className={styles.statLabel} aria-hidden="true">{label}</span>
       <span
         className={[
           styles.statValue,
           boosted ? styles.statValueBoosted : "",
         ].join(" ")}
+        aria-hidden="true"
       >
         {value}
       </span>
@@ -99,20 +109,17 @@ function CreatureInfoPage({
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // ── Creature base data ──
   const {
     data: creature,
     loading: creatureLoading,
     error: creatureError,
   } = useAsyncData(() => getCreatureById(String(creatureId)), isOpen);
 
-  // ── Move entries (with required level_id per move) ──
   const { moveEntries, loading: movesLoading } = useCreatureMoveIds(
     isOpen ? creatureId : null,
     isOpen,
   );
 
-  // ── Types (selection view only) ──
   const { types } = useCreatureTypes(
     isOpen && !isBattleView ? creatureId : null,
     isOpen && !isBattleView,
@@ -155,7 +162,7 @@ function CreatureInfoPage({
     };
   }, [isOpen]);
 
-  // SC 2.1.1 — focus trap + Escape key handler
+  // SC 2.1.1 — focus trap + Escape key handler (unchanged)
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
@@ -240,12 +247,14 @@ function CreatureInfoPage({
           <p id={descId} className={styles.visuallyHidden}>
             Press Escape to close this dialog.
           </p>
+          {/* CHANGE 2 — SC 2.5.5: min 44×44px touch/click target on close button */}
           <button
             ref={closeButtonRef}
             type="button"
             className={styles.closeButton}
             onClick={onClose}
             aria-label="Close creature information"
+            style={{ minWidth: 44, minHeight: 44 }}
           >
             ✕
           </button>
@@ -253,7 +262,6 @@ function CreatureInfoPage({
 
         {/* ── Scrollable body ── */}
         <div className={styles.body}>
-          {/* Loading skeleton */}
           {loading && (
             <div
               role="status"
@@ -267,14 +275,12 @@ function CreatureInfoPage({
             </div>
           )}
 
-          {/* Error */}
           {creatureError && !loading && (
             <p role="alert" className={styles.errorState}>
               Failed to load creature information. Please try again.
             </p>
           )}
 
-          {/* Content */}
           {creature && !loading && (
             <>
               <img
@@ -283,7 +289,6 @@ function CreatureInfoPage({
                 className={styles.sprite}
               />
 
-              {/* Name + level badge side by side */}
               <div className={styles.nameRow}>
                 <h3 className={styles.creatureName}>{creature.name}</h3>
                 {!loading && (
@@ -318,7 +323,6 @@ function CreatureInfoPage({
                 <p className={styles.description}>{creature.description}</p>
               )}
 
-              {/* HP block — <div> avoids LobbyPage's .lobbyPage section override */}
               <div className={styles.hpSection} aria-label="Health">
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
@@ -367,9 +371,13 @@ function CreatureInfoPage({
                 )}
               </div>
 
-              {/* Stats grid */}
+              {/* CHANGE 3 — SC 2.1.1 + 1.3.1: role="list" groups the stat cells
+                  so VoiceOver announces "Creature statistics, list, 3 items" (or 4),
+                  and each StatCell's role="listitem" + tabIndex={0} makes it
+                  reachable and readable in sequence. */}
               <div
                 className={styles.statsGrid}
+                role="list"
                 aria-label="Creature statistics"
                 data-cols={isBattleView ? "3" : "2"}
               >
@@ -444,7 +452,6 @@ function CreatureInfoPage({
                 )}
               </div>
 
-              {/* Moves */}
               {moveEntries.length > 0 && (
                 <div
                   className={styles.movesSection}
@@ -459,9 +466,19 @@ function CreatureInfoPage({
                         resolvedLevelId !== null &&
                         requiredLevelId <= resolvedLevelId;
 
+                      // CHANGE 4 — SC 3.3.5: provide context-sensitive help for
+                      // locked moves. The hidden span is read by VoiceOver when
+                      // the locked label is focused via aria-describedby.
+                      const lockHelpId = `lock-help-${uid}-${moveId}`;
+
                       return (
                         <div key={moveId} className={styles.moveRow}>
-                          <div className={styles.infoMoveWrapper}>
+                          {/* CHANGE 5 — SC 2.5.5: enforce 44px min height on the
+                              move button wrapper so the touch target is large enough */}
+                          <div
+                            className={styles.infoMoveWrapper}
+                            style={{ minHeight: 44 }}
+                          >
                             <MoveButton
                               moveId={moveId}
                               onSelect={(): void => undefined}
@@ -471,12 +488,24 @@ function CreatureInfoPage({
                             />
                           </div>
                           {!isUnlocked && (
-                            <span
-                              className={styles.lockedLabel}
-                              aria-label={`Move locked until level ${requiredLevelId}`}
-                            >
-                              LOCKED
-                            </span>
+                            <>
+                              {/* SC 3.3.5 help text — visually hidden, read by
+                                  screen readers via aria-describedby below */}
+                              <span
+                                id={lockHelpId}
+                                className={styles.visuallyHidden}
+                              >
+                                This move unlocks at level {requiredLevelId}.
+                                Your creature is currently level {resolvedLevelNumber}.
+                              </span>
+                              <span
+                                className={styles.lockedLabel}
+                                aria-label={`Move locked until level ${requiredLevelId}`}
+                                aria-describedby={lockHelpId}
+                              >
+                                LOCKED
+                              </span>
+                            </>
                           )}
                         </div>
                       );
