@@ -43,7 +43,6 @@ export default function BattleArena({
     error: playerTwoError,
   } = useCreatureBase(playerTwoCreatureId);
 
-
   const randomizedOpponentLevel = useMemo((): number => {
     if (!playerOneLevel) return 1;
 
@@ -361,7 +360,7 @@ export default function BattleArena({
               <Creature
                 userId={playerTwoId}
                 creatureId={playerTwoCreatureId}
-                role="opponent"
+                side="opponent"
                 isAttacking={turnOwner === "opponent" && isProcessing}
                 isHit={opponentIsHit}
               />
@@ -381,7 +380,7 @@ export default function BattleArena({
               <Creature
                 userId={playerOneId}
                 creatureId={playerOneCreatureId}
-                role="player"
+                side="player"
                 isAttacking={turnOwner === "player" && isProcessing}
                 isHit={playerIsHit}
               />

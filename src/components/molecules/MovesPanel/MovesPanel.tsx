@@ -18,25 +18,39 @@ export default function MovesPanel({
   disabled = false,
   shadow = false,
 }: MovesPanelProps) {
-  const { moveIds, loading, error } = useCreatureMoves(creatureId, creatureLevel);
+  const { moveIds, loading, error } = useCreatureMoves(
+    creatureId,
+    creatureLevel,
+  );
 
   if (loading) {
     return (
-      <section className={styles.movesPanel} aria-label="Loading available battle moves">
+      <div
+        className={styles.movesPanel}
+        role="group"
+        aria-label="Loading available battle moves"
+        aria-busy="true"
+      >
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className={styles.emptyMoveSlot} aria-hidden="true">
             Loading...
           </div>
         ))}
-      </section>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section className={styles.movesPanel} aria-label="Move selection unavailable">
-        <div className={styles.errorMessage}>Failed to load moves.</div>
-      </section>
+      <div
+        className={styles.movesPanel}
+        role="group"
+        aria-label="Move selection unavailable"
+      >
+        <div className={styles.errorMessage} role="alert">
+          Failed to load moves.
+        </div>
+      </div>
     );
   }
 
@@ -44,7 +58,11 @@ export default function MovesPanel({
   while (paddedMoveIds.length < 4) paddedMoveIds.push(0);
 
   return (
-    <section className={styles.movesPanel} aria-label="Available battle moves">
+    <div
+      className={styles.movesPanel}
+      role="group"
+      aria-label="Available battle moves"
+    >
       {paddedMoveIds.map((moveId, index) =>
         moveId > 0 ? (
           <MoveButton
@@ -66,6 +84,6 @@ export default function MovesPanel({
           </button>
         ),
       )}
-    </section>
+    </div>
   );
 }
