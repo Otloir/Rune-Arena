@@ -121,7 +121,7 @@ export default function ResultPage(): ReactElement {
         className="visuallyHidden"
       >
         {playerWon
-          ? `${playerName} defeated ${opponentName}. You gained ${xpGained} XP.`
+          ? `${playerName} defeated ${opponentName}. You gained ${xpGained} experience points.`
           : `${playerName} was defeated by ${opponentName}.`}
       </div>
       <section
