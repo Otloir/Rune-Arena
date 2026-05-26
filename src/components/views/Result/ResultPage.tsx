@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { ReactElement } from "react";
 import styles from "./ResultPage.module.css";
 import Button from "../../atoms/buttons/Button";
@@ -49,6 +49,11 @@ export default function ResultPage(): ReactElement {
   const xpGained: number = state?.xpGained ?? 0;
   const stamp: StampReward | null = state?.stamp ?? null;
   const isGuest: boolean = state?.isGuest ?? true;
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
 
   const handleBack = (): void => {
     if (isGuest) {
@@ -80,7 +85,10 @@ export default function ResultPage(): ReactElement {
   if (sessionError) {
     return (
       <main className={styles.resultPage}>
-        <section className={styles.content} aria-live="polite">
+        <section
+            className={styles.content}
+            aria-labelledby="result-title"
+          >
           <h1 className={`${styles.title} ${styles.defeat}`}>
             Invalid Session
           </h1>
@@ -105,8 +113,23 @@ export default function ResultPage(): ReactElement {
 
   return (
     <main className={styles.resultPage}>
-      <section className={styles.content} aria-live="polite">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="visuallyHidden"
+      >
+        {playerWon
+          ? `${playerName} defeated ${opponentName}. You gained ${xpGained} experience points.`
+          : `${playerName} was defeated by ${opponentName}.`}
+      </div>
+      <section
+        className={styles.content}
+      >
         <h1
+          ref={headingRef}
+          id="result-title"
+          tabIndex={-1}
           className={`${styles.title} ${playerWon ? styles.victory : styles.defeat}`}
         >
           {playerWon ? "Victory!" : "Defeated!"}
@@ -119,14 +142,7 @@ export default function ResultPage(): ReactElement {
         </p>
 
         {playerWon && (
-          <p
-            className={styles.coinsAwarded}
-            aria-label={
-              newBalance !== null
-                ? `Earned 5 RuneCoins, balance is now ${newBalance}`
-                : "Earned 5 RuneCoins"
-            }
-          >
+          <p className={styles.coinsAwarded}>
             {newBalance !== null
               ? `+5 RC earned! (Balance: ${newBalance} RC)`
               : "+5 RC earned!"}
@@ -134,14 +150,22 @@ export default function ResultPage(): ReactElement {
         )}
 
         {stamp !== null && (
-          <section className={styles.rewardSection} aria-label="Stamp reward">
-            <p className={styles.rewardLabel}>You earned a stamp:</p>
+          <section
+            className={styles.rewardSection}
+            aria-labelledby="reward-heading"
+          >
+            <p
+              id="reward-heading"
+              className={styles.rewardLabel}
+            >
+              You earned a stamp:
+            </p>
             <article className={styles.rewardCard} aria-label="Stamp details">
               <div className={styles.rewardImageContainer}>
                 {stamp.imageUrl ? (
                   <img
                     src={stamp.imageUrl}
-                    alt={stamp.name}
+                    alt={`${stamp.name} stamp`}
                     className={styles.rewardImage}
                   />
                 ) : (
@@ -153,7 +177,10 @@ export default function ResultPage(): ReactElement {
           </section>
         )}
 
-        <p className={styles.xpGained} aria-label={`XP gained: ${xpGained}`}>
+        <p
+          className={styles.xpGained}
+          aria-label={`You gained ${xpGained} experience points`}
+        >
           +{xpGained} XP
         </p>
         <Button
