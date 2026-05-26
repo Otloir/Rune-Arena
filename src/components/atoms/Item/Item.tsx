@@ -45,7 +45,7 @@ function Item({
           `${displayItem.name}. ` +
           `${displayItem.description}. ` +
           `Effect: ${displayItem.property} ${displayItem.propvalue}. ` +
-          `Price: ${displayItem.price} RuneCoins. ` +
+          `Price: ${displayItem.price} RC. ` +
           `${canAfford ? "Can afford." : "Cannot afford."}`
         }
       >
@@ -93,7 +93,7 @@ function Item({
             id={affordabilityHelpId}
             className="visuallyHidden"
           >
-            You do not have enough RuneCoins to buy this item.
+            Insufficient RC.
           </span>
         )}
       </article>
