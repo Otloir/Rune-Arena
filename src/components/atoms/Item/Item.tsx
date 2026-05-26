@@ -64,6 +64,7 @@ function Item({
         {!isInBattle && (
           <p className={styles.cardDescription}>{displayItem.description}</p>
         )}
+        <>
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
@@ -71,28 +72,31 @@ function Item({
             </span>
             {displayItem.price}
           </span>
+
           {type === "store" && onBuy && (
-            <>
-              <button
-                className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
-                onClick={onBuy}
-                aria-label={`Buy ${displayItem.name} for ${displayItem.price} RC`}
-                disabled={!canAfford}
-                aria-describedby={!canAfford ? affordabilityHelpId : undefined}
-              >
-                {"Buy"}
-              </button>
-              {!canAfford && (
-                <span
-                  id={affordabilityHelpId}
-                  className={styles.visuallyHidden}
-                >
-                  You do not have enough RuneCoins to buy this item.
-                </span>
-              )}
-            </>
+            <button
+              className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
+              onClick={onBuy}
+              disabled={!canAfford}
+              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RuneCoins`}
+              aria-describedby={
+                !canAfford ? affordabilityHelpId : undefined
+              }
+            >
+              {canAfford ? "Buy" : " X "}
+            </button>
           )}
         </div>
+
+      </>
+      {!canAfford && (
+          <span
+            id={affordabilityHelpId}
+            className="visuallyHidden"
+          >
+            You do not have enough RuneCoins to buy this item.
+          </span>
+        )}
       </article>
     );
   }
