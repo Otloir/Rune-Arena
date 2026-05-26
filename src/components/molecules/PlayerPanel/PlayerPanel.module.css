@@ -133,6 +133,7 @@
     flex-basis: 0;
     height: 100%;
     overflow: hidden;
+    padding-bottom: 0.18rem;
   }
 
   .movesWrapper {

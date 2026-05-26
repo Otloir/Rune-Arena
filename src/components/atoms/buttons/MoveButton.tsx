@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { useMove } from "../../../hooks/useMove";
 import type { MoveWithType } from "../../../types/move.types";
 import styles from "./MoveButton.module.css";
@@ -9,7 +9,6 @@ interface MoveButtonProps {
   disabled?: boolean;
   shape?: "rounded" | "pill";
   shadow?: boolean;
-  damageLabel?: ReactNode;
 }
 
 const MoveButton: FC<MoveButtonProps> = ({

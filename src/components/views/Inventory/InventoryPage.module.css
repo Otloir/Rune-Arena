@@ -19,8 +19,8 @@
   border-radius: 1.25rem;
   padding: 1.5rem;
   width: min(90vw, 32rem);
-  max-height: 85dvh;
   max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
   position: relative;
   box-shadow: 0 0.5rem 2rem var(--shadow-black-22);
