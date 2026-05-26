@@ -2,6 +2,8 @@ import { useEffect, useId, useRef } from "react";
 import type { ReactElement } from "react";
 import type { Creature } from "../../../types/creature.types";
 import type { StatBoosts } from "../../../types/battleEffects.types";
+import IconButton from "../../atoms/buttons/IconButton";
+import closeIcon from "../../../assets/icons/close_icon.svg";
 import {
   useAsyncData,
   useCreatureMoveIds,
@@ -240,15 +242,18 @@ function CreatureInfoPage({
           <p id={descId} className={styles.visuallyHidden}>
             Press Escape to close this dialog.
           </p>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className={styles.closeButton}
+          <IconButton
             onClick={onClose}
-            aria-label="Close creature information"
-          >
-            ✕
-          </button>
+            label="Close creature information"
+            aria-describedby={descId}
+            iconSrc={closeIcon}
+            variant="invisible"
+            shape="circle"
+            size="md"
+            iconSize="1.5rem"
+            style={{ color: "#000000" }}
+            className={styles.closeButton}
+          />
         </div>
 
         {/* ── Scrollable body ── */}

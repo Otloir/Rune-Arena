@@ -1,5 +1,7 @@
 import { useEffect, useRef, useId } from "react";
 import ItemList from "../../molecules/itemList/ItemList";
+import IconButton from "../../atoms/buttons/IconButton";
+import closeIcon from "../../../assets/icons/close_icon.svg";
 import type { Item as ItemType } from "../../../types/item.types";
 import style from "./InventoryPage.module.css";
 
@@ -118,15 +120,19 @@ export default function InventoryPage({
         aria-describedby={descId}
         tabIndex={-1}
       >
-        <button
-          ref={closeButtonRef}
-          className={style.closeButton}
+        <IconButton
           onClick={onClose}
-          aria-label="Close inventory"
-          type="button"
-        >
-          ✕
-        </button>
+          label="Close inventory"
+          aria-describedby={descId}
+          iconSrc={closeIcon}
+          variant="invisible"
+          shape="circle"
+          size="md"
+          hoverEffect={false}
+          iconSize="1.5rem"
+          style={{ color: "#000000" }}
+          className={style.closeButton}
+        />
         <h2 id={titleId}>Inventory</h2>
         <p id={descId} className={style.visuallyHidden}>
           Press Escape to close this dialog. Use Tab and Shift+Tab to move

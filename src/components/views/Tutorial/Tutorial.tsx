@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode, useId } from "react";
 import type { ReactElement } from "react";
 import styles from "./Tutorial.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
 
 import healthIcon from "./../../../assets/icons/health_icon.svg";
 import evadeIcon from "./../../../assets/icons/evade_icon.svg";
 import defenceIcon from "./../../../assets/icons/defence_icon.svg";
 import speedIcon from "./../../../assets/icons/speed_icon.svg";
-import closeIcon from "./../../../assets/icons/close_icon.svg";
 import arrowUpIcon from "./../../../assets/icons/arrow_up_icon.svg";
+import closeIcon from "./../../../assets/icons/close_icon.svg";
 import typeChartImage from "./../../../assets/images/type_chart.svg";
 
 interface TextCarouselProps {
@@ -210,6 +211,7 @@ export default function Tutorial({
   const touchStartY = useRef<number | null>(null);
   const uid = useId();
   const descId = `tutorial-desc-${uid}`;
+  const slideLiveId = `tutorial-slide-live-${uid}`;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -296,19 +298,19 @@ export default function Tutorial({
         aria-describedby={descId}
         tabIndex={-1}
       >
-        <button
-          ref={closeButtonRef}
-          className={styles.textCarouselClose}
+        <IconButton
           onClick={onClose}
-          aria-label="Close tutorial"
-        >
-          <img
-            src={closeIcon}
-            alt=""
-            aria-hidden="true"
-            className={styles.closeIcon}
-          />
-        </button>
+          label="Close tutorial"
+          aria-describedby={descId}
+          iconSrc={closeIcon}
+          variant="invisible"
+          shape="circle"
+          size="md"
+          hoverEffect={false}
+          iconSize="1.5rem"
+          style={{ color: "#000000" }}
+          className={styles.textCarouselClose}
+        />
 
         <div
           className={styles.textCarouselViewport}
@@ -328,6 +330,7 @@ export default function Tutorial({
                   className={styles.textCarouselSlide}
                   data-accname={slide.accName}
                   inert={index !== activeSlideIndex ? true : undefined}
+                  aria-hidden={index !== activeSlideIndex}
                   aria-roledescription="slide"
                   aria-labelledby={slideTitleId}
                 >
@@ -443,6 +446,14 @@ export default function Tutorial({
         <p id={descId} className={styles.visuallyHidden}>
           Use Tab and Shift+Tab to navigate controls. Press Escape to close.
         </p>
+
+        <span
+          id={slideLiveId}
+          className={styles.visuallyHidden}
+          aria-live="polite"
+        >
+          {`Slide ${activeSlideIndex + 1} of ${infoSlides.length}: ${infoSlides[activeSlideIndex].title}`}
+        </span>
       </section>
     </div>
   );

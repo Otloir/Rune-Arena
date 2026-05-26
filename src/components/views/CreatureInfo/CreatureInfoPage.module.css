@@ -86,21 +86,19 @@
 .closeButton {
   background: none;
   border: none;
-  font-size: 1.25rem;
+  border-radius: 50%;
   cursor: pointer;
-  color: var(--text-primary);
   padding: 0;
   width: 2.75rem;
   height: 2.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   transition: background-color 0.15s ease;
   flex-shrink: 0;
 }
 .closeButton:hover {
-  background-color: var(--gray-lightest);
+  background-color: transparent;
 }
 .closeButton:focus-visible {
   outline: 0.1875rem solid var(--btn-cta-bg);
