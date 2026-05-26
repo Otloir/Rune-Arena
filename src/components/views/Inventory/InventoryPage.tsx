@@ -27,8 +27,32 @@ export default function InventoryPage({
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     // focus the close button when the inventory opens
     closeButtonRef.current?.focus();
+
+    const getFocusableElements = (root: HTMLElement): HTMLElement[] =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+    const focusFirstDialogElement = (): void => {
+      const dialogElement = dialogRef.current;
+
+      if (!dialogElement) return;
+
+      const focusableElements = getFocusableElements(dialogElement);
+
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+        return;
+      }
+
+      dialogElement.focus();
+    };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -42,11 +66,7 @@ export default function InventoryPage({
       const dialogElement = dialogRef.current;
       if (!dialogElement) return;
 
-      const focusableElements = Array.from(
-        dialogElement.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ),
-      );
+      const focusableElements = getFocusableElements(dialogElement);
 
       if (focusableElements.length === 0) {
         event.preventDefault();
@@ -66,9 +86,23 @@ export default function InventoryPage({
       }
     };
 
+    const handleFocusIn = (event: FocusEvent): void => {
+      const dialogElement = dialogRef.current;
+      const focusedTarget = event.target;
+
+      if (!(focusedTarget instanceof Node)) return;
+      if (!dialogElement || dialogElement.contains(focusedTarget)) return;
+
+      focusFirstDialogElement();
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+    document.addEventListener("focusin", handleFocusIn);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
