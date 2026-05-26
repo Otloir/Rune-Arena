@@ -2,6 +2,8 @@ import { useEffect, useId, useRef } from "react";
 import type { ReactElement } from "react";
 import type { Creature } from "../../../types/creature.types";
 import type { StatBoosts } from "../../../types/battleEffects.types";
+import IconButton from "../../atoms/buttons/IconButton";
+import closeIcon from "../../../assets/icons/close_icon.svg";
 import {
   useAsyncData,
   useCreatureMoveIds,
@@ -100,7 +102,6 @@ function CreatureInfoPage({
   const descId = `creature-info-desc-${uid}`;
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const {
     data: creature,
@@ -137,14 +138,6 @@ function CreatureInfoPage({
 
   const loading =
     creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
-
-  useEffect((): (() => void) | void => {
-    if (!isOpen) return;
-    const id = window.setTimeout((): void => {
-      closeButtonRef.current?.focus();
-    }, 50);
-    return (): void => window.clearTimeout(id);
-  }, [isOpen]);
 
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
@@ -239,15 +232,18 @@ function CreatureInfoPage({
           <p id={descId} className={styles.visuallyHidden}>
             Press Escape to close this dialog.
           </p>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className={styles.closeButton}
+          <IconButton
             onClick={onClose}
-            aria-label="Close creature information"
-          >
-            ✕
-          </button>
+            label="Close creature information"
+            aria-describedby={descId}
+            iconSrc={closeIcon}
+            variant="invisible"
+            shape="circle"
+            size="md"
+            iconSize="1.5rem"
+            style={{ color: "#000000" }}
+            className={styles.closeButton}
+          />
         </div>
 
         <div className={styles.body}>

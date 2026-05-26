@@ -5,7 +5,7 @@ import styles from "./Creature.module.css";
 interface CreatureProps {
   readonly userId: string | number;
   readonly creatureId: string | number;
-  readonly role: "player" | "opponent";
+  readonly side: "player" | "opponent";
   readonly isAttacking?: boolean;
   readonly isHit?: boolean;
 }
@@ -13,31 +13,30 @@ interface CreatureProps {
 export default function Creature({
   userId,
   creatureId,
-  role,
+  side,
   isAttacking = false,
   isHit = false,
 }: CreatureProps): React.ReactElement {
   const playerResult = useCreatureById(userId, creatureId);
   const opponentResult = useCreatureBase(creatureId);
   const { creature, loading, error } =
-    role === "opponent" ? opponentResult : playerResult;
-
+    side === "opponent" ? opponentResult : playerResult;
 
   if (loading)
-    return <section className={styles.creatureContainer}>Loading...</section>;
+    return <div className={styles.creatureContainer}>Loading...</div>;
 
   if (error || !creature)
     return (
-      <section className={styles.creatureContainer}>
+      <div className={styles.creatureContainer}>
         {error ?? "No creature found"}
-      </section>
+      </div>
     );
 
   // Show front image for opponent, back image for player
   let spriteImage = creature.back_img;
   let spriteDescription = "back";
 
-  if (role === "opponent") {
+  if (side === "opponent") {
     spriteImage = creature.front_img;
     spriteDescription = "front";
   }
@@ -45,24 +44,25 @@ export default function Creature({
   const spriteAlt = `${creature.name} ${spriteDescription} sprite`;
 
   return (
-    <section className={styles.creatureContainer}>
+    <div className={styles.creatureContainer}>
       <div className={styles.creatureStack}>
         <img
           src={spriteImage}
           alt={spriteAlt}
           width="500"
           height="600"
-          className={`${styles.creatureSprite} ${isAttacking ? (role === "player" ? styles.player : styles.opponent) : ""} ${isHit ? styles.shake : ""}`}
+          className={`${styles.creatureSprite} ${isAttacking ? (side === "player" ? styles.player : styles.opponent) : ""} ${isHit ? styles.shake : ""}`}
         />
 
         <img
           src={platformImage}
-          alt="Platform"
+          alt=""
+          aria-hidden="true"
           width="500"
           height="600"
           className={styles.platform}
         />
       </div>
-    </section>
+    </div>
   );
 }

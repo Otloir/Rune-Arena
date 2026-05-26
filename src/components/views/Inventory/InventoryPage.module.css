@@ -62,7 +62,7 @@
 }
 
 .closeButton:hover {
-  background-color: var(--gray-lightest);
+  background-color: transparent;
 }
 
 .closeButton:focus-visible {

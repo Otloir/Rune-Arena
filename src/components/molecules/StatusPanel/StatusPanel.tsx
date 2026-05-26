@@ -2,7 +2,6 @@ import styles from "./StatusPanel.module.css";
 import Bars from "../../atoms/Bars/Bars";
 import { useCreatureById, useCreatureBase } from "../../../hooks/useCreature";
 
-
 interface StatusPanelProps {
   readonly userId: string | number;
   readonly creatureId: string | number;
@@ -11,7 +10,6 @@ interface StatusPanelProps {
   readonly overrideLevel?: number;
 }
 
-
 export default function StatusPanel({
   userId,
   creatureId,
@@ -19,7 +17,6 @@ export default function StatusPanel({
   side,
   overrideLevel,
 }: StatusPanelProps): React.ReactElement {
-  
   const playerResult = useCreatureById(userId, creatureId);
   const opponentResult = useCreatureBase(creatureId);
   const isOpponent = side === "opponent";
@@ -32,13 +29,13 @@ export default function StatusPanel({
   const displayLevel = overrideLevel ?? (isOpponent ? null : level);
 
   if (loading)
-    return <section className={styles.statusBarContainer}>Loading...</section>;
+    return <div className={styles.statusBarContainer}>Loading...</div>;
 
   if (error || !creature)
     return (
-      <section className={styles.statusBarContainer}>
+      <div className={styles.statusBarContainer}>
         {error ?? "No creature found"}
-      </section>
+      </div>
     );
 
   const displayHp = Math.min(
@@ -56,8 +53,18 @@ export default function StatusPanel({
         <span>{displayLevel !== null ? `Lv. ${displayLevel}` : ""}</span>
       </div>
 
-      <Bars current={currentXp} max={xpRequired} variant="xp" aria="xp bar" />
-      <Bars current={displayHp} max={creature.hp} variant="hp" aria="hp bar" />
+      <Bars
+        current={currentXp}
+        max={xpRequired}
+        variant="xp"
+        aria={`${creature.name} XP`}
+      />
+      <Bars
+        current={displayHp}
+        max={creature.hp}
+        variant="hp"
+        aria={`${creature.name} HP`}
+      />
     </section>
   );
 }

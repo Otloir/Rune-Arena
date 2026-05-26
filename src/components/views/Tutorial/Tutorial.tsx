@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode, useId } from "react";
 import type { ReactElement } from "react";
 import styles from "./Tutorial.module.css";
+import IconButton from "../../atoms/buttons/IconButton";
 
 import healthIcon from "./../../../assets/icons/health_icon.svg";
 import evadeIcon from "./../../../assets/icons/evade_icon.svg";
 import defenceIcon from "./../../../assets/icons/defence_icon.svg";
 import speedIcon from "./../../../assets/icons/speed_icon.svg";
-import closeIcon from "./../../../assets/icons/close_icon.svg";
 import arrowUpIcon from "./../../../assets/icons/arrow_up_icon.svg";
+import closeIcon from "./../../../assets/icons/close_icon.svg";
 import typeChartImage from "./../../../assets/images/type_chart.svg";
 
 interface TextCarouselProps {
@@ -141,7 +142,7 @@ const infoSlides: Slide[] = [
       {
         tag: "image",
         src: typeChartImage,
-        alt: "Type chart showing the effectiveness between creature types",
+        alt: "Type chart showing the effectiveness between creature types: Fire beats grass, Grass beats water, Water beats fire, normal is not strong or effective againsed anything",
       },
     ],
   },
@@ -205,14 +206,34 @@ export default function Tutorial({
 }: TextCarouselProps): ReactElement | null {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const dialogRef = useRef<HTMLElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const uid = useId();
   const descId = `tutorial-desc-${uid}`;
+  const slideLiveId = `tutorial-slide-live-${uid}`;
 
   useEffect(() => {
     if (!isOpen) return;
 
-    closeButtonRef.current?.focus();
+    const getFocusableElements = (root: HTMLElement): HTMLElement[] =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+
+    const focusFirstDialogElement = (): void => {
+      const dialogElement = dialogRef.current;
+      if (!dialogElement) return;
+      const focusableElements = getFocusableElements(dialogElement);
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+        return;
+      }
+      dialogElement.focus();
+    };
+
+    focusFirstDialogElement();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -226,11 +247,7 @@ export default function Tutorial({
       const dialogElement = dialogRef.current;
       if (!dialogElement) return;
 
-      const focusableElements = Array.from(
-        dialogElement.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ),
-      );
+      const focusableElements = getFocusableElements(dialogElement);
 
       if (focusableElements.length === 0) {
         event.preventDefault();
@@ -253,8 +270,20 @@ export default function Tutorial({
       }
     };
 
+    const handleFocusIn = (event: FocusEvent): void => {
+      const dialogElement = dialogRef.current;
+      const focusedTarget = event.target;
+      if (!(focusedTarget instanceof Node)) return;
+      if (!dialogElement || dialogElement.contains(focusedTarget)) return;
+      focusFirstDialogElement();
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -263,6 +292,24 @@ export default function Tutorial({
 
   const nextSlide = () =>
     setActiveSlideIndex((i) => Math.min(infoSlides.length - 1, i + 1));
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Only trigger if horizontal swipe is dominant and long enough
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) nextSlide();
+      else previousSlide();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   return (
     <div className={styles.textCarouselOverlay} onClick={onClose}>
@@ -276,96 +323,115 @@ export default function Tutorial({
         aria-describedby={descId}
         tabIndex={-1}
       >
-        <button
-          ref={closeButtonRef}
-          className={styles.textCarouselClose}
+        <IconButton
           onClick={onClose}
-          aria-label="Close tutorial"
-        >
-          <img
-            src={closeIcon}
-            alt=""
-            aria-hidden="true"
-            className={styles.closeIcon}
-          />
-        </button>
+          label="Close tutorial"
+          aria-describedby={descId}
+          iconSrc={closeIcon}
+          variant="invisible"
+          shape="circle"
+          size="md"
+          hoverEffect={false}
+          iconSize="1.5rem"
+          style={{ color: "#000000" }}
+          className={styles.textCarouselClose}
+        />
 
-        <div className={styles.textCarouselViewport}>
+        <div
+          className={styles.textCarouselViewport}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div
             className={styles.textCarouselTrack}
             style={{ transform: `translateX(-${activeSlideIndex * 100}%)` }}
           >
-            {infoSlides.map((slide) => (
-              <article
-                key={slide.accName}
-                className={styles.textCarouselSlide}
-                data-accname={slide.accName}
-              >
-                <h2>{slide.title}</h2>
+            {infoSlides.map((slide, index) => {
+              const slideTitleId = `tutorial-slide-${index}-title`;
 
-                {slide.content.map((entry, index) => {
-                  if (entry.tag === "property") {
-                    return (
-                      <div
-                        key={`${slide.accName}-${index}`}
-                        className={styles.propertyRow}
-                      >
-                        <span
-                          className={styles.propertyIconWrapper}
-                          style={{
-                            backgroundColor: `var(${entry.colorVar})`,
-                            WebkitMaskImage: `url(${entry.icon})`,
-                            maskImage: `url(${entry.icon})`,
-                          }}
+              return (
+                <article
+                  key={slide.accName}
+                  className={styles.textCarouselSlide}
+                  data-accname={slide.accName}
+                  inert={index !== activeSlideIndex ? true : undefined}
+                  aria-hidden={index !== activeSlideIndex}
+                  aria-roledescription="slide"
+                  aria-labelledby={slideTitleId}
+                >
+                  <h2 id={slideTitleId}>{slide.title}</h2>
+
+                  {slide.content.map((entry, index) => {
+                    if (entry.tag === "property") {
+                      return (
+                        <div
+                          key={`${slide.accName}-${index}`}
+                          className={styles.propertyRow}
                         >
-                          <span className={styles.visuallyHidden}>
-                            {entry.name}
-                          </span>
-                        </span>
-                        <div className={styles.propertyText}>
                           <span
-                            className={styles.propertyName}
-                            style={{ color: `var(${entry.colorVar})` }}
-                          >
-                            {entry.name}
-                          </span>
-                          <p className={styles.propertyDesc}>
-                            {highlightKeywords(entry.description)}
-                          </p>
+                            className={styles.propertyIconWrapper}
+                            style={{
+                              backgroundColor: `var(${entry.colorVar})`,
+                              WebkitMaskImage: `url(${entry.icon})`,
+                              maskImage: `url(${entry.icon})`,
+                            }}
+                            aria-hidden="true"
+                          />
+                          <div className={styles.propertyText}>
+                            <span
+                              className={styles.propertyName}
+                              style={{ color: `var(${entry.colorVar})` }}
+                            >
+                              {entry.name}
+                            </span>
+                            <p className={styles.propertyDesc}>
+                              <span aria-hidden="true">
+                                {highlightKeywords(entry.description)}
+                              </span>
+                              <span className={styles.visuallyHidden}>
+                                {entry.description}
+                              </span>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }
+                      );
+                    }
 
-                  if (entry.tag === "h3") {
-                    return (
-                      <h4 key={`${slide.accName}-${index}`}>{entry.text}</h4>
-                    );
-                  }
+                    if (entry.tag === "h3") {
+                      return (
+                        <h3 key={`${slide.accName}-${index}`}>{entry.text}</h3>
+                      );
+                    }
 
-                  if (entry.tag === "image") {
-                    return (
-                      <img
-                        key={`${slide.accName}-${index}`}
-                        src={entry.src}
-                        alt={entry.alt}
-                        className={styles.typeChartImage}
-                      />
-                    );
-                  }
+                    if (entry.tag === "image") {
+                      return (
+                        <img
+                          key={`${slide.accName}-${index}`}
+                          src={entry.src}
+                          alt={entry.alt}
+                          className={styles.typeChartImage}
+                        />
+                      );
+                    }
 
-                  if (entry.tag === "p") {
-                    return (
-                      <p key={`${slide.accName}-${index}`}>
-                        {highlightKeywords(entry.text)}
-                      </p>
-                    );
-                  }
+                    if (entry.tag === "p") {
+                      return (
+                        <p key={`${slide.accName}-${index}`}>
+                          <span aria-hidden="true">
+                            {highlightKeywords(entry.text)}
+                          </span>
+                          <span className={styles.visuallyHidden}>
+                            {entry.text}
+                          </span>
+                        </p>
+                      );
+                    }
 
-                  return null;
-                })}
-              </article>
-            ))}
+                    return null;
+                  })}
+                </article>
+              );
+            })}
           </div>
         </div>
 
@@ -384,10 +450,6 @@ export default function Tutorial({
             />
           </button>
 
-          <span className={styles.textCarouselIndicator} aria-live="polite">
-            {activeSlideIndex + 1} / {infoSlides.length}
-          </span>
-
           <button
             className={styles.textCarouselNavButton}
             onClick={nextSlide}
@@ -405,6 +467,14 @@ export default function Tutorial({
         <p id={descId} className={styles.visuallyHidden}>
           Use Tab and Shift+Tab to navigate controls. Press Escape to close.
         </p>
+
+        <span
+          id={slideLiveId}
+          className={styles.visuallyHidden}
+          aria-live="polite"
+        >
+          {`Slide ${activeSlideIndex + 1} of ${infoSlides.length}: ${infoSlides[activeSlideIndex].title}`}
+        </span>
       </section>
     </div>
   );
