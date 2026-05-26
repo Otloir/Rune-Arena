@@ -35,6 +35,8 @@
 .sm {
   font-size: 0.8rem;
   padding: 0.4375rem 1rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
 }
 .md {
   font-size: 0.95rem;
@@ -57,8 +59,8 @@
   padding: 0;
 }
 .circle.sm {
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
 }
 .circle.md {
   width: 2.75rem;
