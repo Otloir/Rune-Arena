@@ -290,11 +290,18 @@ function CreatureInfoPage({
               />
 
               <div className={styles.nameRow}>
-                <h3 className={styles.creatureName}>{creature.name}</h3>
+                <h3
+                  className={styles.creatureName}
+                  tabIndex={0}
+                >
+                  {creature.name}
+                </h3>
+
                 {!loading && (
                   <span
                     className={styles.levelBadgeInline}
                     aria-label={`Level ${resolvedLevelNumber}`}
+                    tabIndex={0}
                   >
                     Lv.{resolvedLevelNumber}
                   </span>
@@ -307,6 +314,7 @@ function CreatureInfoPage({
                     <span
                       key={type.id}
                       className={styles.typeBadge}
+                      tabIndex={0}
                       style={{
                         background: `var(--type-${type.name.toLowerCase()}-1, var(--type-normal-1))`,
                         boxShadow: `0 0.125rem 0 var(--type-${type.name.toLowerCase()}-shadow, var(--type-normal-shadow))`,
@@ -320,10 +328,24 @@ function CreatureInfoPage({
               )}
 
               {!isBattleView && creature.description && (
-                <p className={styles.description}>{creature.description}</p>
+                <p
+                  className={styles.description}
+                  tabIndex={0}
+                >
+                  {creature.description}
+                </p>
               )}
 
-              <div className={styles.hpSection} aria-label="Health">
+              <div
+                className={styles.hpSection}
+                tabIndex={0}
+                role="group"
+                aria-label={
+                  isBattleView
+                    ? `Health: ${resolvedCurrentHp} out of ${resolvedMaxHp} HP`
+                    : `Health: ${resolvedMaxHp} HP`
+                }
+              >
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
                     <span
