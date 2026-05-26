@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePlayer } from "./../../../hooks/usePlayer";
 import { startTransaction } from "./../../../api/centralbank.api";
@@ -16,7 +16,7 @@ import swordIcon from "../../../assets/icons/sword_icon.svg";
 
 const ENTRY_FEE = 2;
 
-export default function LobbyPage() {
+export default function LobbyPage(): ReactElement {
   const playerState = usePlayer();
   const navigate = useNavigate();
 

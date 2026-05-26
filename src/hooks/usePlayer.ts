@@ -24,7 +24,7 @@ export function usePlayer(): PlayerState {
   useEffect(() => {
     let cancelled = false;
 
-    async function init() {
+    async function init(): Promise<void> {
       try {
         const { isGuest, localUser, identityToken } = await resolvePlayer();
 
