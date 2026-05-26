@@ -143,6 +143,7 @@ export default function InventoryPage({
             userId={userId}
             variant="row"
             type="inventory"
+            isInBattle={isInBattle}
             onUseItem={isInBattle && onUseItem ? onUseItem : undefined}
             refreshToggle={refreshToggle}
           />
