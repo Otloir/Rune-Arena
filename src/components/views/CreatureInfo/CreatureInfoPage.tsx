@@ -189,6 +189,19 @@ function CreatureInfoPage({
     };
 
     document.addEventListener("keydown", handleKeyDown);
+
+    const dialog = overlayRef.current?.querySelector<HTMLElement>('[role="dialog"]');
+    if (dialog) {
+      const focusable = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length > 0) {
+        focusable[0].focus();
+      } else {
+        dialog.focus();
+      }
+    }
+    
     return (): void => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
@@ -482,11 +495,11 @@ function CreatureInfoPage({
                               disabled={!isUnlocked}
                               shape="rounded"
                               shadow
+                              helpTextId={!isUnlocked ? lockHelpId : undefined}
                             />
                           </div>
                           {!isUnlocked && (
                             <>
-
                               <span
                                 id={lockHelpId}
                                 className={styles.visuallyHidden}

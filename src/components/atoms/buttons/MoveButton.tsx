@@ -9,6 +9,7 @@ interface MoveButtonProps {
   disabled?: boolean;
   shape?: "rounded" | "pill";
   shadow?: boolean;
+  helpTextId?: string;
 }
 
 function MoveButton({
@@ -17,6 +18,7 @@ function MoveButton({
   disabled = false,
   shape = "rounded",
   shadow = false,
+  helpTextId,
 }: MoveButtonProps): ReactElement {
   const { move, loading, error } = useMove(moveId);
 
@@ -43,6 +45,7 @@ function MoveButton({
         ].join(" ")}
         disabled
         aria-label={error ?? "Move unavailable"}
+        aria-describedby={helpTextId}
         title={error ?? "Move unavailable"}
       >
         <div className={styles.left}>
@@ -75,6 +78,7 @@ function MoveButton({
       ].join(" ")}
       onClick={() => onSelect(move)}
       disabled={disabled}
+      aria-describedby={disabled ? helpTextId : undefined}
       aria-label={`${move.name}, ${move.move_type.name} type, ${move.damage} damage, ${move.chance}% accuracy`}
     >
       <div className={styles.left}>

@@ -107,7 +107,7 @@ export default function PurchaseModal({
             Press Escape to close this dialog. Use Tab and Shift+Tab to move
             between controls.
           </p>
-          <p className={styles.message}>
+          <p className={styles.message} role="status" aria-live="polite">
             {isSuccess ? (
               <>
                 <strong>{itemName}</strong> has been added to your inventory.

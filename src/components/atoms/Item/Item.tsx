@@ -77,7 +77,11 @@ function Item({
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
               disabled={!canAfford}
-              aria-label={`Buy ${displayItem.name} for ${displayItem.price} RuneCoins`}
+              aria-label={
+                !canAfford
+                  ? `Cannot buy ${displayItem.name}. Insufficient RuneCoins.`
+                  : `Buy ${displayItem.name} for ${displayItem.price} RuneCoins`
+              }
               aria-describedby={
                 !canAfford ? affordabilityHelpId : undefined
               }
@@ -93,7 +97,8 @@ function Item({
             id={affordabilityHelpId}
             className="visuallyHidden"
           >
-            Insufficient RC.
+            Insufficient RuneCoins to purchase this item. Earn more RC by winning
+            battles.
           </span>
         )}
       </article>

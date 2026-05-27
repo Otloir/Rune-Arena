@@ -440,7 +440,11 @@ export default function Tutorial({
             className={styles.textCarouselNavButton}
             onClick={previousSlide}
             disabled={activeSlideIndex === 0}
-            aria-label="Previous slide"
+            aria-label={
+              activeSlideIndex === 0
+                ? "Previous slide, already at the first slide"
+                : "Previous slide"
+            }
           >
             <img
               src={arrowUpIcon}
@@ -454,7 +458,11 @@ export default function Tutorial({
             className={styles.textCarouselNavButton}
             onClick={nextSlide}
             disabled={activeSlideIndex === infoSlides.length - 1}
-            aria-label="Next slide"
+            aria-label={
+              activeSlideIndex === infoSlides.length - 1
+                ? "Next slide, already at the last slide"
+                : "Next slide"
+            }
           >
             <img
               src={arrowUpIcon}

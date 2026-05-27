@@ -1,3 +1,4 @@
+import { useId } from "react";
 import MoveButton from "../../atoms/buttons/MoveButton";
 import type { MoveWithType } from "../../../types/move.types";
 import styles from "./MovesPanel.module.css";
@@ -18,6 +19,8 @@ export default function MovesPanel({
   disabled = false,
   shadow = false,
 }: MovesPanelProps) {
+  const panelId = useId();
+  const disabledHelpId = `${panelId}-move-disabled-help`;
   const { moveIds, loading, error } = useCreatureMoves(
     creatureId,
     creatureLevel,
@@ -63,6 +66,12 @@ export default function MovesPanel({
       role="group"
       aria-label="Available battle moves"
     >
+      {disabled && (
+        <span id={disabledHelpId} className="visuallyHidden">
+          Moves cannot be selected while it is not your turn or while the
+          current action is processing.
+        </span>
+      )}
       {paddedMoveIds.map((moveId, index) =>
         moveId > 0 ? (
           <MoveButton
@@ -70,6 +79,7 @@ export default function MovesPanel({
             moveId={moveId}
             onSelect={onMoveSelect}
             disabled={disabled}
+            helpTextId={disabled ? disabledHelpId : undefined}
             shadow={shadow}
           />
         ) : (
@@ -78,7 +88,7 @@ export default function MovesPanel({
             type="button"
             disabled
             className={styles.emptyMoveSlot}
-            aria-label="Empty move slot"
+            aria-label="Empty move slot, no move available"
           >
             No Move available
           </button>
