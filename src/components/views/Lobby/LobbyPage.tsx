@@ -87,7 +87,6 @@ export default function LobbyPage(): ReactElement {
       return;
     }
 
-
     goToArena(result.data);
   };
 
@@ -119,9 +118,7 @@ export default function LobbyPage(): ReactElement {
             )}
           </div>
           <IconButton
-            hoverEffect={false}
             iconSrc={informationIcon}
-            iconAlt="Information"
             onClick={() => setIsInfoOpen(true)}
             label="Open information"
             className={styles.iconButton}
@@ -130,7 +127,6 @@ export default function LobbyPage(): ReactElement {
             <nav>
               <Button
                 onClick={() => navigate("/store", { state: { userId } })}
-                aria-label="navigate to shop button"
                 textColor="#155DFC"
               >
                 <span className={styles.buttonLabel}>
@@ -148,7 +144,6 @@ export default function LobbyPage(): ReactElement {
             </nav>
             <Button
               onClick={() => setIsInventoryOpen(true)}
-              aria-label="open inventory button"
               backgroundColor="#DCB8A0"
               textColor="#955D38"
             >
@@ -177,9 +172,24 @@ export default function LobbyPage(): ReactElement {
               }}
             >
               <div className={styles.creatureSelectButtons}>
-                <CreatureButton creatureId="1" userId={userId} onSelect={() => handleCreatureSelect("1")} selected={selectedCreatureId === "1"} />
-                <CreatureButton creatureId="2" userId={userId} onSelect={() => handleCreatureSelect("2")} selected={selectedCreatureId === "2"} />
-                <CreatureButton creatureId="3" userId={userId} onSelect={() => handleCreatureSelect("3")} selected={selectedCreatureId === "3"} />
+                <CreatureButton
+                  creatureId="1"
+                  userId={userId}
+                  onSelect={() => handleCreatureSelect("1")}
+                  selected={selectedCreatureId === "1"}
+                />
+                <CreatureButton
+                  creatureId="2"
+                  userId={userId}
+                  onSelect={() => handleCreatureSelect("2")}
+                  selected={selectedCreatureId === "2"}
+                />
+                <CreatureButton
+                  creatureId="3"
+                  userId={userId}
+                  onSelect={() => handleCreatureSelect("3")}
+                  selected={selectedCreatureId === "3"}
+                />
               </div>
               {chargeError && <p>Payment failed: {chargeError}</p>}
               <Button

@@ -13,6 +13,11 @@
   width: 100%;
 }
 
+.row:focus-visible {
+  outline: 0.1875rem solid var(--btn-cta-bg);
+  outline-offset: 0.1875rem;
+}
+
 .rowImg {
   width: 3.5rem;
   height: 3.5rem;
@@ -47,6 +52,7 @@
 }
 
 .rowDescription {
+  display: none;
   margin: 0;
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -134,6 +140,12 @@
   background: var(--btn-purchase-hover);
 }
 
+.buyBtn:disabled {
+  background: var(--color-error);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .rowActions {
   display: flex;
   align-items: center;
@@ -148,4 +160,10 @@
   padding: 0.5rem 0.75rem;
   border-radius: 0.75rem;
   cursor: pointer;
+}
+
+@media (min-width: 48rem) {
+  .rowDescription {
+    display: block;
+  }
 }

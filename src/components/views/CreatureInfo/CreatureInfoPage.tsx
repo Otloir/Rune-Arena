@@ -1,7 +1,9 @@
 import { useEffect, useId, useRef } from "react";
-import type { FC } from "react";
+import type { ReactElement } from "react";
 import type { Creature } from "../../../types/creature.types";
 import type { StatBoosts } from "../../../types/battleEffects.types";
+import IconButton from "../../atoms/buttons/IconButton";
+import closeIcon from "../../../assets/icons/close_icon.svg";
 import {
   useAsyncData,
   useCreatureMoveIds,
@@ -41,42 +43,50 @@ interface StatCellProps {
 
 /* ─────────────────────────── StatCell ──────────────────────── */
 
-const StatCell: FC<StatCellProps> = ({
+function StatCell({
   icon,
   color,
   label,
   value,
   highlighted = false,
   boosted = false,
-}): React.ReactElement => (
-  <div
-    className={[
-      styles.statCell,
-      highlighted ? styles.statCellHighlighted : "",
-    ].join(" ")}
-    aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
-  >
-    <span
-      className={styles.statIcon}
-      aria-hidden="true"
-      style={{
-        WebkitMaskImage: `url(${icon})`,
-        maskImage: `url(${icon})`,
-        backgroundColor: color,
-      }}
-    />
-    <span className={styles.statLabel}>{label}</span>
-    <span
-      className={[styles.statValue, boosted ? styles.statValueBoosted : ""].join(" ")}
+}: StatCellProps): ReactElement {
+  return (
+    <div
+      className={[
+        styles.statCell,
+        highlighted ? styles.statCellHighlighted : "",
+      ].join(" ")}
+      role="listitem"
+      tabIndex={0}
+      aria-label={`${label}: ${value}${boosted ? " (boosted)" : ""}`}
     >
-      {value}
-    </span>
-  </div>
-);
+      <span
+        className={styles.statIcon}
+        aria-hidden="true"
+        style={{
+          WebkitMaskImage: `url(${icon})`,
+          maskImage: `url(${icon})`,
+          backgroundColor: color,
+        }}
+      />
+      <span className={styles.statLabel} aria-hidden="true">{label}</span>
+      <span
+        className={[
+          styles.statValue,
+          boosted ? styles.statValueBoosted : "",
+        ].join(" ")}
+        aria-hidden="true"
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
 
 /* ─────────────────────────── CreatureInfoPage ───────────────── */
 
-const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
+function CreatureInfoPage({
   creatureId,
   isOpen,
   onClose,
@@ -86,30 +96,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
   userId,
   creatureLevelId: creatureLevelIdProp,
   statBoosts,
-}): React.ReactElement | null => {
+}: CreatureInfoPageProps): ReactElement | null {
   const uid = useId();
   const titleId = `creature-info-title-${uid}`;
+  const descId = `creature-info-desc-${uid}`;
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // ── Creature base data ──
   const {
     data: creature,
     loading: creatureLoading,
     error: creatureError,
-  } = useAsyncData(
-    () => getCreatureById(String(creatureId)),
-    isOpen,
-  );
+  } = useAsyncData(() => getCreatureById(String(creatureId)), isOpen);
 
-  // ── Move entries (with required level_id per move) ──
   const { moveEntries, loading: movesLoading } = useCreatureMoveIds(
     isOpen ? creatureId : null,
     isOpen,
   );
 
-  // ── Types (selection view only) ──
   const { types } = useCreatureTypes(
     isOpen && !isBattleView ? creatureId : null,
     isOpen && !isBattleView,
@@ -124,7 +128,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
 
   const resolvedLevelNumber: number =
     creatureLevelIdProp !== undefined
-      ? fetchedLevelNumber 
+      ? fetchedLevelNumber
       : (fetchedLevelNumber ?? 1);
 
   const resolvedLevelId: number | null =
@@ -132,15 +136,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       ? creatureLevelIdProp
       : (fetchedLevelId ?? null);
 
-  const loading = creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
-
-  useEffect((): (() => void) | void => {
-    if (!isOpen) return;
-    const id = window.setTimeout((): void => {
-      closeButtonRef.current?.focus();
-    }, 50);
-    return (): void => window.clearTimeout(id);
-  }, [isOpen]);
+  const loading =
+    creatureLoading || movesLoading || (needsLevelFetch && levelLoading);
 
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
@@ -151,7 +148,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     };
   }, [isOpen]);
 
-  // SC 2.1.1 — focus trap + Escape key handler
   useEffect((): (() => void) | void => {
     if (!isOpen) return;
 
@@ -162,9 +158,8 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       }
       if (e.key !== "Tab") return;
 
-      const dialog = overlayRef.current?.querySelector<HTMLElement>(
-        '[role="dialog"]',
-      );
+      const dialog =
+        overlayRef.current?.querySelector<HTMLElement>('[role="dialog"]');
       if (!dialog) return;
 
       const focusable = Array.from(
@@ -194,12 +189,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
     };
 
     document.addEventListener("keydown", handleKeyDown);
+
+    const dialog = overlayRef.current?.querySelector<HTMLElement>('[role="dialog"]');
+    if (dialog) {
+      const focusable = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length > 0) {
+        focusable[0].focus();
+      } else {
+        dialog.focus();
+      }
+    }
+    
     return (): void => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  
   const resolvedMaxHp: number = isBattleView
     ? (maxHpProp ?? creature?.hp ?? 0)
     : (creature?.hp ?? 0);
@@ -221,15 +228,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
         : "var(--hp-bar-damage)";
 
   return (
-    <div
-      ref={overlayRef}
-      className={styles.overlay}
-      onClick={onClose}
-    >
+    <div ref={overlayRef} className={styles.overlay} onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={descId}
         className={styles.modal}
         onClick={(e): void => e.stopPropagation()}
       >
@@ -238,21 +242,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
           <h2 className={styles.title} id={titleId}>
             {isBattleView ? "Creature Details" : "Creature Information"}
           </h2>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className={styles.closeButton}
+          <p id={descId} className={styles.visuallyHidden}>
+            Press Escape to close this dialog.
+          </p>
+          <IconButton
             onClick={onClose}
-            aria-label="Close creature information"
-          >
-            ✕
-          </button>
+            label="Close creature information"
+            aria-describedby={descId}
+            iconSrc={closeIcon}
+            variant="invisible"
+            shape="circle"
+            size="md"
+            iconSize="1.5rem"
+            style={{ color: "#000000" }}
+            className={styles.closeButton}
+          />
         </div>
 
-        {/* ── Scrollable body ── */}
         <div className={styles.body}>
-
-          {/* Loading skeleton */}
           {loading && (
             <div
               role="status"
@@ -266,14 +273,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
             </div>
           )}
 
-          {/* Error */}
           {creatureError && !loading && (
             <p role="alert" className={styles.errorState}>
               Failed to load creature information. Please try again.
             </p>
           )}
 
-          {/* Content */}
           {creature && !loading && (
             <>
               <img
@@ -282,19 +287,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 className={styles.sprite}
               />
 
-              {/* Name + level badge side by side */}
               <div className={styles.nameRow}>
-                <h3 className={styles.creatureName}>{creature.name}</h3>
+                <h3
+                  className={styles.creatureName}
+                  tabIndex={0}
+                >
+                  {creature.name}
+                </h3>
+
                 {!loading && (
                   <span
                     className={styles.levelBadgeInline}
                     aria-label={`Level ${resolvedLevelNumber}`}
+                    tabIndex={0}
                   >
                     Lv.{resolvedLevelNumber}
                   </span>
                 )}
               </div>
-
 
               {!isBattleView && types.length > 0 && (
                 <div className={styles.typeBadges} aria-label="Creature types">
@@ -302,6 +312,7 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     <span
                       key={type.id}
                       className={styles.typeBadge}
+                      tabIndex={0}
                       style={{
                         background: `var(--type-${type.name.toLowerCase()}-1, var(--type-normal-1))`,
                         boxShadow: `0 0.125rem 0 var(--type-${type.name.toLowerCase()}-shadow, var(--type-normal-shadow))`,
@@ -315,11 +326,24 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
               )}
 
               {!isBattleView && creature.description && (
-                <p className={styles.description}>{creature.description}</p>
+                <p
+                  className={styles.description}
+                  tabIndex={0}
+                >
+                  {creature.description}
+                </p>
               )}
 
-              {/* HP block — <div> avoids LobbyPage's .lobbyPage section override */}
-              <div className={styles.hpSection} aria-label="Health">
+              <div
+                className={styles.hpSection}
+                tabIndex={0}
+                role="group"
+                aria-label={
+                  isBattleView
+                    ? `Health: ${resolvedCurrentHp} out of ${resolvedMaxHp} HP`
+                    : `Health: ${resolvedMaxHp} HP`
+                }
+              >
                 <div className={styles.hpRow}>
                   <span className={styles.hpLabel}>
                     <span
@@ -367,9 +391,9 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                 )}
               </div>
 
-              {/* Stats grid */}
               <div
                 className={styles.statsGrid}
+                role="list"
                 aria-label="Creature statistics"
                 data-cols={isBattleView ? "3" : "2"}
               >
@@ -380,12 +404,12 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                     const speedBoost = statBoosts?.speedBoost ?? 0;
 
                     const effectiveEvade = creature.evade + evadeBoost;
-                    const effectiveDefense = creature.defense + Math.floor(
-                      (creature.defense * defenseBoost) / 100,
-                    );
-                    const effectiveSpeed = creature.speed + Math.floor(
-                      (creature.speed * speedBoost) / 100,
-                    );
+                    const effectiveDefense =
+                      creature.defense +
+                      Math.floor((creature.defense * defenseBoost) / 100);
+                    const effectiveSpeed =
+                      creature.speed +
+                      Math.floor((creature.speed * speedBoost) / 100);
 
                     return (
                       <>
@@ -416,15 +440,34 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                   })()
                 ) : (
                   <>
-                    <StatCell icon={healthIcon}  color="var(--health)"  label="Max HP"  value={resolvedMaxHp} />
-                    <StatCell icon={evadeIcon}   color="var(--evade)"   label="Evade"   value={creature.evade} />
-                    <StatCell icon={defenseIcon} color="var(--defense)" label="Defense" value={creature.defense} />
-                    <StatCell icon={speedIcon}   color="var(--speed)"   label="Speed"   value={creature.speed} />
+                    <StatCell
+                      icon={healthIcon}
+                      color="var(--health)"
+                      label="Max HP"
+                      value={resolvedMaxHp}
+                    />
+                    <StatCell
+                      icon={evadeIcon}
+                      color="var(--evade)"
+                      label="Evade"
+                      value={creature.evade}
+                    />
+                    <StatCell
+                      icon={defenseIcon}
+                      color="var(--defense)"
+                      label="Defense"
+                      value={creature.defense}
+                    />
+                    <StatCell
+                      icon={speedIcon}
+                      color="var(--speed)"
+                      label="Speed"
+                      value={creature.speed}
+                    />
                   </>
                 )}
               </div>
 
-              {/* Moves */}
               {moveEntries.length > 0 && (
                 <div
                   className={styles.movesSection}
@@ -439,24 +482,39 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
                         resolvedLevelId !== null &&
                         requiredLevelId <= resolvedLevelId;
 
+                      const lockHelpId = `lock-help-${uid}-${moveId}`;
+
                       return (
                         <div key={moveId} className={styles.moveRow}>
-                          <div className={styles.infoMoveWrapper}>
+                          <div
+                            className={styles.infoMoveWrapper}
+                          >
                             <MoveButton
                               moveId={moveId}
                               onSelect={(): void => undefined}
                               disabled={!isUnlocked}
                               shape="rounded"
                               shadow
+                              helpTextId={!isUnlocked ? lockHelpId : undefined}
                             />
                           </div>
                           {!isUnlocked && (
-                            <span
-                              className={styles.lockedLabel}
-                              aria-label={`Move locked until level ${requiredLevelId}`}
-                            >
-                              LOCKED
-                            </span>
+                            <>
+                              <span
+                                id={lockHelpId}
+                                className={styles.visuallyHidden}
+                              >
+                                This move unlocks at level {requiredLevelId}.
+                                Your creature is currently level {resolvedLevelNumber}.
+                              </span>
+                              <span
+                                className={styles.lockedLabel}
+                                aria-label={`Move locked until level ${requiredLevelId}`}
+                                aria-describedby={lockHelpId}
+                              >
+                                LOCKED
+                              </span>
+                            </>
                           )}
                         </div>
                       );
@@ -470,6 +528,6 @@ const CreatureInfoPage: FC<CreatureInfoPageProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default CreatureInfoPage;

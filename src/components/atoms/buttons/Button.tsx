@@ -1,4 +1,9 @@
-import type { ButtonHTMLAttributes, CSSProperties, FC, ReactNode } from "react";
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import styles from "./Button.module.css";
 
 /*
@@ -56,24 +61,27 @@ function darkenHex(hex: string, amount = 40): string {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
-const Button: FC<ButtonProps> = ({
-  onClick,
-  children,
-  disabled = false,
-  variant = "action",
-  size = "md",
-  shape = "rounded",
-  shadow = false,
-  textColor,
-  backgroundColor,
-  className = "",
-  type = "button",
-  loading = false,
-  radius,
-  style,
-  hoverEffect = true,
-  ...nativeProps
-}) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    onClick,
+    children,
+    disabled = false,
+    variant = "action",
+    size = "md",
+    shape = "rounded",
+    shadow = false,
+    textColor,
+    backgroundColor,
+    className = "",
+    type = "button",
+    loading = false,
+    radius,
+    style,
+    hoverEffect = true,
+    ...nativeProps
+  },
+  ref,
+): ReactElement {
   const isValidBackgroundColor =
     !backgroundColor || /^#[0-9a-fA-F]{6}$/.test(backgroundColor);
 
@@ -85,21 +93,9 @@ const Button: FC<ButtonProps> = ({
 
   const useCustomColor = Boolean(backgroundColor && isValidBackgroundColor);
 
-  const customStyle: CSSProperties | undefined = useCustomColor
-    ? ({
-        "--btn-custom-bg": backgroundColor!,
-        "--btn-custom-border": darkenHex(backgroundColor!),
-      } as CSSProperties)
-    : undefined;
-
-  const textStyle: CSSProperties | undefined = textColor
-    ? ({
-        "--btn-custom-text": textColor,
-      } as CSSProperties)
-    : undefined;
-
   return (
     <button
+      ref={ref}
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
@@ -115,21 +111,24 @@ const Button: FC<ButtonProps> = ({
       style={{
         ...(radius !== undefined ? { borderRadius: `${radius}px` } : {}),
         ...(textColor ? { color: textColor } : {}),
-        ...customStyle,
-        ...textStyle,
+        ...(useCustomColor
+          ? {
+              backgroundColor: backgroundColor!,
+              boxShadow: `0 0.1875rem 0 ${darkenHex(backgroundColor!)}`,
+            }
+          : {}),
         ...style,
       }}
       aria-busy={loading}
-      aria-disabled={disabled || loading}
       {...nativeProps}
     >
       {loading ? (
-        <span className={styles.spinner} aria-hidden="true" role="status" />
+        <span className={styles.spinner} aria-hidden="true" />
       ) : (
         children
       )}
     </button>
   );
-};
+});
 
 export default Button;

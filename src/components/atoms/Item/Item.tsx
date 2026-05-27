@@ -1,5 +1,6 @@
 import { useItem } from "./../../../hooks/useItem";
 import type { Item as ItemType } from "./../../../types/item.types";
+import type { ReactElement } from "react";
 import styles from "./Item.module.css";
 interface ItemProps {
   readonly item?: ItemType;
@@ -11,7 +12,7 @@ interface ItemProps {
   readonly canAfford?: boolean;
   readonly isInBattle?: boolean;
 }
-const Item: React.FC<ItemProps> = ({
+function Item({
   item,
   itemId,
   variant = "row",
@@ -20,7 +21,7 @@ const Item: React.FC<ItemProps> = ({
   onUse,
   canAfford = true,
   isInBattle = false,
-}) => {
+}: ItemProps): ReactElement | null {
   const {
     item: fetchedItem,
     loading,
@@ -32,11 +33,21 @@ const Item: React.FC<ItemProps> = ({
     if (error) return <div role="alert">{error}</div>;
   }
   if (!displayItem) return <div role="status">No item found.</div>;
+  const quantity = displayItem.quantity ?? 1;
+  const inventoryLabel = `${displayItem.name}. ${displayItem.description}. Effect: ${displayItem.property} ${displayItem.propvalue}. Quantity: ${quantity}.`;
+  const affordabilityHelpId = `affordability-help-${displayItem.id}`;
   if (variant === "card") {
     return (
       <article
         className={styles.card}
-        aria-label={`${displayItem.name} item card`}
+        tabIndex={0}
+        aria-label={
+          `${displayItem.name}. ` +
+          `${displayItem.description}. ` +
+          `Effect: ${displayItem.property} ${displayItem.propvalue}. ` +
+          `Price: ${displayItem.price} RC. ` +
+          `${canAfford ? "Can afford." : "Cannot afford."}`
+        }
       >
         {displayItem.img && (
           <img
@@ -52,6 +63,7 @@ const Item: React.FC<ItemProps> = ({
         {!isInBattle && (
           <p className={styles.cardDescription}>{displayItem.description}</p>
         )}
+        <>
         <div className={styles.cardFooter}>
           <span className={styles.price}>
             <span aria-hidden="true" className={styles.coinIcon}>
@@ -59,26 +71,41 @@ const Item: React.FC<ItemProps> = ({
             </span>
             {displayItem.price}
           </span>
+
           {type === "store" && onBuy && (
             <button
               className={`${styles.buyBtn}${!canAfford ? ` ${styles.buyBtnDisabled}` : ""}`}
               onClick={onBuy}
+              disabled={!canAfford}
               aria-label={
-                  `Buy ${displayItem.name} for ${displayItem.price} RC`
+                !canAfford
+                  ? `Cannot buy ${displayItem.name}. Insufficient RuneCoins.`
+                  : `Buy ${displayItem.name} for ${displayItem.price} RuneCoins`
+              }
+              aria-describedby={
+                !canAfford ? affordabilityHelpId : undefined
               }
             >
-              {"Buy"}
+              Buy
             </button>
           )}
         </div>
+
+      </>
+      {!canAfford && (
+          <span
+            id={affordabilityHelpId}
+            className="visuallyHidden"
+          >
+            Insufficient RuneCoins to purchase this item. Earn more RC by winning
+            battles.
+          </span>
+        )}
       </article>
     );
   }
   return (
-    <article
-      className={styles.row}
-      aria-label={`${displayItem.name} inventory item`}
-    >
+    <article className={styles.row} tabIndex={0} aria-label={inventoryLabel}>
       {displayItem.img && (
         <img
           src={displayItem.img}
@@ -89,10 +116,7 @@ const Item: React.FC<ItemProps> = ({
       <div className={styles.rowBody}>
         <div className={styles.rowTitleRow}>
           <span className={styles.rowName}>{displayItem.name}</span>
-          {/* Show quantity if available, otherwise default to 1 */}
-          <span className={styles.rowQuantity} aria-label="Quantity owned">
-            × {displayItem.quantity ?? 1}
-          </span>
+          <span className={styles.rowQuantity}>× {quantity}</span>
         </div>
         <p className={styles.rowProperty}>
           {displayItem.property} {displayItem.propvalue}
@@ -114,5 +138,5 @@ const Item: React.FC<ItemProps> = ({
       )}
     </article>
   );
-};
+}
 export default Item;
