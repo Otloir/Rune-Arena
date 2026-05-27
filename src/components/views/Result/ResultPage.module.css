@@ -1,0 +1,156 @@
+.resultPage {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 2rem 1rem;
+  background-color: var(--result-page-bg);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 10vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.victory {
+  color: var(--color-victory);
+}
+
+.defeat {
+  color: var(--color-error);
+  font-size: clamp(2rem, 8vw, 3.3rem);
+}
+
+.subtitle {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-white);
+  max-width: 17rem;
+}
+
+.rewardSection {
+  min-height: 12rem;
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rewardLabel {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  color: var(--color-white);
+}
+
+/* optional subtle tone difference without layout change */
+.rewardLabelLose {
+  opacity: 0.85;
+}
+
+.rewardCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rewardImageContainer {
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  background-color: var(--reward-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rewardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rewardFallback {
+  font-size: 3rem;
+}
+
+.rewardCount {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.4rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.rewardName {
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  color: var(--color-white);
+}
+
+.secondaryButton {
+  margin-top: 1.5rem;
+  padding: 0.85rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: var(--btn-action-bg);
+  color: var(--color-white);
+  font-size: 1rem;
+  cursor: pointer;
+  min-height: 3rem;
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.secondaryButton:hover,
+.secondaryButton:focus-visible {
+  background-color: var(--btn-action-hover);
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 0.2rem solid var(--color-white);
+  outline-offset: 0.2rem;
+}
+
+.noReward {
+  font-size: 3rem;
+  color: var(--color-white);
+}
+
+.xpGained {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffd84d;
+}

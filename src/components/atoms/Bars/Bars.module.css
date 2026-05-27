@@ -1,0 +1,37 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.bar {
+  border-radius: 0.9375rem;
+  overflow: hidden;
+}
+
+.bar:has(.hp) {
+  background-color: var(--hp-bar-damage);
+}
+
+.bar:has(.xp) {
+  background-color: var(--xp-bar-empty);
+}
+
+.hp {
+  background-color: var(--hp-bar);
+  height: 0.625rem;
+}
+
+.xp {
+  background-color: var(--xp-bar);
+  height: 0.3125rem;
+}
+
+@media (min-width: 1024px) {
+  .hp {
+    height: 0.875rem;
+  }
+  
+  .xp {
+    height: 0.5625rem;
+  }
+}

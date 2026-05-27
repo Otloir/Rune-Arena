@@ -1,0 +1,95 @@
+.arena {
+  padding: 3rem 1rem 0 1rem;
+  background-color: var(--battle-arena-bg);
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.arenaContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.battleView {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 20rem;
+  gap: clamp(1rem, 6vh, 2rem);
+}
+
+.player {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.opponent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.playerContainer,
+.opponentContainer {
+  display: flex;
+}
+
+.opponentContainer {
+  flex-direction: row-reverse;
+}
+
+.playerContainer {
+  flex-direction: row;
+}
+
+.controlsWrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.loadingState {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ── Tablet ── */
+@media (min-width: 40rem) {
+  .arena {
+    padding: 4rem 1rem 0 1rem;
+  }
+
+  .battleView {
+    padding-bottom: min(38vh, 20rem);
+    gap: clamp(1rem, 6vh, 4rem);
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 64rem) {
+  .arena {
+    padding: 2rem 2rem 0 2rem;
+  }
+
+  .battleView {
+    padding-bottom: min(38vh, 22rem);
+    gap: 0;
+  }
+}

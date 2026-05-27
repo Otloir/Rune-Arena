@@ -1,0 +1,135 @@
+.lobbyPage {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
+  padding: 4rem 2rem 2rem 2rem;
+  color: var(--light-fon-color);
+}
+
+.lobbyPage section {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 2rem;
+}
+
+.guestText{
+padding-top: 1rem;
+}
+
+.guestTextGuest{
+  color: var(--guest-text);
+}
+
+.creatureSelectContainer {
+  width: 80vw;
+}
+
+.creatureSelectContainer,
+.creatureSelectButtons {
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creatureSelectContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.startButton {
+  width: fit-content;
+  align-self: center;
+}
+
+.inventoryShopComtainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10%;
+}
+
+.buttonLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: block;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.iconButton {
+  float: right;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+  position: fixed;
+  background-color: var(--btn-cta-bg);
+  box-shadow: none;
+  border: none;
+  padding: 1.5rem;
+  background-color: var(--btn-cta-bg);
+  box-shadow: none;
+  border: none;
+  padding: 1.5rem;
+  color: var(--btn-cta-text);
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  background-color: var(--btn-cta-hover) !important;
+  cursor: pointer;
+}
+
+.loadingState{
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ height: 100%;
+}
+
+/* tablet */
+
+@media (min-width: 641px) {
+  .lobbyPage {
+  padding: 1rem;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .lobbyPage {
+    padding-top: 1rem;
+    padding: 2rem;
+  }
+  .creatureSelectButtons {
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .creatureSelectContainer form {
+    gap: 2rem;
+  }
+  .iconButton {
+    top: 2rem;
+    right: 2rem;
+  }
+}

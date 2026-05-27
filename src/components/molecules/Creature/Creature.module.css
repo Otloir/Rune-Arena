@@ -1,0 +1,98 @@
+.creatureContainer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.creatureStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creatureSprite {
+  width: 5.5rem;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 2;
+  margin-bottom: -2.5rem;
+  transition: transform 0.3s ease-out;
+}
+
+.creatureSprite.player {
+  animation: player 0.8s ease-in-out;
+}
+
+.creatureSprite.opponent {
+  animation: opponent 0.8s ease-in-out;
+}
+
+.creatureSprite.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes player {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(2rem) translateY(-0.5rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes opponent {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-2rem) translateY(0.5rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-0.4rem);
+  }
+  40% {
+    transform: translateX(0.4rem);
+  }
+  60% {
+    transform: translateX(-0.4rem);
+  }
+  80% {
+    transform: translateX(0.4rem);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.platform {
+  width: 10rem;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 40rem) {
+  .creatureSprite {
+    width: 7rem;
+    margin-bottom: -4.75rem;
+  }
+
+  .platform {
+    width: 16rem;
+  }
+}

@@ -1,0 +1,150 @@
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 1.25rem;
+  background: var(--color-white);
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -0.25rem 1.25rem var(--shadow-black-08);
+}
+
+/* ── LOG ── */
+.logPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  background: var(--gray-lightest);
+  border-radius: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  overflow: hidden;
+  height: 5.5rem;
+  flex-shrink: 0;
+}
+
+.logTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.logScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  scrollbar-width: none;
+}
+
+.logScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.logEntry {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+/* ── ACTIONS ── */
+.actionPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.actionTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.movesWrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  flex: 1;
+  min-width: 0;
+}
+
+.buttonLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  flex: 0 0 auto;
+  transform: scale(1.35);
+  transform-origin: center;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+/* ── Tablet ── */
+@media (min-width: 40rem) {
+  .controlsPanel {
+    flex-direction: row;
+    height: min(38vh, 20rem);
+  }
+
+  .logPanel {
+    flex: 1;
+    flex-basis: 0;
+    height: 100%;
+  }
+
+  .logScroll {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .actionPanel {
+    flex: 1.2;
+    flex-basis: 0;
+    height: 100%;
+    overflow: hidden;
+    padding-bottom: 0.18rem;
+  }
+
+  .movesWrapper {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 64rem) {
+  .controlsPanel {
+    height: min(38vh, 22rem);
+  }
+}

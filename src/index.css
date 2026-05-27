@@ -1,111 +1,271 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Jacquard+12&family=Jersey+25&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap");
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
+  /* ─── Primary Colors ─── */
+  --color-white: #ffffff;
+  --color-off-white: #f0f2f8;
+  --color-black: #000000;
+
+  /* ─── Text Colors ─── */
+  --text: #fafafa;
+  --bag-text-color: #955d38;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7399;
+  --text-tertiary: #4f5678;
+  --text-light: #f3f4f6;
+  --coin-text: #d08700;
+  --guest-text: #73d0ed;
+  --stamp: #6f00d0;
+
+  /* ─── Background Colors ─── */
+  --bg: #7d756b;
+  --arena-bg: #d6b481;
+  --battle-arena-bg: #edeec7;
+  --carousel-slide-bg: #ead9bb;
+  --carousel-property-bg: #dfcdb1;
+  --carousel-panel-bg: #a39482;
+  --result-page-bg: #7d766d;
+  --coin-container-bg: #fef9c2;
+  --surface: var(--color-white);
+  --surface-muted: var(--color-off-white);
+  --shop-container: var(--surface);
+  --status-panel-bg: var(--surface);
+  --modal-bg: var(--surface);
+  --reward-bg: #d4b27b;
+
+  /* ─── Button Colors (unified) ─── */
+  --btn-action-bg: #90c6ef;
+  --btn-action-shadow: #66a3d1;
+  --btn-action-hover: #b0cfe7;
+  --btn-neutral-bg: var(--surface-muted);
+  --btn-neutral-text: #3a3f5c;
+  --btn-neutral-shadow: #d0d4e8;
+  --btn-neutral-hover: #e4e7f5;
+  --btn-cta-bg: #2b7fff;
+  --btn-cta-hover: #4a90fa;
+  --btn-cta-text: #ffffff;
+  --btn-fight-bg: #b23131;
+  --btn-bag-bg: #dcb8a0;
+  --btn-purchase-bg: #7cb767;
+  --btn-purchase-hover: #80cf64;
+  --btn-failure-bg: var(--color-error);
+
+  /* ─── Status Colors ─── */
+  --color-success: #22c55e;
+  --color-victory: #49b84d;
+  --color-error: #e84040;
+  --color-error-bg: #ffe5e5;
+  --color-error-text: #b42323;
+
+  /* ─── Health/Status Bar ─── */
+  --hp-bar-damage: #a42121;
+  --hp-bar: #04aa6d;
+  --xp-bar: #0483aa;
+  --xp-bar-empty: #d9d9d9;
+  --hp-bar-fill: var(--color-success);
+  --heart-icon: #fb2c36;
+
+  /* ─── Creature Properties ─── */
+  --evade: #fb7c20;
+  --defense: #2b7fff;
+  --speed: #10b20d;
+  --health: #fb2c36;
+
+  /* ─── Move Type Colors ─── */
+  --type-fire-1: #f97316;
+  --type-fire-2: #ef4444;
+  --type-fire-shadow: #b91c1c;
+  --type-water-1: #38bdf8;
+  --type-water-2: #3b82f6;
+  --type-water-shadow: #1d4ed8;
+  --type-grass-1: #4ade80;
+  --type-grass-2: #16a34a;
+  --type-grass-shadow: #14532d;
+  --type-ice-1: #a5f3fc;
+  --type-ice-2: #0891b2;
+  --type-ice-shadow: #0e7490;
+  --type-rock-1: #a8a29e;
+  --type-rock-2: #57534e;
+  --type-rock-shadow: #292524;
+  --type-electric-1: #fde047;
+  --type-electric-2: #ca8a04;
+  --type-electric-shadow: #92400e;
+  --type-normal-1: #a8a29e;
+  --type-normal-2: #78716c;
+  --type-normal-shadow: #44403c;
+
+  /* ─── Grayscale & Borders ─── */
   --border: #e5e4e7;
+  --border-dark: #2e303a;
+  --gray-light: #e5e7eb;
+  --gray-lighter: #dfe4f0;
+  --gray-lightest: #eef2f8;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
+  --border-soft: var(--gray-light);
+  --text-muted: var(--text-secondary);
+  --selected-green: #7cb767;
+
+  /* ─── Overlay & Transparency ─── */
+  --overlay-dark: rgba(0, 0, 0, 0.5);
+  --overlay-dark-heavy: rgba(15, 23, 42, 0.72);
+  --overlay-dark-light: rgba(15, 23, 42, 0.35);
+  --shadow-black-15: rgba(0, 0, 0, 0.15);
+  --shadow-black-18: rgba(0, 0, 0, 0.18);
+  --shadow-black-22: rgba(0, 0, 0, 0.22);
+  --shadow-black-08: rgba(0, 0, 0, 0.08);
+  --shadow-white-25: rgba(255, 255, 255, 0.25);
+  --shadow-white-35: rgba(255, 255, 255, 0.35);
+  --shadow-white-85: rgba(255, 255, 255, 0.85);
+  --shadow-white-15: rgba(255, 255, 255, 0.15);
   --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* ─── Loading Placeholders ─── */
+  --placeholder-1: #e2e5f0;
+  --placeholder-2: #eceff5;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  /* Fonts */
+  --sans: "Press Start 2P", system-ui;
+
+  /* Font sizes */
+  --fs-xs: 0.75rem; /* captions */
+  --fs-sm: 0.875rem; /* small text */
+  --fs-md: 1rem; /* body text */
+  --fs-lg: 1.125rem; /* lead / slightly larger */
+  --fs-xl: 1.25rem; /* subtitles */
+  --fs-2xl: 1.5rem; /* section headings */
+  --fs-3xl: 2.25rem; /* page title */
+
+  /* Global typography */
+  font-family: var(--sans);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+  letter-spacing: 0.01125rem;
+
   color: var(--text);
   background: var(--bg);
+
+  color-scheme: light dark;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 48rem) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+    --fs-md: 1.0625rem;
+    --fs-lg: 1.1875rem;
+    --fs-xl: 1.3125rem;
+    --fs-2xl: 1.75rem;
+    --fs-3xl: 2.5rem;
   }
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+@media (min-width: 64rem) {
+  :root {
+    --fs-md: 1.125rem;
+    --fs-lg: 1.25rem;
+    --fs-xl: 1.5rem;
+    --fs-2xl: 1.875rem;
+    --fs-3xl: 3.5rem;
+  }
 }
 
+/* Layout reset */
+html,
 body {
+  height: 100%;
   margin: 0;
+  height: -webkit-fill-available;
+  color: var(--text);
+  background: var(--bg);
+  font-family: inherit;
 }
 
+/* Ensure form controls inherit typography */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+/* Typography */
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3 {
+  font-weight: 400;
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  font-size: var(--fs-3xl);
+  letter-spacing: -0.0675rem;
+  margin: 1.25rem 0;
+}
+
+@media (min-width: 64rem) {
+  h1 {
+    letter-spacing: -0.105rem;
+    margin: 2rem 0;
   }
 }
+
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+  font-size: var(--fs-2xl);
+  line-height: 1.18;
+  letter-spacing: -0.015rem;
+  margin: 0 0 0.5rem;
+}
+
+@media (min-width: 64rem) {
+  h2 {
+    /* on desktop, keep the same variable but desktop override increases it */
+    font-size: var(--fs-2xl);
   }
 }
+
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh; /* modern fix for mobile browsers */
+}
+
+html {
+  height: -webkit-fill-available;
+  span,
+  p,
+  button {
+    font-family: var(--sans);
+  }
 }

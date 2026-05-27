@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+# Rune Arena
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+RuneArena is a turn-based creature fighting game where you can battle, buy items in the marketplace and level up your creatures. It is inspired by the roman empire and its colosseum. The game is built with React, TypeScript and Vite. 
 
-Currently, two official plugins are available:
+You can play it on its own deployed [website](rune-arena.vercel.app), or through https://loopland.se/.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **PVE battle** with creatures
+- **Store page** to buy **items** and spend **in-game currency**
+- **Inventory** and item use integration for in-battle effects
+- **Level up** system for creatures, giving new moves
+- **Turtorial/help** screen to help with uncertainties and game information
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- CSS Modules
+- Supabase
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Get Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clone the repo:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/Otloir/Rune-Arena.git
+cd rune-arena
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+3. Run the dev server:
+
+```bash
+npm run dev
+```
+
+
+## License
+
+See the `LICENSE` file in this repository.
+

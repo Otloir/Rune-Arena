@@ -1,0 +1,110 @@
+.overlay {
+  position: fixed;
+  inset: 0; /* replaces width/height/top/left — always fills viewport */
+  background-color: var(--overlay-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: var(--modal-bg);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  width: min(90vw, 32rem);
+  max-height: 85vh;
+  max-height: 85dvh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0.5rem 2rem var(--shadow-black-22);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(1.5rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: transparent;
+}
+
+.closeButton:focus-visible {
+  outline: 0.1875rem solid var(--btn-cta-bg);
+  outline-offset: 0.125rem;
+}
+
+.content {
+  margin-top: 1.25rem;
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: var(--fs-xl);
+  color: var(--text-primary);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* tablet */
+@media (min-width: 48rem) {
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
+
+/* desktop */
+@media (min-width: 64rem) {
+  .modal {
+    width: min(60vw, 36rem);
+  }
+}

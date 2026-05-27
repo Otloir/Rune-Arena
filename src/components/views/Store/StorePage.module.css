@@ -1,0 +1,169 @@
+.storePage {
+  padding: 6rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.userShopInfo {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.storeTitle {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  line-height: 1.15;
+  font-size: clamp(1.5rem, 8vw, 2.25rem);
+  letter-spacing: -0.03em;
+}
+
+.userShopInfo div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userMoneyDisplay {
+  padding: 0 0.75rem;
+  min-height: 3.1rem;
+
+  border-radius: 1rem;
+  background-color: var(--coin-container-bg);
+  color: var(--coin-text);
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  box-sizing: border-box;
+
+  max-width: 9rem;
+  overflow: hidden;
+}
+
+.userMoneyDisplay span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balanceValue {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.balanceCurrency {
+  flex-shrink: 0;
+}
+
+.fixedInformationBar {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  max-width: calc(100vw - 1.5rem);
+
+  z-index: 20;
+}
+
+.buttonLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: block;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.iconButton {
+  background-color: var(--btn-cta-bg);
+  box-shadow: none;
+  border: none;
+  padding: 1.5rem;
+  color: var(--btn-cta-text);
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  background-color: var(--btn-cta-hover) !important;
+  cursor: pointer;
+}
+
+/* utility to remove box-shadow on buttons */
+.noShadow {
+  box-shadow: none;
+}
+
+.backToTopButton {
+  display: flex;
+  align-self: center;
+  justify-content: center;
+}
+
+.backButton {
+  width: 100%;
+  max-width: 20rem;
+}
+
+/* desktop */
+@media (min-width: 768px) {
+  .storePage {
+    padding: 2rem 1rem 1rem 1rem;
+  }
+
+    .fixedInformationBar {
+    top: 2rem;
+    right: 2rem;
+    gap: 0.75rem;
+  }
+
+  .userMoneyDisplay {
+    min-height: 3.45rem;
+    max-width: 12rem;
+    padding: 0 1rem;
+  }
+
+  .buttonIcon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .creatureSelectButtons {
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .storePage {
+    padding: 2rem;
+  }
+  .storeTitle {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+  }
+  .backButton {
+    width: 30%;
+  }
+}
